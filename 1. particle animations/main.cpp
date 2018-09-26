@@ -202,7 +202,13 @@ void draw(const Mesh &mesh)
 	glBindVertexArray(0);
 }
 
-
+//Function that creates a float between two values
+float RandomFloat(float a, float b) {
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
 
 // main function
 int main()
@@ -226,14 +232,39 @@ int main()
 
 	/*
 	CREATE THE PARTICLE(S) YOU NEED TO COMPLETE THE TASKS HERE
+
 	*/
+	std::vector<Mesh> allPart;
+	const int MAXPARTICLES = 50;
+
+	for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
+		Mesh particle = Mesh::Mesh();
+		//scale it down (x.1), translate it up by 2.5 and rotate it by 90 degrees around the x axis
+		particle.translate(glm::vec3(0.0f, 2.5f, 0.0f));
+		particle.scale(glm::vec3(.1f, .1f, .1f));
+		particle.rotate((GLfloat)M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
+		// allocate shader
+		particle.setShader(Shader("resources/shaders/core.vert", "resources/shaders/core_blue.frag"));
+		allPart.push_back(particle);
+	}
+
+
+
+	glm::vec3 Pinpos[MAXPARTICLES] ; //initial position for particles
+	glm::vec3 Pu[MAXPARTICLES]; //initial; velocity for particles
+
+	for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
+
+		Pinpos[i] = glm::vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), 0.0f);
+		Pu[i] = glm::vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), 0.0f);
+	}
 
 	glm::vec3 a = glm::vec3(0, -9.8, 0); //acceleration
 	glm::vec3 inpos = glm::vec3(0, 5.0f, 0); //initial position
 	glm::vec3 u = glm::vec3(2.0f, 8.0f, 0); //initisal velocity
 	float x_pos = 0.0f;
 
-	//particle1.setPos(glm::vec3(0.0f, 7.0f, 0.0f));
+	
 
 	GLfloat firstFrame = (GLfloat)glfwGetTime();
 	float acc = 1.1f;
@@ -290,6 +321,7 @@ int main()
 
 		// 5 - add collision with plane
 
+		/*
 
 		particle1.setPos(inpos + (u*currentFrame + 0.5*a*currentFrame*currentFrame));
 
@@ -300,9 +332,21 @@ int main()
 			firstFrame = (GLfloat)glfwGetTime();
 
 		}
+		
+		*/
 
 		// 6 - Same as above but for a collection of particles
+		for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 
+			allPart[i].setPos(Pinpos[i] + (Pu[i]*currentFrame + 0.5*a*currentFrame*currentFrame));
+
+			if (allPart[i].getTranslate()[3][1] < 0.0f) {
+				//x_pos = particle1.getTranslate()[3][0];
+				Pinpos[i] = glm::vec3(allPart[i].getTranslate()[3][0], 0.0f, 0.0f);
+				Pu[i] *= 0.9f;
+				firstFrame = (GLfloat)glfwGetTime();
+			}
+		}
 		/*
 		**	RENDER 
 		*/
@@ -315,7 +359,10 @@ int main()
 		draw(plane);
 		// draw particles
 		draw(particle1);
-		
+		//draw question 6 particles
+		for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
+			draw(allPart[i]);
+		}
 				
 
 		glBindVertexArray(0);
