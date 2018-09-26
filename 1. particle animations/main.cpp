@@ -232,7 +232,6 @@ int main()
 
 	/*
 	CREATE THE PARTICLE(S) YOU NEED TO COMPLETE THE TASKS HERE
-
 	*/
 	std::vector<Mesh> allPart;
 	const int MAXPARTICLES = 50;
