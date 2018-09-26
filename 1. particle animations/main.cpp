@@ -291,15 +291,15 @@ int main()
 		// 5 - add collision with plane
 
 
-		////particle1.setPos(inpos + (u*currentFrame + 0.5*a*currentFrame*currentFrame) + glm::vec3(x_pos, 0.0f, 0.0f));
+		particle1.setPos(inpos + (u*currentFrame + 0.5*a*currentFrame*currentFrame));
 
 		if (particle1.getTranslate()[3][1] < 0.0f) {
 			//x_pos = particle1.getTranslate()[3][0];
-			inpos =
-				u *= 0.9f;
+			inpos = glm::vec3(particle1.getTranslate()[3][0],0.0f , 0.0f);
+			u *= 0.9f;
 			firstFrame = (GLfloat)glfwGetTime();
-		
 
+		}
 
 		// 6 - Same as above but for a collection of particles
 
