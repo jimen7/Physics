@@ -29,7 +29,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Mesh.h"
-
+using namespace glm;
 
 // Properties
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -58,6 +58,14 @@ GLfloat lastFrame = 0.0f;
 
 // window
 GLFWwindow* window = NULL;
+
+//Function that creates a float between two values
+float RandomFloat(float a, float b) {
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
 
 // Moves/alters the camera positions based on user input
 void DoMovement()
@@ -128,6 +136,31 @@ void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset)
 {
 	camera.ProcessMouseScroll((GLfloat)yOffset);
 }
+
+struct particle {                                          //////////////////////////////////////////////////////////////////////////QUESTION 6 STUCT
+	vec3 velocity;
+	vec3 Pinpos;
+	GLfloat firstFrame;
+	GLfloat currentFrame;
+	GLfloat lastFrame;
+	Mesh mesh; 
+	
+	particle::particle() {
+		Pinpos = glm::vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), 0.0f);
+		velocity = glm::vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), 0.0f);
+		firstFrame = (GLfloat)glfwGetTime();
+		mesh = Mesh::Mesh();
+		currentFrame = 0.0f;
+		lastFrame = 0.0f;
+		
+		//scale it down (x.1), translate it up by 2.5 and rotate it by 90 degrees around the x axis
+		mesh.translate(glm::vec3(0.0f, 2.5f, 0.0f));
+		mesh.scale(glm::vec3(.1f, .1f, .1f));
+		mesh.rotate((GLfloat)M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
+		// allocate shader
+		mesh.setShader(Shader("resources/shaders/core.vert", "resources/shaders/core_blue.frag"));
+	}
+};
 
 
 // Renderer initialisation
@@ -202,13 +235,8 @@ void draw(const Mesh &mesh)
 	glBindVertexArray(0);
 }
 
-//Function that creates a float between two values
-float RandomFloat(float a, float b) {
-	float random = ((float)rand()) / (float)RAND_MAX;
-	float diff = b - a;
-	float r = random * diff;
-	return a + r;
-}
+
+
 
 // main function
 int main()
@@ -233,36 +261,32 @@ int main()
 	/*
 	CREATE THE PARTICLE(S) YOU NEED TO COMPLETE THE TASKS HERE
 	*/
-	std::vector<Mesh> allPart;
-	const int MAXPARTICLES = 50;
+	std::vector<particle> allPart;
+	const int MAXPARTICLES = 1000;
 
 	for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
-		Mesh particle = Mesh::Mesh();
-		//scale it down (x.1), translate it up by 2.5 and rotate it by 90 degrees around the x axis
-		particle.translate(glm::vec3(0.0f, 2.5f, 0.0f));
-		particle.scale(glm::vec3(.1f, .1f, .1f));
-		particle.rotate((GLfloat)M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
-		// allocate shader
-		particle.setShader(Shader("resources/shaders/core.vert", "resources/shaders/core_blue.frag"));
-		allPart.push_back(particle);
+		allPart.push_back(particle());
 	}
 
 
 
-	glm::vec3 Pinpos[MAXPARTICLES] ; //initial position for particles
-	glm::vec3 Pu[MAXPARTICLES]; //initial; velocity for particles
 
-	for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
-
-		Pinpos[i] = glm::vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), 0.0f);
-		Pu[i] = glm::vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), 0.0f);
-	}
 
 	glm::vec3 a = glm::vec3(0, -9.8, 0); //acceleration
 	glm::vec3 inpos = glm::vec3(0, 5.0f, 0); //initial position
 	glm::vec3 u = glm::vec3(2.0f, 8.0f, 0); //initisal velocity
 	float x_pos = 0.0f;
+	/*
+	glm::vec3 Pinpos[MAXPARTICLES]; //initial position for multiple particles
+	glm::vec3 Pu[MAXPARTICLES]; //initial; velocity for multiple particles
 
+	for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
+
+		Pinpos[i] = glm::vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), 0.0f);
+		Pu[i] = glm::vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), 0.0f);
+
+	}
+	*/
 	
 
 	GLfloat firstFrame = (GLfloat)glfwGetTime();
@@ -278,6 +302,8 @@ int main()
 		currentFrame *= 1.5f;
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+
+
 
 		/*
 		**	INTERACTION
@@ -337,13 +363,20 @@ int main()
 		// 6 - Same as above but for a collection of particles
 		for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 
-			allPart[i].setPos(Pinpos[i] + (Pu[i]*currentFrame + 0.5*a*currentFrame*currentFrame));
+			allPart[i].currentFrame = (GLfloat)glfwGetTime() - allPart[i].firstFrame;
+			// the animation can be sped up or slowed down by multiplying currentFrame by a factor.
+			allPart[i].currentFrame *= 1.5f;
+			deltaTime = allPart[i].currentFrame - allPart[i].lastFrame;
+			allPart[i].lastFrame = allPart[i].currentFrame;
 
-			if (allPart[i].getTranslate()[3][1] < 0.0f) {
+
+			allPart[i].mesh.setPos(allPart[i].Pinpos + (allPart[i].velocity*allPart[i].currentFrame + 0.5*a*allPart[i].currentFrame*allPart[i].currentFrame));
+
+			if (allPart[i].mesh.getTranslate()[3][1] < 0.0f) {
 				//x_pos = particle1.getTranslate()[3][0];
-				Pinpos[i] = glm::vec3(allPart[i].getTranslate()[3][0], 0.0f, 0.0f);
-				Pu[i] *= 0.9f;
-				firstFrame = (GLfloat)glfwGetTime();
+				allPart[i].Pinpos = glm::vec3(allPart[i].mesh.getTranslate()[3][0], 0.0f, 0.0f);
+				allPart[i].velocity *= 0.9f;
+				allPart[i].firstFrame = (GLfloat)glfwGetTime();
 			}
 		}
 		/*
@@ -360,7 +393,7 @@ int main()
 		draw(particle1);
 		//draw question 6 particles
 		for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
-			draw(allPart[i]);
+			draw(allPart[i].mesh);
 		}
 				
 
