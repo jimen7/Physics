@@ -22,11 +22,50 @@
 #include "Application.h"
 #include "Shader.h"
 #include "Mesh.h"
-
+using namespace glm;
 
 // time
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+
+float RandomFloat(float a, float b) {
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
+
+struct particle {                                          //////////////////////////////////////////////////////////////////////////QUESTION 6 STUCT
+	vec3 velocity;
+	GLfloat firstFrame;
+	GLfloat currentFrame;
+	GLfloat lastFrame;
+	Mesh mesh; //mesh
+	vec3 a; //acceleration
+	vec3 Ftotal; //Force applied to the particle
+	const float m = 1.0f;
+	vec3 Fg; //Force applied by gravity
+	vec3 rFin; //Displacement Final
+	vec3 rIn; //Displacement Initial
+
+	particle::particle() {
+		rIn = glm::vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 5.0f));
+		velocity = glm::vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 5.0f));
+		firstFrame = (GLfloat)glfwGetTime();
+		mesh = Mesh::Mesh(Mesh::QUAD);
+		a = glm::vec3(0.0f, -9.8f, 0.0f);
+		currentFrame = 0.0f;
+		lastFrame = 0.0f;
+		rIn = glm::vec3(0.0f, 5.0f, 0.0f);
+
+		//scale it down (x.1), translate it up by 2.5 and rotate it by 90 degrees around the x axis
+		mesh.translate(glm::vec3(0.0f, 2.5f, 0.0f));
+		mesh.scale(glm::vec3(.1f, .1f, .1f));
+		mesh.rotate((GLfloat)M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
+		// allocate shader
+		mesh.setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
+	}
+};
 
 
 // main function
@@ -53,6 +92,15 @@ int main()
 	particle1.scale(glm::vec3(.1f, .1f, .1f));
 	particle1.rotate((GLfloat) M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
 	particle1.setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
+
+	std::vector<particle> allPart;
+	const int MAXPARTICLES = 10;
+
+	for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
+		allPart.push_back(particle());
+	}
+
+
 	
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
@@ -141,7 +189,12 @@ int main()
 		// draw groud plane
 		app.draw(plane);
 		// draw particles
-		app.draw(particle1);	
+		app.draw(particle1);
+
+		//draw Task 2 particles
+		for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
+			draw(allPart[i].mesh);
+		}
 
 		// draw demo objects
 		app.draw(cube);
