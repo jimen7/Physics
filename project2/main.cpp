@@ -34,7 +34,7 @@ float RandomFloat(float a, float b) {
 	float r = random * diff;
 	return a + r;
 }
-
+/*
 struct particle {                                          //////////////////////////////////////////////////////////////////////////QUESTION 6 STUCT
 	vec3 velocity;
 	GLfloat firstFrame;
@@ -66,7 +66,7 @@ struct particle {                                          /////////////////////
 		mesh.setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
 	}
 };
-
+*/
 
 // main function
 int main()
@@ -93,12 +93,12 @@ int main()
 	particle1.rotate((GLfloat) M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
 	particle1.setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
 
-	std::vector<particle> allPart;
+	/*std::vector<particle> allPart;
 	const int MAXPARTICLES = 10;
 
 	for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 		allPart.push_back(particle());
-	}
+	}*/
 
 
 	
@@ -192,9 +192,9 @@ int main()
 		app.draw(particle1);
 
 		//draw Task 2 particles
-		for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
-			draw(allPart[i].mesh);
-		}
+		/*for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
+			app.draw(allPart[i].mesh);
+		}*/
 
 		// draw demo objects
 		app.draw(cube);
