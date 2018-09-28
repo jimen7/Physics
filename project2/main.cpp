@@ -24,9 +24,11 @@
 #include "Mesh.h"
 using namespace glm;
 
+
 // time
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+
 
 float RandomFloat(float a, float b) {
 	float random = ((float)rand()) / (float)RAND_MAX;
@@ -68,10 +70,10 @@ struct particle {                                          /////////////////////
 };
 */
 
+
 // main function
 int main()
 {
-
 	// create application
 	Application app = Application::Application();
 	app.initRender();
@@ -94,12 +96,11 @@ int main()
 	particle1.setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
 
 	/*std::vector<particle> allPart;
-	const int MAXPARTICLES = 10;
+const int MAXPARTICLES = 10;
 
-	for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
-		allPart.push_back(particle());
-	}*/
-
+for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
+	allPart.push_back(particle());
+}*/
 
 	
 	// create demo objects (a cube and a sphere)
@@ -112,7 +113,7 @@ int main()
 
 	// time
 	GLfloat firstFrame = (GLfloat) glfwGetTime();
-	
+
 	//Declaring particle 
 	glm::vec3 a = glm::vec3(0.0f, -9.8f, 0.0f); //acceleration
 	//glm::vec3 inpos = glm::vec3(0.0f, 5.0f, 0.0f); //initial position
@@ -125,11 +126,9 @@ int main()
 	glm::vec3 rIn = glm::vec3(0.0f, 5.0f, 0.0f); //Displacement Initial
 
 	//TASK 3 VARIABLES
-	glm::vec3 cubecorner = glm::vec3(-5.0f,0.0f,-5.0f); 
+	glm::vec3 cubecorner = glm::vec3(-5.0f, 0.0f, -5.0f);
 	glm::vec3 d = glm::vec3(10.0f);
-
-
-
+	
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
 	{
@@ -156,30 +155,30 @@ int main()
 		u = u + deltaTime * a;
 		//rIn = rFin;
 		//rFin = rIn + deltaTime * u;
-		
-	
+
+
 
 		//Task 2
 	//	if (particle1.getPos().x < (cubecorner-d).x || particle1.getPos().y < (cubecorner - d).y || particle1.getPos().z < (cubecorner + d).z) {
-			
+
 		//	firstFrame = (GLfloat)glfwGetTime();
 	//	}
 
-		for (unsigned int i= 0; i < 3; ++i) {
-			if (particle1.getPos()[i]<cubecorner[i]) {
+		for (unsigned int i = 0; i < 3; ++i) {
+			if (particle1.getPos()[i] < cubecorner[i]) {
 				//rIn[i] = particle1.getPos()[i];
-				u[i] = -u[i]*0.9f;
+				u[i] = -u[i] * 0.9f;
 				particle1.setPos(i, cubecorner[i]);
 
 			}
-			else if (particle1.getPos()[i] > cubecorner[i]+d[i]) {
+			else if (particle1.getPos()[i] > cubecorner[i] + d[i]) {
 				//rIn[i] = particle1.getPos()[i];
 				u[i] = -u[i] * 0.9f;
-				particle1.setPos(i,cubecorner[i]+d[i]);
+				particle1.setPos(i, cubecorner[i] + d[i]);
 			}
 		}
 		particle1.translate(deltaTime * u);
-		
+
 
 		/*
 		**	RENDER 
@@ -189,12 +188,7 @@ int main()
 		// draw groud plane
 		app.draw(plane);
 		// draw particles
-		app.draw(particle1);
-
-		//draw Task 2 particles
-		/*for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
-			app.draw(allPart[i].mesh);
-		}*/
+		app.draw(particle1);	
 
 		// draw demo objects
 		app.draw(cube);
