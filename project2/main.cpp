@@ -115,7 +115,7 @@ for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 	GLfloat firstFrame = (GLfloat) glfwGetTime();
 
 	//Declaring particle 
-	glm::vec3 a = glm::vec3(0.0f, -9.8f, 0.0f); //acceleration
+	glm::vec3 a; //acceleration
 	//glm::vec3 inpos = glm::vec3(0.0f, 5.0f, 0.0f); //initial position
 	glm::vec3 u = glm::vec3(5.0f, 20.0f, 3.0f); //initisal velocity
 	glm::vec3 Ftotal; //Force applied to the particle
@@ -128,6 +128,16 @@ for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 	//TASK 3 VARIABLES
 	glm::vec3 cubecorner = glm::vec3(-5.0f, 0.0f, -5.0f);
 	glm::vec3 d = glm::vec3(10.0f);
+
+	//Task 4 variables
+
+	float density = 1.225f;
+	float coefficient = 1.05f;
+	vec3 e;
+	vec3 area = vec3(0.1f, 0.1f, 0.0f);
+	vec3 Fa;
+	vec3 absoluteu;
+	glm::vec3 g = glm::vec3(0.0f, -9.8f, 0.0f);
 	
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
@@ -152,7 +162,14 @@ for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 
 		//Task 1
 
-		u = u + deltaTime * a;
+		u = u + deltaTime * g;
+		/*Fg = m * g;
+		absoluteu = abs(u);
+		e = -u / absoluteu;
+		Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
+		Ftotal = Fg - Fa;
+		a = Ftotal / m;*/
+		
 		//rIn = rFin;
 		//rFin = rIn + deltaTime * u;
 
