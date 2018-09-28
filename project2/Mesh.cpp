@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include <errno.h>
+using namespace glm;
 
 /*
 **	MESH 

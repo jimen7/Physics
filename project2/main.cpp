@@ -28,9 +28,11 @@
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
+
 // main function
 int main()
 {
+
 	// create application
 	Application app = Application::Application();
 	app.initRender();
@@ -63,6 +65,23 @@ int main()
 	// time
 	GLfloat firstFrame = (GLfloat) glfwGetTime();
 	
+	//Declaring particle 
+	glm::vec3 a = glm::vec3(0.0f, -9.8f, 0.0f); //acceleration
+	//glm::vec3 inpos = glm::vec3(0.0f, 5.0f, 0.0f); //initial position
+	glm::vec3 u = glm::vec3(5.0f, 20.0f, 3.0f); //initisal velocity
+	glm::vec3 Ftotal; //Force applied to the particle
+	//glm::vec3 uFin; //Final velocity
+	static float m = 1.0f;
+	glm::vec3 Fg;
+	glm::vec3 rFin; //Displacement Final
+	glm::vec3 rIn = glm::vec3(0.0f, 5.0f, 0.0f); //Displacement Initial
+
+	//TASK 3 VARIABLES
+	glm::vec3 cubecorner = glm::vec3(-5.0f,0.0f,-5.0f); 
+	glm::vec3 d = glm::vec3(10.0f);
+
+
+
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
 	{
@@ -83,8 +102,36 @@ int main()
 		/*
 		**	SIMULATION
 		*/
-		
 
+		//Task 1
+
+		u = u + deltaTime * a;
+		//rIn = rFin;
+		//rFin = rIn + deltaTime * u;
+		
+	
+
+		//Task 2
+	//	if (particle1.getPos().x < (cubecorner-d).x || particle1.getPos().y < (cubecorner - d).y || particle1.getPos().z < (cubecorner + d).z) {
+			
+		//	firstFrame = (GLfloat)glfwGetTime();
+	//	}
+
+		for (unsigned int i= 0; i < 3; ++i) {
+			if (particle1.getPos()[i]<cubecorner[i]) {
+				//rIn[i] = particle1.getPos()[i];
+				u[i] = -u[i]*0.9f;
+				particle1.setPos(i, cubecorner[i]);
+
+			}
+			else if (particle1.getPos()[i] > cubecorner[i]+d[i]) {
+				//rIn[i] = particle1.getPos()[i];
+				u[i] = -u[i] * 0.9f;
+				particle1.setPos(i,cubecorner[i]+d[i]);
+			}
+		}
+		particle1.translate(deltaTime * u);
+		
 
 		/*
 		**	RENDER 
