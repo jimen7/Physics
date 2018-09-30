@@ -94,7 +94,7 @@ int main()
 	particle1.scale(glm::vec3(.1f, .1f, .1f));
 	particle1.rotate((GLfloat) M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
 	particle1.setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
-
+	
 	/*std::vector<particle> allPart;
 const int MAXPARTICLES = 10;
 
@@ -102,7 +102,7 @@ for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 	allPart.push_back(particle());
 }*/
 
-	
+
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
 	sphere.translate(glm::vec3(-1.0f, 1.0f, 0.0f));
@@ -113,6 +113,7 @@ for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 
 	// time
 	GLfloat firstFrame = (GLfloat) glfwGetTime();
+
 
 	//Declaring particle 
 	glm::vec3 a; //acceleration
@@ -169,7 +170,7 @@ for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 		Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
 		Ftotal = Fg - Fa;
 		a = Ftotal / m;*/
-		
+
 		//rIn = rFin;
 		//rFin = rIn + deltaTime * u;
 
@@ -195,6 +196,7 @@ for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 			}
 		}
 		particle1.translate(deltaTime * u);
+		
 
 
 		/*
