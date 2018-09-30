@@ -139,6 +139,12 @@ for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 	vec3 Fa;
 	vec3 absoluteu;
 	glm::vec3 g = glm::vec3(0.0f, -9.8f, 0.0f);
+
+	//To add friction
+
+	vec3 N = vec3(0.0f); //Normal dorce
+	float frictioncoef = 0.5f; //Friction Coefficient
+	vec3 Ff = vec3(0.0f);
 	
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
@@ -163,13 +169,8 @@ for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 
 		//Task 1
 
-		u = u + deltaTime * g;
-		/*Fg = m * g;
-		absoluteu = abs(u);
-		e = -u / absoluteu;
-		Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
-		Ftotal = Fg - Fa;
-		a = Ftotal / m;*/
+		//u = u + deltaTime * g;
+		
 
 		//rIn = rFin;
 		//rFin = rIn + deltaTime * u;
@@ -182,22 +183,39 @@ for (unsigned int i = 0; i < MAXPARTICLES; ++i) {
 		//	firstFrame = (GLfloat)glfwGetTime();
 	//	}
 
+		//Task 3
+
+		Fg = m * g;
+		absoluteu = abs(u);
+		e = -u / absoluteu;
+		Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
+		Ftotal = Fg + Fa - Ff;
+		a = Ftotal / m;
+		//
+
+
+		u = u + deltaTime * a;
+
 		for (unsigned int i = 0; i < 3; ++i) {
 			if (particle1.getPos()[i] < cubecorner[i]) {
 				//rIn[i] = particle1.getPos()[i];
-				u[i] = -u[i] * 0.9f;
+				u[i] = -u[i] * 0.6f;
+				/*N = m * g;
+				Ff = N * frictioncoef;*/  //Was trying to add friction here			
 				particle1.setPos(i, cubecorner[i]);
 
 			}
 			else if (particle1.getPos()[i] > cubecorner[i] + d[i]) {
 				//rIn[i] = particle1.getPos()[i];
-				u[i] = -u[i] * 0.9f;
+				u[i] = -u[i] * 0.6f;
+				/*N = m * g;
+				Ff = N * frictioncoef;*/  //Was trying to add friction here
 				particle1.setPos(i, cubecorner[i] + d[i]);
 			}
 		}
 		particle1.translate(deltaTime * u);
 		
-
+		//Ff = vec3(0.0F);
 
 		/*
 		**	RENDER 
