@@ -56,7 +56,7 @@ int main()
 
 
 	//Create particle via class:
-	//Particle particle1();
+	Particle *particle2 = new Particle();
 
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
