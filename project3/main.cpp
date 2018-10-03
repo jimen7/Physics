@@ -45,7 +45,7 @@ int main()
 	Shader lambert = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	plane.setShader(lambert);
 
-
+	/*
 	// create particle
 	Mesh particle1 = Mesh::Mesh(Mesh::QUAD);
 	//scale it down (x.1), translate it up by 2.5 and rotate it by 90 degrees around the x axis
@@ -53,6 +53,10 @@ int main()
 	particle1.scale(glm::vec3(.1f, .1f, .1f));
 	particle1.rotate((GLfloat) M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
 	particle1.setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
+	*/
+
+	//Create particle via class:
+	Particle particle1();
 	
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
@@ -96,7 +100,7 @@ int main()
 		// draw groud plane
 		app.draw(plane);
 		// draw particles
-		app.draw(particle1);	
+		app.draw(particle1);	////////////////////////////////////////////////////put partile here
 
 		// draw demo objects
 		app.draw(cube);
