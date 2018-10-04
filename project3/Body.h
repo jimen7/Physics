@@ -1,12 +1,12 @@
 #pragma once
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <string>
-#include <vector>
-#include "OBJloader.h"
-#include "Shader.h"
+//#include <GL/glew.h>
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/gtc/type_ptr.hpp>
+//#include <string>
+//#include <vector>
+//#include "OBJloader.h"
+//#include "Shader.h"
 #include "Mesh.h"
 
 class Body
