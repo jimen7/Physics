@@ -114,25 +114,25 @@ int main()
 
 	//Task 2
 
-	double t = 0.0;
-	const double dt = 0.01;
-	double currentTime = (GLfloat)glfwGetTime();
-	double accumulator=0.0;
+	float t = 0.0f;
+	const float dt = 0.01f;
+	float currentTime = (GLfloat)glfwGetTime();
+	float accumulator=0.0f;
 
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
 	{
-		double newTime = (GLfloat)glfwGetTime();
-		double frameTime = newTime - currentTime;
+		float newTime = (GLfloat)glfwGetTime();
+		float frameTime = newTime - currentTime;
 		currentTime = newTime;
 
 		accumulator += frameTime;
 
 
 
-		//// Set frame time
+		////// Set frame time
 		//GLfloat currentFrame = (GLfloat)glfwGetTime() - firstFrame;
-		//// the animation can be sped up or slowed down by multiplying currentFrame by a factor.
+		////// the animation can be sped up or slowed down by multiplying currentFrame by a factor.
 		//currentFrame *= 1.5f;
 		//deltaTime = currentFrame - lastFrame;
 		//lastFrame = currentFrame;
@@ -167,7 +167,7 @@ int main()
 					allPart[i].setAcc(Ftotal / allPart[i].getMass());
 
 
-					allPart[i].setVel(allPart[i].getVel() + deltaTime * allPart[i].getAcc());
+					allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
 					//
 
 
@@ -190,7 +190,7 @@ int main()
 						
 					}
 
-					allPart[i].translate(deltaTime*allPart[i].getVel());
+					allPart[i].translate(dt*allPart[i].getVel());
 
 					
 				}
