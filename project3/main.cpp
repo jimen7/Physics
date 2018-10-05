@@ -24,7 +24,14 @@
 #include "Mesh.h"
 #include "Body.h"
 #include "Particle.h"
+using namespace glm;
 
+float RandomFloat(float a, float b) {
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
 
 // time
 GLfloat deltaTime = 0.0f;
@@ -56,8 +63,16 @@ int main()
 
 
 	//Create particle via class:
-	Particle *particle2 = new Particle();
-	particle2->getVel();
+
+	const int particlenum = 10;
+	std::vector<Particle> allPart;
+	for (unsigned int i = 0; i < particlenum; ++i) {
+		allPart.push_back(Particle::Particle());
+		allPart[i].getMesh().setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
+	}
+
+	//Particle *particle2 = new Particle();
+	//particle2->getVel();
 
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
@@ -69,6 +84,36 @@ int main()
 
 	// time
 	GLfloat firstFrame = (GLfloat)glfwGetTime();
+
+	///////////////////////////////////////////////////////Forces
+
+	glm::vec3 Ftotal; //Force applied to the particle
+	glm::vec3 Fg;
+
+
+
+	//TASK 1 Variables
+	glm::vec3 cubecorner = glm::vec3(-5.0f, 0.0f, -5.0f);
+	glm::vec3 d = glm::vec3(10.0f);
+
+
+	float density = 1.225f;
+	float coefficient = 1.05f;
+	vec3 e;
+	vec3 area = vec3(0.1f, 0.1f, 0.0f);
+	vec3 Fa;
+	vec3 absoluteu;
+	glm::vec3 g = glm::vec3(0.0f, -9.8f, 0.0f);
+
+
+	glm::vec3 ParticleVelocity[particlenum]; //initial; velocity for multiple particles
+	for (unsigned int i = 0; i < particlenum; ++i) {
+		allPart[i].setVel(vec3(RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 8.0f)));
+		allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), RandomFloat(0.0f, 8.0f)));
+	}
+
+
+
 
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
@@ -90,6 +135,42 @@ int main()
 		/*
 		**	SIMULATION
 		*/
+		for (unsigned int i = 0; i < particlenum; i++) {
+
+			Fg = allPart[i].getMass() * g;
+			absoluteu = abs(allPart[i].getVel());
+			e = -allPart[i].getVel() / absoluteu;
+			Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
+			Ftotal = Fg + Fa ;
+			allPart[i].setAcc(Ftotal/allPart[i].getMass());
+
+
+			allPart[i].setVel(allPart[i].getVel()+deltaTime*allPart[i].getAcc());
+			//
+
+
+			for (unsigned int j = 0; j < 3; j++) {
+				if (allPart[i].getPos()[j] < cubecorner[j]) {
+					//rIn[i] = particle1.getPos()[i];
+					allPart[i].setVel(j, allPart[i].getVel()[j]*-0.9f);
+					/*N = m * g;
+					Ff = N * frictioncoef;*/  //Was trying to add friction here			
+					allPart[i].setPos(j, cubecorner[j]);
+
+				}
+				else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
+					//rIn[i] = particle1.getPos()[i];
+					allPart[i].setVel(j, allPart[i].getVel()[j]*-0.9f);
+					/*N = m * g;
+					Ff = N * frictioncoef;*/  //Was trying to add friction here
+					allPart[i].setPos(j, cubecorner[j]+d[j]);
+				}
+			}
+
+			allPart[i].translate(deltaTime*allPart[i].getVel());
+
+
+		}
 
 
 
@@ -101,11 +182,13 @@ int main()
 		// draw groud plane
 		app.draw(plane);
 		// draw particles
-		app.draw(particle1);	////////////////////////////////////////////////////put partile here
-
+		//app.draw(particle1);	////////////////////////////////////////////////////put partile here
+		for (unsigned int i = 0; i < particlenum; ++i) {
+			app.draw(allPart[i].getMesh());
+		}
 		// draw demo objects
-		app.draw(cube);
-		app.draw(sphere);
+		//app.draw(cube);
+		//app.draw(sphere);
 
 		app.display();
 	}

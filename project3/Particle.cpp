@@ -11,7 +11,7 @@
 
 Particle::Particle()
 {
-	setMesh(Mesh::Mesh());
+	setMesh(Mesh::Mesh(Mesh::QUAD));
 	scale(glm::vec3(.1f, .1f, .1f));
 	rotate((GLfloat)M_PI_2, glm::vec3(1.0f, 0.0f, 0.f));
 
