@@ -2,7 +2,7 @@
 #include <errno.h>
 
 /*
-**	MESH 
+**	MESH
 */
 
 // default constructor creates a horizontal plane or dimensions 1 x 1 centered on the origin
@@ -156,7 +156,7 @@ Mesh::Mesh(MeshType type)
 
 		break;
 	}
-	
+
 
 	//create mesh
 	initMesh(vertices, normals);
@@ -171,8 +171,8 @@ Mesh::~Mesh()
 }
 
 
-/* 
-** INIT METHODS 
+/*
+** INIT METHODS
 */
 
 // initialise transform matrices to identity
@@ -264,7 +264,7 @@ void Mesh::loadOBJ(const char * path,
 	{
 		printf("The file was not opened\n");
 	}
-	else{
+	else {
 		while (1) {
 
 			char lineHeader[128];

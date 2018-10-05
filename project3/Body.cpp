@@ -27,3 +27,4 @@ void Body::scale(const glm::vec3 & vect) {
 	m_mesh.scale(vect);
 
 }
+
