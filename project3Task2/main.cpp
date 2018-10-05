@@ -64,7 +64,7 @@ int main()
 
 	//Create particle via class:
 
-	const int particlenum = 10;
+	const int particlenum = 3;
 	std::vector<Particle> allPart;
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart.push_back(Particle::Particle());
@@ -102,17 +102,24 @@ int main()
 	vec3 e;
 	vec3 area = vec3(0.1f, 0.1f, 0.0f);
 	vec3 Fa;
-	vec3 absoluteu;
+	float absoluteu;
 	glm::vec3 g = glm::vec3(0.0f, -9.8f, 0.0f);
 
 
-	glm::vec3 ParticleVelocity[particlenum]; //initial; velocity for multiple particles
-	for (unsigned int i = 0; i < particlenum; ++i) {
+	//glm::vec3 ParticleVelocity[particlenum]; //initial; velocity for multiple particles
+
+	////Task 1&2
+	/*for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart[i].setVel(vec3(RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 8.0f)));
 		allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), RandomFloat(0.0f, 8.0f)));
-	}
+	}*/
 
 	//Task 2
+	for (unsigned int i = 0; i < particlenum; ++i) {
+		allPart[i].setVel(vec3(0.0f));
+		allPart[i].setPos(vec3(0.0f, 2.5f, 0.0f));
+		std::cout << "mass: " << allPart[i].getMass() << std::endl;
+	}
 
 	float t = 0.0f;
 	const float dt = 0.01f;
@@ -148,49 +155,74 @@ int main()
 
 		while (accumulator >= dt)
 		{
-
-		
-				
-				
-
-
 				/*
 				**	SIMULATION
 				*/
 				for (unsigned int i = 0; i < particlenum; i++) {
-
+					
+					// compute forces
+					// gravity
 					Fg = allPart[i].getMass() * g;
-					absoluteu = abs(allPart[i].getVel());
-					e = -allPart[i].getVel() / absoluteu;
-					Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
-					Ftotal = Fg + Fa;
-					allPart[i].setAcc(Ftotal / allPart[i].getMass());
+					Fa = vec3(0.0f);
+					// aerodynamic drag
+					if (allPart[i].getVel().length() < 0.1f) {
+						Fa = vec3(0.0f);                                              //////////////////////////Something is eetting FA to be werird
+					}
+					else {
+						std::cout << glm::to_string(allPart[i].getVel()) << std::endl;
+						absoluteu = length(allPart[i].getVel()); /////////////////////////THIS LINE IS BREAKING MY CODE
+						std::cout << "Abs: " << absoluteu << std::endl;
 
+
+						e = -allPart[i].getVel() / absoluteu;
+						Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
+						//Fa = vec3(0.0f);
+					}
+					
+
+					Ftotal = Fg + Fa;
+
+					// acceleration
+					allPart[i].setAcc(Ftotal / allPart[i].getMass());
+					std::cout << "ftotal: " << to_string(Fa) << std::endl;
+
+
+					//for (unsigned int j = 0; j < 3; j++) {
+					//	if (allPart[i].getPos()[j] < cubecorner[j]) {
+					//		//rIn[i] = particle1.getPos()[i];
+					//		allPart[i].setVel(j, allPart[i].getVel()[j] * -0.6f);
+					//		/*N = m * g;
+					//		Ff = N * frictioncoef;*/  //Was trying to add friction here			
+					//		allPart[i].setPos(j, cubecorner[j]);
+
+					//	}
+					//	else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
+					//		//rIn[i] = particle1.getPos()[i];
+					//		allPart[i].setVel(j, allPart[i].getVel()[j] * -0.6f);
+					//		/*N = m * g;
+					//		Ff = N * frictioncoef;*/  //Was trying to add friction here
+					//		allPart[i].setPos(j, cubecorner[j] + d[j]);
+					//	}
+					//	
+					//}
+
+					// integrate
+					std::cout << "test1: " << glm::to_string(allPart[i].getVel()) << std::endl;
+					std::cout << "ACCELEARTION: " << glm::to_string(allPart[i].getAcc()) << std::endl;
 
 					allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
-					//
-
-
-					for (unsigned int j = 0; j < 3; j++) {
-						if (allPart[i].getPos()[j] < cubecorner[j]) {
-							//rIn[i] = particle1.getPos()[i];
-							allPart[i].setVel(j, allPart[i].getVel()[j] * -0.9f);
-							/*N = m * g;
-							Ff = N * frictioncoef;*/  //Was trying to add friction here			
-							allPart[i].setPos(j, cubecorner[j]);
-
-						}
-						else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
-							//rIn[i] = particle1.getPos()[i];
-							allPart[i].setVel(j, allPart[i].getVel()[j] * -0.9f);
-							/*N = m * g;
-							Ff = N * frictioncoef;*/  //Was trying to add friction here
-							allPart[i].setPos(j, cubecorner[j] + d[j]);
-						}
-						
-					}
+					std::cout << "test2: " << glm::to_string(allPart[i].getVel()) << std::endl;
 
 					allPart[i].translate(dt*allPart[i].getVel());
+
+
+					//if (allPart[i].getVel() == vec3(0.0f)) {
+					//	allPart[i].translate(vec3(0.0f,2.5f,0.0f));
+					//}
+					//else {
+					//	allPart[i].translate(dt*allPart[i].getVel());
+					//}
+					//std::cout << glm::to_string(allPart[i].getVel());
 
 					
 				}
