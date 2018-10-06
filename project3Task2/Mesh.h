@@ -8,8 +8,8 @@
 #include "OBJloader.h"
 #include "Shader.h"
 
-/*
-** VERTEX CLASS
+/* 
+** VERTEX CLASS 
 */
 class Vertex {
 public:
@@ -37,8 +37,8 @@ enum MeshBufferPositions
 	INDEX_VB
 };
 
-/*
-** MESH CLASS
+/* 
+** MESH CLASS 
 */
 class Mesh
 {
@@ -69,13 +69,13 @@ public:
 
 	// getModel computes the model matrix any time it is required
 	glm::vec3 getPos() const { return getTranslate()[3]; }
-	glm::mat4 getModel() const { return getTranslate() * getRotate() * getScale(); }
-	glm::mat4 getTranslate() const { return m_translate; }
-	glm::mat4 getRotate() const { return m_rotate; }
-	glm::mat4 getScale() const { return m_scale; }
+	glm::mat4 getModel() const{ return getTranslate() * getRotate() * getScale();}
+	glm::mat4 getTranslate() const{ return m_translate; }
+	glm::mat4 getRotate() const{ return m_rotate; }
+	glm::mat4 getScale() const{ return m_scale; }
 
 	Shader getShader() const { return m_shader; }
-	unsigned int getNumIndices() const { return m_numIndices; }
+	unsigned int getNumIndices() const{ return m_numIndices; }
 
 	// set position of mesh center to specified 3D position vector
 	void setPos(const glm::vec3 &position) {
@@ -97,7 +97,7 @@ public:
 	GLuint getVertexBuffer() const { return m_vertexBuffer; }
 	GLuint getNormalBuffer() const { return m_normalBuffer; }
 
-	/*
+	/* 
 	** INITIALISATION AND UTILITY METHODS
 	*/
 
@@ -120,7 +120,7 @@ public:
 	/*
 	** TRANSFORMATION METHODS
 	*/
-
+	
 	// translate mesh by a vector
 	void translate(const glm::vec3 &vect);
 	// rotate mesh by a vector

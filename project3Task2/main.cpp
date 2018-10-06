@@ -117,14 +117,18 @@ int main()
 	//Task 2
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart[i].setVel(vec3(0.0f));
-		allPart[i].setPos(vec3(0.0f, 2.5f, 0.0f));
-		std::cout << "mass: " << allPart[i].getMass() << std::endl;
+		//allPart[i].setPos(vec3(0.0f, 2.5f, 0.0f));
+		//std::cout << "mass: " << allPart[i].getMass() << std::endl;
 	}
+
+	allPart[0].setPos(vec3(0.0f, 2.0f, 0.0f));
+	allPart[1].setPos(vec3(2.0f, 2.0f, 0.0f));
+	allPart[2].setPos(vec3(-2.0f, 2.0f, 0.0f));
 
 	float t = 0.0f;
 	const float dt = 0.01f;
 	float currentTime = (GLfloat)glfwGetTime();
-	float accumulator=0.0f;
+	float accumulator = 0.0f;
 
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
@@ -155,81 +159,116 @@ int main()
 
 		while (accumulator >= dt)
 		{
-				/*
-				**	SIMULATION
-				*/
-				for (unsigned int i = 0; i < particlenum; i++) {
-					
-					// compute forces
-					// gravity
-					Fg = allPart[i].getMass() * g;
-					Fa = vec3(0.0f);
-					// aerodynamic drag
-					if (allPart[i].getVel().length() < 0.1f) {
-						Fa = vec3(0.0f);                                              //////////////////////////Something is eetting FA to be werird
-					}
-					else {
-						std::cout << glm::to_string(allPart[i].getVel()) << std::endl;
-						absoluteu = length(allPart[i].getVel()); /////////////////////////THIS LINE IS BREAKING MY CODE
-						std::cout << "Abs: " << absoluteu << std::endl;
+			/*
+			**	SIMULATION
+			*/
+			for (unsigned int i = 0; i < particlenum; i++) {
+				
+				// compute forces
+				// gravity
+				Fg = allPart[i].getMass() * g;
+				Fa = vec3(0.0f);
+				// aerodynamic drag
+				if (glm::length(allPart[i].getVel()) == 0.0f) {
+					Fa = vec3(0.0f);                                              //////////////////////////Something is eetting FA to be werird
+				}
+				else {
+					//std::cout << glm::to_string(allPart[i].getVel()) << std::endl;
+					absoluteu = length(allPart[i].getVel()); /////////////////////////THIS LINE IS BREAKING MY CODE
+					//std::cout << "Abs: " << absoluteu << std::endl;
 
 
-						e = -allPart[i].getVel() / absoluteu;
-						Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
-						//Fa = vec3(0.0f);
-					}
-					
+					e = -allPart[i].getVel() / absoluteu;
+					//Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
+					//Fa = vec3(0.0f);
+				}
 
-					Ftotal = Fg + Fa;
 
+				Ftotal = Fg + Fa;
+
+				std::cout << "ftotal: " << to_string(Ftotal) << std::endl;
+
+
+				if (i == 1) {  //Forward Euler
 					// acceleration
 					allPart[i].setAcc(Ftotal / allPart[i].getMass());
-					std::cout << "ftotal: " << to_string(Fa) << std::endl;
+					//std::cout << "ftotal: " << to_string(Fa) << std::endl;
 
 
-					//for (unsigned int j = 0; j < 3; j++) {
-					//	if (allPart[i].getPos()[j] < cubecorner[j]) {
-					//		//rIn[i] = particle1.getPos()[i];
-					//		allPart[i].setVel(j, allPart[i].getVel()[j] * -0.6f);
-					//		/*N = m * g;
-					//		Ff = N * frictioncoef;*/  //Was trying to add friction here			
-					//		allPart[i].setPos(j, cubecorner[j]);
+					for (unsigned int j = 0; j < 3; j++) {
+						if (allPart[i].getPos()[j] < cubecorner[j]) {
+							//rIn[i] = particle1.getPos()[i];
+							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+							/*N = m * g;
+							Ff = N * frictioncoef;*/  //Was trying to add friction here			
+							allPart[i].setPos(j, cubecorner[j]);
 
-					//	}
-					//	else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
-					//		//rIn[i] = particle1.getPos()[i];
-					//		allPart[i].setVel(j, allPart[i].getVel()[j] * -0.6f);
-					//		/*N = m * g;
-					//		Ff = N * frictioncoef;*/  //Was trying to add friction here
-					//		allPart[i].setPos(j, cubecorner[j] + d[j]);
-					//	}
-					//	
-					//}
+						}
+						else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
+							//rIn[i] = particle1.getPos()[i];
+							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+							/*N = m * g;
+							Ff = N * frictioncoef;*/  //Was trying to add friction here
+							allPart[i].setPos(j, cubecorner[j] + d[j]);
+						}
+
+					}
 
 					// integrate
-					std::cout << "test1: " << glm::to_string(allPart[i].getVel()) << std::endl;
-					std::cout << "ACCELEARTION: " << glm::to_string(allPart[i].getAcc()) << std::endl;
+
 
 					allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
-					std::cout << "test2: " << glm::to_string(allPart[i].getVel()) << std::endl;
 
 					allPart[i].translate(dt*allPart[i].getVel());
+				}
+
+				if (i == 2){
+					allPart[i].setAcc(Ftotal / allPart[i].getMass());
+					//std::cout << "ftotal: " << to_string(Fa) << std::endl;
 
 
-					//if (allPart[i].getVel() == vec3(0.0f)) {
-					//	allPart[i].translate(vec3(0.0f,2.5f,0.0f));
-					//}
-					//else {
-					//	allPart[i].translate(dt*allPart[i].getVel());
-					//}
-					//std::cout << glm::to_string(allPart[i].getVel());
+					for (unsigned int j = 0; j < 3; j++) {
+						if (allPart[i].getPos()[j] < cubecorner[j]) {
+							//rIn[i] = particle1.getPos()[i];
+							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+							/*N = m * g;
+							Ff = N * frictioncoef;*/  //Was trying to add friction here			
+							allPart[i].setPos(j, cubecorner[j]);
+
+						}
+						else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
+							//rIn[i] = particle1.getPos()[i];
+							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+							/*N = m * g;
+							Ff = N * frictioncoef;*/  //Was trying to add friction here
+							allPart[i].setPos(j, cubecorner[j] + d[j]);
+						}
+
+					}
+
+					// integrate
+					allPart[i].translate(dt*allPart[i].getVel());
+
+					allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
 
 					
 				}
-				accumulator -= dt;
-				t += dt;
 
-	}
+
+				//if (allPart[i].getVel() == vec3(0.0f)) {
+				//	allPart[i].translate(vec3(0.0f,2.5f,0.0f));
+				//}
+				//else {
+				//	allPart[i].translate(dt*allPart[i].getVel());
+				//}
+				//std::cout << glm::to_string(allPart[i].getVel());
+
+
+			}
+			accumulator -= dt;
+			t += dt;
+
+		}
 		/*
 		**	RENDER
 		*/
