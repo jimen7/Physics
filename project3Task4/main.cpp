@@ -112,21 +112,21 @@ int main()
 	//glm::vec3 ParticleVelocity[particlenum]; //initial; velocity for multiple particles
 
 	////Task 1&2
-	/*for (unsigned int i = 0; i < particlenum; ++i) {
+	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart[i].setVel(vec3(RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 8.0f)));
 		allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), RandomFloat(0.0f, 8.0f)));
-	}*/
-
-	//Task 2
-	for (unsigned int i = 0; i < particlenum; ++i) {
-		allPart[i].setVel(vec3(0.0f));
-		//allPart[i].setPos(vec3(0.0f, 2.5f, 0.0f));
-		//std::cout << "mass: " << allPart[i].getMass() << std::endl;
 	}
 
-	allPart[0].setPos(vec3(0.0f, 2.0f, 0.0f));
+	//Task 2
+	//for (unsigned int i = 0; i < particlenum; ++i) {
+		//allPart[i].setVel(vec3(0.0f));
+		//allPart[i].setPos(vec3(0.0f, 2.5f, 0.0f));
+		//std::cout << "mass: " << allPart[i].getMass() << std::endl;
+	//}
+
+	/*allPart[0].setPos(vec3(0.0f, 2.0f, 0.0f));
 	allPart[1].setPos(vec3(2.0f, 2.0f, 0.0f));
-	allPart[2].setPos(vec3(-2.0f, 2.0f, 0.0f));
+	allPart[2].setPos(vec3(-2.0f, 2.0f, 0.0f));*/
 
 	float t = 0.0f;
 	const float dt = 0.01f;
@@ -135,7 +135,23 @@ int main()
 
 
 	//Task 4 Variables
-	float h = 5.0f; //Height of cone
+	float h = 4.0f; //Height of cone
+	vec3 coneorigin = vec3(0.0f);
+	float l = 5.0f;
+	float rmax = 3.0f; //radius at the top of the cylinder 
+	float rmin = 0.5; //radius at the bottom of the cylinder
+	vec3 Fwind; //Fwind is P*S, where P is pressure and S is the area of the cone at a particular point, also we know the P1S1=P2S2
+	float Pmax = 50.0f; //Pressure at the bottom of the cone
+	float conearea;
+	float r; //current r for paryticles
+	float coneminarea = M_PI * rmin*rmin;
+	float Fwindymax = Pmax * coneminarea;
+	float Pcurrent;
+
+
+	float cheight; //current height
+
+
 
 
 
@@ -177,6 +193,25 @@ int main()
 				// gravity
 				Fg = allPart[i].getMass() * g;
 				Fa = vec3(0.0f);
+
+				//Calculate Fwind.We know that Fwind = P*S, where S is pressure at a point and S is the area.
+
+				r = glm::length(vec3(allPart[i].getPos()).y - vec3(0.0f, allPart[i].getPos().y, 0.0f));
+				conearea = M_PI * r*r;
+				//We kbnow that P1A1=P2A2, so 
+				Pcurrent = Fwindymax / conearea;
+				//SO, Fwind = P*Area, so
+				//std::cout << r << std::endl;
+				cheight = h - allPart[i].getPos().y;
+				Fwind = vec3(0.0f, cheight*Pcurrent, 0.0f);
+
+
+				//Wind force
+				//if (allPart[i].getAcc().y==0){
+
+				//}
+
+
 				// aerodynamic drag
 				if (glm::length(allPart[i].getVel()) == 0.0f) {
 					Fa = vec3(0.0f);                                              //////////////////////////Something is eetting FA to be werird
@@ -192,8 +227,10 @@ int main()
 					//Fa = vec3(0.0f);
 				}
 
+		
 
-				Ftotal = Fg + Fa;
+
+				Ftotal = Fg + Fa + Fwind;
 
 				//std::cout << "ftotal: " << to_string(Ftotal) << std::endl;
 
