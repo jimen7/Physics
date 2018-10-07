@@ -81,9 +81,9 @@ int main()
 	Mesh cube = Mesh::Mesh("resources/models/cube.obj");
 	cube.translate(glm::vec3(1.0f, .5f, 0.0f));
 	cube.setShader(lambert);
-	Mesh cylinder = Mesh::Mesh("resources/models/cone2.obj");
-	cylinder.translate(glm::vec3(1.0f, .5f, 0.0f));
-	cylinder.setShader(lambert);
+//	Mesh cylinder = Mesh::Mesh("resources/models/cone2.obj");
+//	cylinder.translate(glm::vec3(1.0f, .5f, 0.0f));
+//	cylinder.setShader(lambert);
 
 	// time
 	GLfloat firstFrame = (GLfloat)glfwGetTime();
@@ -172,7 +172,7 @@ int main()
 			**	SIMULATION
 			*/
 			for (unsigned int i = 0; i < particlenum; i++) {
-				
+
 				// compute forces
 				// gravity
 				Fg = allPart[i].getMass() * g;
@@ -231,7 +231,7 @@ int main()
 					allPart[i].translate(dt*allPart[i].getVel());
 				}
 
-				if (i == 2){
+				if (i == 2) {
 					allPart[i].setAcc(Ftotal / allPart[i].getMass());
 					//std::cout << "ftotal: " << to_string(Fa) << std::endl;
 
@@ -260,7 +260,7 @@ int main()
 
 					allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
 
-					
+
 				}
 
 
