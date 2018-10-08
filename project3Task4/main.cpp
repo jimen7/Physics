@@ -46,7 +46,7 @@ GLfloat lastFrame = 0.0f;
 //float coneradius = 5.0f; //radius at the top of the cylinder 
 
 float coneheight = 20.0f; //Height of cone
-vec3 coneorigin = vec3(0.0f, -21.0f, 0.0f); //Tip of the cone
+vec3 coneorigin = vec3(0.0f, -21.0f, 0.0f); //Tip of the cone(origin)
 vec3 coneaxis = vec3(0.0f, 1.0f, 0.0f); //Central axis in the middle of the copne so that we can find thye projections from it
 float coneradius = 5.0f; //radius at the top of the cylinder 
 
