@@ -37,6 +37,7 @@ float RandomFloat(float a, float b) {
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
+
 // main function
 int main()
 {
@@ -153,7 +154,7 @@ int main()
 
 
 
-
+	
 
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
@@ -340,3 +341,7 @@ int main()
 	return EXIT_SUCCESS;
 }
 
+void CalculateConeForce(glm::vec3 pos) {
+
+
+}
