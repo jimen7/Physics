@@ -37,6 +37,62 @@ float RandomFloat(float a, float b) {
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
+//Task 4 Variables
+
+
+//float coneheight = 20.0f; //Height of cone
+//vec3 coneorigin = vec3(0.0f,-21.0f,0.0f); //Tip of the cone
+//vec3 coneaxis = vec3(0.0f, 1.0f, 0.0f); //Central axis in the middle of the copne so that we can find thye projections from it
+//float coneradius = 5.0f; //radius at the top of the cylinder 
+
+float coneheight = 20.0f; //Height of cone
+vec3 coneorigin = vec3(0.0f, -21.0f, 0.0f); //Tip of the cone
+vec3 coneaxis = vec3(0.0f, 1.0f, 0.0f); //Central axis in the middle of the copne so that we can find thye projections from it
+float coneradius = 5.0f; //radius at the top of the cylinder 
+
+
+glm::vec3 CalculateWindForce(glm::vec3 pos) {
+
+	//Variables:
+	//coneorigin
+	//coneaxis
+	//coneheight
+	//coneradius
+
+	float distanceforYaxis = dot(pos - coneorigin, coneaxis); //Calculates distance from particle to height of the cone. We are doing this for the "if" in the y axis(see below)
+
+	//Set the force to 0 if it's within the height of the axis
+	std::cout << "distanceforYaxis" << distanceforYaxis << std::endl;
+	//std::cout << "coneheight" << coneheight << std::endl;
+
+	if (distanceforYaxis < 0 || distanceforYaxis > coneheight) {
+		return vec3(0.0f);
+	}
+
+
+	//Now we will calculate the radius of the cone, at the height of the current possition of the particle by applying a math formula
+	float currentr = (distanceforYaxis / coneheight)*coneradius;
+
+	//Calculate distance from current positionb to the cemntral axis for the cone, in orser touse it for the if statement for the x axis
+	float distanceforXaxis = length((pos - coneorigin) - distanceforYaxis * coneaxis);
+	std::cout << "distanceforXaxis" << distanceforXaxis << std::endl;
+	
+
+	//Set the force to 0 if the distance from the central axis is greater than the radius of the cone at the current y position of the particle
+	//std::cout << "distanceforXaxis" << distanceforXaxis << std::endl;
+	
+	if (distanceforXaxis > currentr) {
+		return vec3(0.0f);
+	}
+	
+
+	std::cout << "currentr" << currentr << std::endl;
+	//Now we will calculate the wind force the particle receives within the cube, based on its current position  (WIND FORCE CALCULATION)
+
+	//Calculate the force so that it generates is maximal at the bottom of the cone and null at the top.	float ymagnitude = 1 - (distanceforYaxis / coneheight);		//Calculate the force so that it's maximal along the central vertical axis of the cone at any given height and decreases radially until it is null at the edge of the cone.	float xmagnitude = 1 - (distanceforXaxis / coneradius);	//Calculate total decrease of the force due to distance from central axis and height, by multiplying them together	float magnitude = ymagnitude * xmagnitude;	//Now we will calculate the direction that the force will be applied to the particle, by geting the vector from the particle position tpo the cube origin	vec3 forceangle = pos - coneorigin;	//We calculate the force of the wnd, and normalise it depending on the forceangle(above)	vec3 Fcurrent = normalize(forceangle)*magnitude;	//Return the force		std::cout << "Fcurrent" << to_string(Fcurrent) << std::endl;	return Fcurrent;
+}
+
+
 
 // main function
 int main()
@@ -65,7 +121,7 @@ int main()
 
 	//Create particle via class:
 
-	const int particlenum = 3;
+	const int particlenum = 20;
 	std::vector<Particle> allPart;
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart.push_back(Particle::Particle());
@@ -135,24 +191,23 @@ int main()
 	float accumulator = 0.0f;
 
 
-	//Task 4 Variables
-	float h = 4.0f; //Height of cone
-	vec3 coneorigin = vec3(0.0f);
+////task 4 lefover variables
+
+
 	float l = 5.0f;
-	float rmax = 3.0f; //radius at the top of the cylinder 
-	float rmin = 0.5; //radius at the bottom of the cylinder
-	vec3 Fwind; //Fwind is P*S, where P is pressure and S is the area of the cone at a particular point, also we know the P1S1=P2S2
+	
+	
+	 //Fwind is P*S, where P is pressure and S is the area of the cone at a particular point, also we know the P1S1=P2S2
 	float Pmax = 50.0f; //Pressure at the bottom of the cone
 	float conearea;
-	float r; //current r for paryticles
-	float coneminarea = M_PI * rmin*rmin;
-	float Fwindymax = Pmax * coneminarea;
-	float Pcurrent;
+	//float currentr; //current r for paryticles
+	float Pcurrent;	
 
 
-	float cheight; //current height
+	float cheight; //current height of particle
 
 
+	vec3 Fwind; //The force that will be applied to the particle if it's within the cone
 
 	
 
@@ -194,17 +249,23 @@ int main()
 				// gravity
 				Fg = allPart[i].getMass() * g;
 				Fa = vec3(0.0f);
+				
+				Fwind = CalculateWindForce(allPart[i].getPos())*20;
+				//std::cout << "Fwind" << to_string(Fwind) << std::endl;
+				
+				
+				//Fwind = vec3(0.0f); ///////////////////SET FWIND TO 0 FOR TESTINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 
 				//Calculate Fwind.We know that Fwind = P*S, where S is pressure at a point and S is the area.
 
-				r = glm::length(vec3(allPart[i].getPos()).y - vec3(0.0f, allPart[i].getPos().y, 0.0f));
-				conearea = M_PI * r*r;
-				//We kbnow that P1A1=P2A2, so 
-				Pcurrent = Fwindymax / conearea;
-				//SO, Fwind = P*Area, so
-				//std::cout << r << std::endl;
-				cheight = h - allPart[i].getPos().y;
-				Fwind = vec3(0.0f, cheight*Pcurrent, 0.0f);
+				//currentr = glm::length(vec3(allPart[i].getPos().x ,0.0f, allPart[i].getPos().z));
+				//conearea = M_PI * currentr *currentr;
+				////We kbnow that P1A1=P2A2, so 
+				//Pcurrent = Fwindymax / conearea;
+				////SO, Fwind = P*Area, so				////////////////////////MY VERSION OF FWIND
+				////std::cout << r << std::endl;
+				//cheight = h - allPart[i].getPos().y;
+				//Fwind = vec3(0.0f, currentr*Pcurrent, 0.0f);
 
 
 				//Wind force
@@ -214,8 +275,8 @@ int main()
 
 
 				// aerodynamic drag
-				if (glm::length(allPart[i].getVel()) == 0.0f) {
-					Fa = vec3(0.0f);                                              //////////////////////////Something is eetting FA to be werird
+				if (glm::length(allPart[i].getVel()) == 0.0f) {	//If velocity is 0, set the aerodynamic drag to 0
+					Fa = vec3(0.0f);                                             
 				}
 				else {
 					//std::cout << glm::to_string(allPart[i].getVel()) << std::endl;
@@ -224,7 +285,7 @@ int main()
 
 
 					e = -allPart[i].getVel() / absoluteu;
-					//Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
+					Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
 					//Fa = vec3(0.0f);
 				}
 
@@ -232,9 +293,38 @@ int main()
 
 
 				Ftotal = Fg + Fa + Fwind;
-
+				
+				//std::cout << "Ftotal" << to_string(Ftotal) << std::endl;
 				//std::cout << "ftotal: " << to_string(Ftotal) << std::endl;
 
+
+				//TESTING FOR TASK 4
+				// acceleration
+				allPart[i].setAcc(Ftotal / allPart[i].getMass());
+				//std::cout << "ftotal: " << to_string(Fa) << std::endl;
+
+
+				for (unsigned int j = 0; j < 3; j++) {
+					if (allPart[i].getPos()[j] < cubecorner[j]) {
+						allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+						allPart[i].setPos(j, cubecorner[j]);
+
+					}
+					else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
+						allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+						allPart[i].setPos(j, cubecorner[j] + d[j]);
+					}
+
+				}
+
+				// integrate
+
+
+				allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
+
+				allPart[i].translate(dt*allPart[i].getVel());
+
+				/*                                            TASK 2
 
 				if (i == 1) {  //Forward Euler
 					// acceleration
@@ -244,18 +334,12 @@ int main()
 
 					for (unsigned int j = 0; j < 3; j++) {
 						if (allPart[i].getPos()[j] < cubecorner[j]) {
-							//rIn[i] = particle1.getPos()[i];
-							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
-							/*N = m * g;
-							Ff = N * frictioncoef;*/  //Was trying to add friction here			
+							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);	
 							allPart[i].setPos(j, cubecorner[j]);
 
 						}
 						else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
-							//rIn[i] = particle1.getPos()[i];
 							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
-							/*N = m * g;
-							Ff = N * frictioncoef;*/  //Was trying to add friction here
 							allPart[i].setPos(j, cubecorner[j] + d[j]);
 						}
 
@@ -276,18 +360,12 @@ int main()
 
 					for (unsigned int j = 0; j < 3; j++) {
 						if (allPart[i].getPos()[j] < cubecorner[j]) {
-							//rIn[i] = particle1.getPos()[i];
-							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
-							/*N = m * g;
-							Ff = N * frictioncoef;*/  //Was trying to add friction here			
+							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);	
 							allPart[i].setPos(j, cubecorner[j]);
 
 						}
 						else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
-							//rIn[i] = particle1.getPos()[i];
 							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
-							/*N = m * g;
-							Ff = N * frictioncoef;*/  //Was trying to add friction here
 							allPart[i].setPos(j, cubecorner[j] + d[j]);
 						}
 
@@ -300,7 +378,7 @@ int main()
 
 
 				}
-
+				*/
 
 				//if (allPart[i].getVel() == vec3(0.0f)) {
 				//	allPart[i].translate(vec3(0.0f,2.5f,0.0f));
@@ -339,9 +417,4 @@ int main()
 	app.terminate();
 
 	return EXIT_SUCCESS;
-}
-
-void CalculateConeForce(glm::vec3 pos) {
-
-
 }
