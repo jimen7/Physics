@@ -45,7 +45,7 @@ GLfloat lastFrame = 0.0f;
 //vec3 coneaxis = vec3(0.0f, 1.0f, 0.0f); //Central axis in the middle of the copne so that we can find thye projections from it
 //float coneradius = 5.0f; //radius at the top of the cylinder 
 
-float coneheight = 20.0f; //Height of cone
+float coneheight = 18.0f; //Height of cone
 vec3 coneorigin = vec3(0.0f, -15.0f, 0.0f); //Tip of the cone(origin)
 vec3 coneaxis = vec3(0.0f, 1.0f, 0.0f); //Central axis in the middle of the copne so that we can find thye projections from it
 float coneradius = 4.0f; //radius at the top of the cylinder 
@@ -145,11 +145,15 @@ int main()
 
 	//Create particle via class:
 
-	const int particlenum = 50;
+	const int particlenum = 10;
 	std::vector<Particle> allPart;
+	Shader blue = Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag");
+	Shader green = Shader("resources/shaders/solid.vert", "resources/shaders/solid_green.frag");
+	Shader red = Shader("resources/shaders/solid.vert", "resources/shaders/solid_red.frag");
+
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart.push_back(Particle::Particle());
-		allPart[i].getMesh().setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
+		allPart[i].getMesh().setShader(blue);
 	}
 
 	//Particle *particle2 = new Particle();
@@ -195,7 +199,7 @@ int main()
 	////Task 1&2
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart[i].setVel(vec3(RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 8.0f)));
-		allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(0.0f, 8.0f), RandomFloat(0.0f, 8.0f)));
+		allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(5.0f, 9.0f), RandomFloat(0.0f, 8.0f)));
 	}
 
 	//Task 2
@@ -215,22 +219,9 @@ int main()
 	float accumulator = 0.0f;
 
 
-	////task 4 lefover variables
 
 
-	float l = 5.0f;
-
-
-	//Fwind is P*S, where P is pressure and S is the area of the cone at a particular point, also we know the P1S1=P2S2
-	float Pmax = 50.0f; //Pressure at the bottom of the cone
-	float conearea;
-	//float currentr; //current r for paryticles
-	float Pcurrent;
-
-
-	float cheight; //current height of particle
-
-
+	//Task 4 variables
 	vec3 Fwind; //The force that will be applied to the particle if it's within the cone
 
 
@@ -274,28 +265,8 @@ int main()
 				Fg = allPart[i].getMass() * g;
 				Fa = vec3(0.0f);
 
-				Fwind = CalculateWindForce(allPart[i].getPos()) * 200;
+				Fwind = CalculateWindForce(allPart[i].getPos()) * 2000;
 				//std::cout << "Fwind" << to_string(Fwind) << std::endl;
-
-
-				//Fwind = vec3(0.0f); ///////////////////SET FWIND TO 0 FOR TESTINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
-
-				//Calculate Fwind.We know that Fwind = P*S, where S is pressure at a point and S is the area.
-
-				//currentr = glm::length(vec3(allPart[i].getPos().x ,0.0f, allPart[i].getPos().z));
-				//conearea = M_PI * currentr *currentr;
-				////We kbnow that P1A1=P2A2, so 
-				//Pcurrent = Fwindymax / conearea;
-				////SO, Fwind = P*Area, so				////////////////////////MY VERSION OF FWIND
-				////std::cout << r << std::endl;
-				//cheight = h - allPart[i].getPos().y;
-				//Fwind = vec3(0.0f, currentr*Pcurrent, 0.0f);
-
-
-				//Wind force
-				//if (allPart[i].getAcc().y==0){
-
-				//}
 
 
 				// aerodynamic drag
@@ -313,7 +284,12 @@ int main()
 					//Fa = vec3(0.0f);
 				}
 
-
+				if (Fwind == vec3(0.0f)) {
+					allPart[i].getMesh().setShader(blue);
+				}
+				else {
+					allPart[i].getMesh().setShader(red);
+				}
 
 
 				Ftotal = Fg + Fa + Fwind;
@@ -343,8 +319,9 @@ int main()
 
 				// integrate
 
-				allPart[i].translate(dt*allPart[i].getVel());
+				
 				allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
+				allPart[i].translate(dt*allPart[i].getVel());
 
 				
 
