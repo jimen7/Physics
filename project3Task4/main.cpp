@@ -46,9 +46,9 @@ GLfloat lastFrame = 0.0f;
 //float coneradius = 5.0f; //radius at the top of the cylinder 
 
 float coneheight = 20.0f; //Height of cone
-vec3 coneorigin = vec3(0.0f, -21.0f, 0.0f); //Tip of the cone(origin)
+vec3 coneorigin = vec3(0.0f, -19.0f, 0.0f); //Tip of the cone(origin)
 vec3 coneaxis = vec3(0.0f, 1.0f, 0.0f); //Central axis in the middle of the copne so that we can find thye projections from it
-float coneradius = 5.0f; //radius at the top of the cylinder 
+float coneradius = 10.0f; //radius at the top of the cylinder 
 
 
 glm::vec3 CalculateWindForce(glm::vec3 pos) {
@@ -72,24 +72,27 @@ glm::vec3 CalculateWindForce(glm::vec3 pos) {
 
 	//Now we will calculate the radius of the cone, at the height of the current possition of the particle by applying a math formula
 	float currentr = (distanceforYaxis / coneheight)*coneradius;
-
+	std::cout << "currentr" << currentr << std::endl;
 	//Calculate distance from current positionb to the cemntral axis for the cone, in orser touse it for the if statement for the x axis
 	float distanceforXaxis = length((pos - coneorigin) - distanceforYaxis * coneaxis);
-	std::cout << "distanceforXaxis" << distanceforXaxis << std::endl;
+	//float distanceforXaxis = ;
+
+	
 	
 
 	//Set the force to 0 if the distance from the central axis is greater than the radius of the cone at the current y position of the particle
-	//std::cout << "distanceforXaxis" << distanceforXaxis << std::endl;
 	
 	if (distanceforXaxis > currentr) {
 		return vec3(0.0f);
 	}
-	
 
-	std::cout << "currentr" << currentr << std::endl;
+	//std::cout << "distanceforYaxis" << distanceforYaxis << std::endl;
+	
+	//std::cout << "distanceforXaxis" << distanceforXaxis << std::endl;
+	
 	//Now we will calculate the wind force the particle receives within the cube, based on its current position  (WIND FORCE CALCULATION)
 
-	//Calculate the force so that it generates is maximal at the bottom of the cone and null at the top.	float ymagnitude = 1 - (distanceforYaxis / coneheight);		//Calculate the force so that it's maximal along the central vertical axis of the cone at any given height and decreases radially until it is null at the edge of the cone.	float xmagnitude = 1 - (distanceforXaxis / coneradius);	//Calculate total decrease of the force due to distance from central axis and height, by multiplying them together	float magnitude = ymagnitude * xmagnitude;	//Now we will calculate the direction that the force will be applied to the particle, by geting the vector from the particle position tpo the cube origin	vec3 forceangle = pos - coneorigin;	//We calculate the force of the wnd, and normalise it depending on the forceangle(above)	vec3 Fcurrent = normalize(forceangle)*magnitude;	//Return the force		std::cout << "Fcurrent" << to_string(Fcurrent) << std::endl;	return Fcurrent;
+	//Calculate the force so that it generates is maximal at the bottom of the cone and null at the top.	float ymagnitude = 1.0f - (distanceforYaxis / coneheight);	//float ymagnitude = 1.0f - (distanceforYaxis / coneheight);		//Calculate the force so that it's maximal along the central vertical axis of the cone at any given height and decreases radially until it is null at the edge of the cone.	float xmagnitude = 1.0f - (distanceforXaxis / coneradius);	//Calculate total decrease of the force due to distance from central axis and height, by multiplying them together	float magnitude = ymagnitude * xmagnitude;	//Now we will calculate the direction that the force will be applied to the particle, by geting the vector from the particle position tpo the cube origin	vec3 forceangle = pos - coneorigin;	//We calculate the force of the wnd, and normalise it depending on the forceangle(above)	vec3 Fcurrent = normalize(forceangle)*magnitude;	//Return the force		std::cout << "Fcurrent" << to_string(Fcurrent) << std::endl;	return Fcurrent;
 }
 
 
@@ -121,7 +124,7 @@ int main()
 
 	//Create particle via class:
 
-	const int particlenum = 20;
+	const int particlenum = 3;
 	std::vector<Particle> allPart;
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart.push_back(Particle::Particle());
@@ -250,7 +253,7 @@ int main()
 				Fg = allPart[i].getMass() * g;
 				Fa = vec3(0.0f);
 				
-				Fwind = CalculateWindForce(allPart[i].getPos())*20;
+				Fwind = CalculateWindForce(allPart[i].getPos())*200;
 				//std::cout << "Fwind" << to_string(Fwind) << std::endl;
 				
 				
