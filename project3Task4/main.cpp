@@ -46,9 +46,9 @@ GLfloat lastFrame = 0.0f;
 //float coneradius = 5.0f; //radius at the top of the cylinder 
 
 float coneheight = 20.0f; //Height of cone
-vec3 coneorigin = vec3(0.0f, -19.0f, 0.0f); //Tip of the cone(origin)
+vec3 coneorigin = vec3(0.0f, -15.0f, 0.0f); //Tip of the cone(origin)
 vec3 coneaxis = vec3(0.0f, 1.0f, 0.0f); //Central axis in the middle of the copne so that we can find thye projections from it
-float coneradius = 10.0f; //radius at the top of the cylinder 
+float coneradius = 4.0f; //radius at the top of the cylinder 
 
 
 glm::vec3 CalculateWindForce(glm::vec3 pos) {
@@ -77,22 +77,43 @@ glm::vec3 CalculateWindForce(glm::vec3 pos) {
 	float distanceforXaxis = length((pos - coneorigin) - distanceforYaxis * coneaxis);
 	//float distanceforXaxis = ;
 
-	
-	
+
+
 
 	//Set the force to 0 if the distance from the central axis is greater than the radius of the cone at the current y position of the particle
-	
+
 	if (distanceforXaxis > currentr) {
 		return vec3(0.0f);
 	}
 
-	//std::cout << "distanceforYaxis" << distanceforYaxis << std::endl;
-	
+
+
 	//std::cout << "distanceforXaxis" << distanceforXaxis << std::endl;
-	
+
 	//Now we will calculate the wind force the particle receives within the cube, based on its current position  (WIND FORCE CALCULATION)
 
-	//Calculate the force so that it generates is maximal at the bottom of the cone and null at the top.	float ymagnitude = 1.0f - (distanceforYaxis / coneheight);	//float ymagnitude = 1.0f - (distanceforYaxis / coneheight);		//Calculate the force so that it's maximal along the central vertical axis of the cone at any given height and decreases radially until it is null at the edge of the cone.	float xmagnitude = 1.0f - (distanceforXaxis / coneradius);	//Calculate total decrease of the force due to distance from central axis and height, by multiplying them together	float magnitude = ymagnitude * xmagnitude;	//Now we will calculate the direction that the force will be applied to the particle, by geting the vector from the particle position tpo the cube origin	vec3 forceangle = pos - coneorigin;	//We calculate the force of the wnd, and normalise it depending on the forceangle(above)	vec3 Fcurrent = normalize(forceangle)*magnitude;	//Return the force		std::cout << "Fcurrent" << to_string(Fcurrent) << std::endl;	return Fcurrent;
+	//Calculate the force so that it generates is maximal at the bottom of the cone and null at the top.
+	float ymagnitude = 1.0f - (distanceforYaxis / coneheight);
+	//float ymagnitude = 1.0f - (distanceforYaxis / coneheight);
+
+	//Calculate the force so that it's maximal along the central vertical axis of the cone at any given height and decreases radially until it is null at the edge of the cone.
+	float xmagnitude = 1.0f - (distanceforXaxis / coneradius);
+
+	//Calculate total decrease of the force due to distance from central axis and height, by multiplying them together
+	float magnitude = ymagnitude * xmagnitude;
+
+	//Now we will calculate the direction that the force will be applied to the particle, by geting the vector from the particle position tpo the cube origin
+	vec3 forceangle = pos - coneorigin;
+
+	//We calculate the force of the wnd, and normalise it depending on the forceangle(above)
+	vec3 Fcurrent = normalize(forceangle)*magnitude;
+
+	//Return the force
+
+	std::cout << "Fcurrent" << to_string(Fcurrent) << std::endl;
+
+	return Fcurrent;
+
 }
 
 
@@ -124,7 +145,7 @@ int main()
 
 	//Create particle via class:
 
-	const int particlenum = 3;
+	const int particlenum = 50;
 	std::vector<Particle> allPart;
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart.push_back(Particle::Particle());
@@ -141,11 +162,11 @@ int main()
 	Mesh cube = Mesh::Mesh("resources/models/cube.obj");
 	cube.translate(glm::vec3(1.0f, .5f, 0.0f));
 	cube.setShader(lambert);
-//	Mesh cylinder = Mesh::Mesh("resources/models/cone2.obj");
-//	cylinder.translate(glm::vec3(1.0f, .5f, 0.0f));
-//	cylinder.setShader(lambert);
+	//	Mesh cylinder = Mesh::Mesh("resources/models/cone2.obj");
+	//	cylinder.translate(glm::vec3(1.0f, .5f, 0.0f));
+	//	cylinder.setShader(lambert);
 
-	// time
+		// time
 	GLfloat firstFrame = (GLfloat)glfwGetTime();
 
 	///////////////////////////////////////////////////////Forces
@@ -194,17 +215,17 @@ int main()
 	float accumulator = 0.0f;
 
 
-////task 4 lefover variables
+	////task 4 lefover variables
 
 
 	float l = 5.0f;
-	
-	
-	 //Fwind is P*S, where P is pressure and S is the area of the cone at a particular point, also we know the P1S1=P2S2
+
+
+	//Fwind is P*S, where P is pressure and S is the area of the cone at a particular point, also we know the P1S1=P2S2
 	float Pmax = 50.0f; //Pressure at the bottom of the cone
 	float conearea;
 	//float currentr; //current r for paryticles
-	float Pcurrent;	
+	float Pcurrent;
 
 
 	float cheight; //current height of particle
@@ -212,7 +233,7 @@ int main()
 
 	vec3 Fwind; //The force that will be applied to the particle if it's within the cone
 
-	
+
 
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
@@ -252,11 +273,11 @@ int main()
 				// gravity
 				Fg = allPart[i].getMass() * g;
 				Fa = vec3(0.0f);
-				
-				Fwind = CalculateWindForce(allPart[i].getPos())*200;
+
+				Fwind = CalculateWindForce(allPart[i].getPos()) * 200;
 				//std::cout << "Fwind" << to_string(Fwind) << std::endl;
-				
-				
+
+
 				//Fwind = vec3(0.0f); ///////////////////SET FWIND TO 0 FOR TESTINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 
 				//Calculate Fwind.We know that Fwind = P*S, where S is pressure at a point and S is the area.
@@ -279,7 +300,7 @@ int main()
 
 				// aerodynamic drag
 				if (glm::length(allPart[i].getVel()) == 0.0f) {	//If velocity is 0, set the aerodynamic drag to 0
-					Fa = vec3(0.0f);                                             
+					Fa = vec3(0.0f);
 				}
 				else {
 					//std::cout << glm::to_string(allPart[i].getVel()) << std::endl;
@@ -292,11 +313,11 @@ int main()
 					//Fa = vec3(0.0f);
 				}
 
-		
+
 
 
 				Ftotal = Fg + Fa + Fwind;
-				
+
 				//std::cout << "Ftotal" << to_string(Ftotal) << std::endl;
 				//std::cout << "ftotal: " << to_string(Ftotal) << std::endl;
 
@@ -322,10 +343,10 @@ int main()
 
 				// integrate
 
-
+				allPart[i].translate(dt*allPart[i].getVel());
 				allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
 
-				allPart[i].translate(dt*allPart[i].getVel());
+				
 
 				/*                                            TASK 2
 
@@ -337,7 +358,7 @@ int main()
 
 					for (unsigned int j = 0; j < 3; j++) {
 						if (allPart[i].getPos()[j] < cubecorner[j]) {
-							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);	
+							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
 							allPart[i].setPos(j, cubecorner[j]);
 
 						}
@@ -363,7 +384,7 @@ int main()
 
 					for (unsigned int j = 0; j < 3; j++) {
 						if (allPart[i].getPos()[j] < cubecorner[j]) {
-							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);	
+							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
 							allPart[i].setPos(j, cubecorner[j]);
 
 						}
