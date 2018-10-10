@@ -26,6 +26,8 @@
 #include "Particle.h"
 using namespace glm;
 
+
+//Method tyhat creates random variables between 2 values
 float RandomFloat(float a, float b) {
 	float random = ((float)rand()) / (float)RAND_MAX;
 	float diff = b - a;
@@ -62,7 +64,7 @@ glm::vec3 CalculateWindForce(glm::vec3 pos) {
 	float distanceforYaxis = dot(pos - coneorigin, coneaxis); //Calculates distance from particle to height of the cone. We are doing this for the "if" in the y axis(see below)
 
 	//Set the force to 0 if it's within the height of the axis
-	std::cout << "distanceforYaxis" << distanceforYaxis << std::endl;
+	//std::cout << "distanceforYaxis" << distanceforYaxis << std::endl;
 	//std::cout << "coneheight" << coneheight << std::endl;
 
 	if (distanceforYaxis < 0 || distanceforYaxis > coneheight) {
@@ -72,7 +74,7 @@ glm::vec3 CalculateWindForce(glm::vec3 pos) {
 
 	//Now we will calculate the radius of the cone, at the height of the current possition of the particle by applying a math formula
 	float currentr = (distanceforYaxis / coneheight)*coneradius;
-	std::cout << "currentr" << currentr << std::endl;
+	//std::cout << "currentr" << currentr << std::endl;
 	//Calculate distance from current positionb to the cemntral axis for the cone, in orser touse it for the if statement for the x axis
 	float distanceforXaxis = length((pos - coneorigin) - distanceforYaxis * coneaxis);
 	//float distanceforXaxis = ;
@@ -110,7 +112,7 @@ glm::vec3 CalculateWindForce(glm::vec3 pos) {
 
 	//Return the force
 
-	std::cout << "Fcurrent" << to_string(Fcurrent) << std::endl;
+	//std::cout << "Fcurrent" << to_string(Fcurrent) << std::endl;
 
 	return Fcurrent;
 
@@ -145,7 +147,7 @@ int main()
 
 	//Create particle via class:
 
-	const int particlenum = 10;
+	const int particlenum = 100;
 	std::vector<Particle> allPart;
 	Shader blue = Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag");
 	Shader green = Shader("resources/shaders/solid.vert", "resources/shaders/solid_green.frag");
@@ -199,6 +201,8 @@ int main()
 	////Task 1&2
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart[i].setVel(vec3(RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 8.0f)));
+		//allPart[i].setVel(vec3(0.0f));
+		//allPart[i].setPos(vec3(0.0f, 2.5f, 0.0f));
 		allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(5.0f, 9.0f), RandomFloat(0.0f, 8.0f)));
 	}
 
