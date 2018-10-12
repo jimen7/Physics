@@ -49,5 +49,5 @@ glm::vec3 Drag::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 glm::vec3 Hooke::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 	//complete. should return the acceleration from the Spring force
 	
-
+	return glm::vec3(0.0f);
 }

@@ -58,9 +58,17 @@ public:
 	}
 	//get and set methods
 	//you can write these yourself as necessary
+	float getks() { return m_ks; }
+	float getkd() { return m_kd; }
+	float getrest() { return m_rest; }
+
+	void setrest(float & restpos) { m_rest = restpos; }
+
+
 
 	//physics
 	glm::vec3 apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel);
+	
 
 private:
 	float m_ks; //spring stiffness
