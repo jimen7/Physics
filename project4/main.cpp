@@ -33,6 +33,14 @@ GLfloat lastFrame = 0.0f;
 
 Gravity g = Gravity(glm::vec3(0.0f,-9.8f,0.0f));
 
+//Method tyhat creates random variables between 2 values
+float RandomFloat(float a, float b) {
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
+
 // main function
 int main()
 {
@@ -49,13 +57,31 @@ int main()
 	plane.setShader(lambert);
 
 
-	// create particle
-	Particle particle1 = Particle();
-	//scale it down (x.1), translate it up by 2.5 and rotate it by 90 degrees around the x axis
-	particle1.translate(glm::vec3(0.0f, 2.5f, 0.0f));
-	//particle1.scale(glm::vec3(.1f, .1f, .1f));
-	//particle1.rotate((GLfloat) M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
-	particle1.getMesh().setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
+	//// create particle
+	//Particle particle1 = Particle();
+	////scale it down (x.1), translate it up by 2.5 and rotate it by 90 degrees around the x axis
+	//particle1.translate(glm::vec3(0.0f, 2.5f, 0.0f));
+	////particle1.scale(glm::vec3(.1f, .1f, .1f));
+	////particle1.rotate((GLfloat) M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
+	//particle1.getMesh().setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
+
+	//Create particle via class:
+
+	const int particlenum = 2;
+	std::vector<Particle> allPart;
+	Shader blue = Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag");
+
+	for (unsigned int i = 0; i < particlenum; ++i) {
+		allPart.push_back(Particle::Particle());
+		allPart[i].getMesh().setShader(blue);
+	}
+
+	for (unsigned int i = 0; i < particlenum; ++i) {
+		//allPart[i].setVel(vec3(RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 8.0f)));
+		allPart[i].setVel(vec3(0.0f));
+		//allPart[i].setPos(vec3(0.0f, 2.5f, 0.0f));
+		allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(5.0f, 9.0f), RandomFloat(0.0f, 8.0f)));
+	}
 	
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
@@ -74,6 +100,15 @@ int main()
 	const float dt = 0.01f;
 	float currentTime = (GLfloat)glfwGetTime();
 	float accumulator = 0.0f;
+
+	//Cube Variables
+	glm::vec3 cubecorner = glm::vec3(-5.0f, 0.0f, -5.0f);
+	glm::vec3 d = glm::vec3(10.0f);
+
+	//Adding the forces applied to the particle
+	for (unsigned int i = 0; i < particlenum; i++) {
+		allPart[i].addForce(&g);
+	}
 
 
 	// Game loop
@@ -101,10 +136,25 @@ int main()
 		/*
 		**	SIMULATION
 		*/
-		particle1.addForce(&g);
-		particle1.setAcc(particle1.applyForces(particle1.getPos(),particle1.getVel(), t , dt));
-		particle1.setVel(particle1.getVel() + dt * particle1.getAcc());
-		particle1.translate(dt*-0.05f*particle1.getVel());
+			for (unsigned int i = 0; i < particlenum; i++) {
+
+				allPart[i].setAcc(allPart[i].applyForces(allPart[i].getPos(), allPart[i].getVel(), t, dt));
+
+				for (unsigned int j = 0; j < 3; j++) {
+					if (allPart[i].getPos()[j] < cubecorner[j]) {
+						allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+						allPart[i].setPos(j, cubecorner[j]);
+					}
+					else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
+						allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+						allPart[i].setPos(j, cubecorner[j] + d[j]);
+					}
+
+				}
+
+				allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
+				allPart[i].translate(dt*allPart[i].getVel());
+			}
 
 
 		
@@ -120,7 +170,10 @@ int main()
 		// draw groud plane
 		app.draw(plane);
 		// draw particles
-		app.draw(particle1.getMesh());	
+		//app.draw(particle1.getMesh());
+		for (unsigned int i = 0; i < particlenum; i++) {
+			app.draw(allPart[i].getMesh());
+		}
 
 		// draw demo objects
 		app.draw(cube);
