@@ -31,7 +31,7 @@ using namespace glm;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
-Gravity g = Gravity(glm::vec3(0.0f,-9.8f,0.0f));
+Gravity g = Gravity(glm::vec3(0.0f, -9.8f, 0.0f));
 
 //Method tyhat creates random variables between 2 values
 float RandomFloat(float a, float b) {
@@ -48,7 +48,7 @@ int main()
 	Application app = Application::Application();
 	app.initRender();
 	Application::camera.setCameraPosition(glm::vec3(0.0f, 5.0f, 20.0f));
-			
+
 	// create ground plane
 	Mesh plane = Mesh::Mesh(Mesh::QUAD);
 	// scale it up x5
@@ -82,7 +82,7 @@ int main()
 		//allPart[i].setPos(vec3(0.0f, 2.5f, 0.0f));
 		allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(5.0f, 9.0f), RandomFloat(0.0f, 8.0f)));
 	}
-	
+
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
 	sphere.translate(glm::vec3(-1.0f, 1.0f, 0.0f));
@@ -92,8 +92,8 @@ int main()
 	cube.setShader(lambert);
 
 	// time
-	GLfloat firstFrame = (GLfloat) glfwGetTime();
-	
+	GLfloat firstFrame = (GLfloat)glfwGetTime();
+
 
 	//Timestep variables
 	float t = 0.0f;
@@ -133,9 +133,9 @@ int main()
 		app.doMovement(dt);
 
 		while (accumulator >= dt) {
-		/*
-		**	SIMULATION
-		*/
+			/*
+			**	SIMULATION
+			*/
 			for (unsigned int i = 0; i < particlenum; i++) {
 
 				allPart[i].setAcc(allPart[i].applyForces(allPart[i].getPos(), allPart[i].getVel(), t, dt));
@@ -157,14 +157,14 @@ int main()
 			}
 
 
-		
-		accumulator -= dt;
-		t += dt;
+
+			accumulator -= dt;
+			t += dt;
 		}
-		
+
 		/*
-		**	RENDER 
-		*/		
+		**	RENDER
+		*/
 		// clear buffer
 		app.clear();
 		// draw groud plane
