@@ -109,11 +109,11 @@ int main()
 	glm::vec3 d = glm::vec3(10.0f);
 
 
-	Hooke* h = new Hooke(&(allPart[0].getMesh()), &(allPart[1].getMesh()), 0.25f, 0.8f, 2.0f);
+	Hooke* h = new Hooke(&(allPart[0]), &(allPart[1]), 0.25f, 0.8f, 2.0f);
 	float ks = 1.0f;
-	//h->setks(ks);
-	//h->setrest();
-	//h->setkd();
+	h->setks(ks);
+	h->setrest(ks);
+	h->setkd(ks);
 
 
 	//Adding the forces applied to the particle

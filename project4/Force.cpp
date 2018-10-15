@@ -53,7 +53,7 @@ glm::vec3 Drag::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 glm::vec3 Hooke::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 	//complete. should return the acceleration from the Spring force
 
-	float Fh = (-1.0f)* (this->getks) * (this->getrest - glm::length(pos));
+	float Fh = (-1.0f)* (this->getks()) * (this->getrest() - glm::length(pos));
 	glm::vec3 acceleration = (glm::vec3(0.0f, Fh, 0.0f))/mass;
 	return acceleration;
 }
