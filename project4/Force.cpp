@@ -5,8 +5,12 @@
 #include "glm/ext.hpp"
 
 float density = 1.225f;
-float coefficient = 1.05f;
+float aircoefficient = 1.05f;
 glm::vec3 area = glm::vec3(0.1f, 0.1f, 0.0f);
+//float ks = 0.25f; //Spring constant
+//float kd = 1.0f; //Damping Factor
+//float springrest = 1.5f;
+
 
 Force::Force()
 {
@@ -38,7 +42,7 @@ glm::vec3 Drag::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 	//complete. should return the acceleration from aerodynamic Drag
 	float absoluteu = glm::length(vel);
 	glm::vec3 e = -vel / absoluteu;
-	glm::vec3 Fa = 0.5*density*absoluteu*absoluteu*coefficient*area*e;
+	glm::vec3 Fa = 0.5*density*absoluteu*absoluteu*aircoefficient*area*e;
 	glm::vec3 acceleration = Fa / mass; // 
 	return acceleration;
 }
@@ -49,5 +53,7 @@ glm::vec3 Drag::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 glm::vec3 Hooke::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 	//complete. should return the acceleration from the Spring force
 
-	return glm::vec3(0.0f);
+	float Fh = (-1.0f)* (this->getks) * (this->getrest - glm::length(pos));
+	glm::vec3 acceleration = (glm::vec3(0.0f, Fh, 0.0f))/mass;
+	return acceleration;
 }

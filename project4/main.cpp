@@ -33,6 +33,9 @@ GLfloat lastFrame = 0.0f;
 
 Gravity g = Gravity(glm::vec3(0.0f, -9.8f, 0.0f));
 
+//Drag d = Drag();
+
+
 //Method tyhat creates random variables between 2 values
 float RandomFloat(float a, float b) {
 	float random = ((float)rand()) / (float)RAND_MAX;
@@ -105,10 +108,19 @@ int main()
 	glm::vec3 cubecorner = glm::vec3(-5.0f, 0.0f, -5.0f);
 	glm::vec3 d = glm::vec3(10.0f);
 
+
+	Hooke* h = new Hooke(&(allPart[0].getMesh()), &(allPart[1].getMesh()), 0.25f, 0.8f, 2.0f);
+	float ks = 1.0f;
+	//h->setks(ks);
+	//h->setrest();
+	//h->setkd();
+
+
 	//Adding the forces applied to the particle
-	for (unsigned int i = 0; i < particlenum; i++) {
-		allPart[i].addForce(&g);
-	}
+	//for (unsigned int i = 0; i < particlenum; i++) {
+		allPart[1].addForce(&g);
+		allPart[1].addForce(h);
+	//}
 
 
 	// Game loop
