@@ -7,7 +7,7 @@
 float density = 1.225f;
 float aircoefficient = 1.05f;
 glm::vec3 area = glm::vec3(0.1f, 0.1f, 0.0f);
-//float ks = 0.25f; //Spring constant
+//float ks = 0.25f; //Spring constant, how loose the sppring is
 //float kd = 1.0f; //Damping Factor
 //float springrest = 1.5f;
 
@@ -53,7 +53,8 @@ glm::vec3 Drag::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 glm::vec3 Hooke::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 	//complete. should return the acceleration from the Spring force
 
-	float Fh = (-1.0f)* (this->getks()) * (this->getrest() - glm::length(pos));
-	glm::vec3 acceleration = (glm::vec3(0.0f, Fh, 0.0f))/mass;
+	float Fh = (-1.0f)* (this->getks()) * (this->getrest() - /*pos[1]*/glm::length(pos)); //x in this case is rest lenth -current length
+	float Fd = (-1.0f)*(this->getkd()) * ( - glm::length(vel));
+	glm::vec3 acceleration = (glm::vec3(0.0f, Fh+Fd, 0.0f))/mass;
 	return acceleration;
 }

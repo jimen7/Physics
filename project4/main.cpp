@@ -82,9 +82,10 @@ int main()
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		//allPart[i].setVel(vec3(RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 8.0f)));
 		allPart[i].setVel(vec3(0.0f));
-		//allPart[i].setPos(vec3(0.0f, 2.5f, 0.0f));
-		allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(5.0f, 9.0f), RandomFloat(0.0f, 8.0f)));
+		//allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(5.0f, 9.0f), RandomFloat(0.0f, 8.0f)));
 	}
+	allPart[0].setPos(vec3(0.0f, 10.0f, 0.0f));
+	allPart[1].setPos(vec3(0.0f, 8.0f, 0.0f));
 
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
@@ -109,12 +110,20 @@ int main()
 	glm::vec3 d = glm::vec3(10.0f);
 
 
-	Hooke* h = new Hooke(&(allPart[0]), &(allPart[1]), 0.25f, 0.8f, 2.0f);
-	float ks = 1.0f;
-	h->setks(ks);
-	h->setrest(ks);
-	h->setkd(ks);
 
+
+
+	//Hooke force
+	float ks = 3.0f; //spring stiffness
+	float rest = 1.0f;//spring rest length
+	float kd = 0.01f;//damping coefficient
+
+	Hooke* h = new Hooke(&(allPart[0]), &(allPart[1]), ks, kd, rest);
+	
+	//h->setks(ks);
+	//h->setrest(rest);
+	//h->setkd(kd);
+	
 
 	//Adding the forces applied to the particle
 	//for (unsigned int i = 0; i < particlenum; i++) {
@@ -152,17 +161,17 @@ int main()
 
 				allPart[i].setAcc(allPart[i].applyForces(allPart[i].getPos(), allPart[i].getVel(), t, dt));
 
-				for (unsigned int j = 0; j < 3; j++) {
+				/*for (unsigned int j = 0; j < 3; j++) {
 					if (allPart[i].getPos()[j] < cubecorner[j]) {
-						allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+						allPart[i].setVel(j, allPart[i].getVel()[j] * -0.5f);
 						allPart[i].setPos(j, cubecorner[j]);
 					}
 					else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
-						allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+						allPart[i].setVel(j, allPart[i].getVel()[j] * -0.5f);
 						allPart[i].setPos(j, cubecorner[j] + d[j]);
 					}
 
-				}
+				}*/
 
 				allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
 				allPart[i].translate(dt*allPart[i].getVel());
