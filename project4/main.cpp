@@ -114,9 +114,10 @@ int main()
 
 
 	//Hooke force
-	float ks = 3.0f; //spring stiffness
-	float rest = 1.0f;//spring rest length
-	float kd = 0.01f;//damping coefficient
+
+	float ks = 10.0f; //spring stiffness 
+	float rest = 4.0f;//spring rest length
+	float kd = 10.0f;//damping coefficient
 
 	Hooke* h = new Hooke(&(allPart[0]), &(allPart[1]), ks, kd, rest);
 	
@@ -127,7 +128,7 @@ int main()
 
 	//Adding the forces applied to the particle
 	//for (unsigned int i = 0; i < particlenum; i++) {
-		allPart[1].addForce(&g);
+		//allPart[1].addForce(&g);
 		allPart[1].addForce(h);
 	//}
 

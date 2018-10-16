@@ -62,6 +62,7 @@ public:
 	float getkd() { return m_kd; }
 	float getrest() { return m_rest; }
 
+
 	void setks(float & spconst) { m_ks = spconst; } //Spring constant
 	void setkd(float & dampfac) { m_kd = dampfac; } //Damping factor
 	void setrest(float & restpos) { m_rest = restpos; } //Rest legth
