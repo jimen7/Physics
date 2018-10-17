@@ -33,6 +33,10 @@ GLfloat lastFrame = 0.0f;
 
 Gravity g = Gravity(glm::vec3(0.0f, -9.8f, 0.0f));
 
+float ks = 10.0f; //spring stiffness 
+float rest = 0.1f;//spring rest length
+float kd = 5.0f;//damping coefficient
+
 //Drag d = Drag();
 
 
@@ -59,20 +63,15 @@ int main()
 	Shader lambert = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	plane.setShader(lambert);
 
-
-	//// create particle
-	//Particle particle1 = Particle();
-	////scale it down (x.1), translate it up by 2.5 and rotate it by 90 degrees around the x axis
-	//particle1.translate(glm::vec3(0.0f, 2.5f, 0.0f));
-	////particle1.scale(glm::vec3(.1f, .1f, .1f));
-	////particle1.rotate((GLfloat) M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f));
-	//particle1.getMesh().setShader(Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag"));
-
 	//Create particle via class:
 
 	const int particlenum = 5;
 	std::vector<Particle> allPart;
 	Shader blue = Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag");
+
+	const int HookeForces = 4;
+	std::vector<Hooke*> Hookes;
+
 
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart.push_back(Particle::Particle());
@@ -84,11 +83,18 @@ int main()
 		allPart[i].setVel(vec3(0.0f));
 		//allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(5.0f, 9.0f), RandomFloat(0.0f, 8.0f)));
 	}
-	allPart[0].setPos(vec3(0.0f, 10.0f, 0.0f));
+
+	/*allPart[0].setPos(vec3(0.0f, 10.0f, 0.0f));
 	allPart[1].setPos(vec3(0.0f, 8.0f, 0.0f));
 	allPart[2].setPos(vec3(0.0f, 6.0f, 0.0f));
 	allPart[3].setPos(vec3(0.0f, 4.0f, 0.0f));
-	allPart[4].setPos(vec3(0.0f, 2.0f, 0.0f));
+	allPart[4].setPos(vec3(0.0f, 2.0f, 0.0f));*/
+
+	allPart[0].setPos(vec3(0.0f, 10.0f, 0.0f));
+	allPart[1].setPos(vec3(2.0f, 10.0f, 0.0f));
+	allPart[2].setPos(vec3(4.0f, 10.0f, 0.0f));
+	allPart[3].setPos(vec3(6.0f, 10.0f, 0.0f));
+	allPart[4].setPos(vec3(8.0f, 10.0f, 0.0f));
 
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
@@ -114,40 +120,56 @@ int main()
 
 
 
-
-
 	//Hooke force
 
-	float ks = 3.0f; //spring stiffness 
-	float rest = 2.0f;//spring rest length
-	float kd = 10.0f;//damping coefficient
+
+
+
+	
+
+	//Adding forces to the Hook vector
+	for (int i = 0; i < HookeForces; i++)
+	{
+		Hookes.push_back(new Hooke(&(allPart[i]), &(allPart[i+1]), ks, kd, rest));
+	}
+
+
+	//Adding the forces applied to the particle
+	allPart[1].addForce(Hookes[0]);
+	for (int i = 1; i < particlenum-1; i++) {
+		allPart[i].addForce(&g);
+		allPart[i].addForce(Hookes[i]);
+		allPart[i+1].addForce(Hookes[i]);
+	}
+
+
+
+
+
+
+	/*Leaving this for reference of how the spring forces are applied
 
 	Hooke* h1 = new Hooke(&(allPart[0]), &(allPart[1]), ks, kd, rest);
-
-	//For task 4
 	Hooke* h2 = new Hooke(&(allPart[1]), &(allPart[2]), ks, kd, rest);
 	Hooke* h3 = new Hooke(&(allPart[2]), &(allPart[3]), ks, kd, rest);
 	Hooke* h4 = new Hooke(&(allPart[3]), &(allPart[4]), ks, kd, rest);
-	
-	//h->setks(ks);
-	//h->setrest(rest);
-	//h->setkd(kd);
-	
 
-	//Adding the forces applied to the particle
-	//for (unsigned int i = 0; i < particlenum; i++) {
+
+	allPart[1].addForce(h1);
+	allPart[1].addForce(h2);
+	allPart[2].addForce(h2);
+	allPart[2].addForce(h3);
+	allPart[3].addForce(h3);
+	allPart[3].addForce(h4);
+	allPart[4].addForce(h4);
+	}
+
+	for (unsigned int i = 0; i < particlenum; i++) {
 		allPart[1].addForce(&g);
 		allPart[2].addForce(&g);
 		allPart[3].addForce(&g);
 		allPart[4].addForce(&g);
-
-
-		allPart[1].addForce(h1);
-		allPart[2].addForce(h2);
-		allPart[3].addForce(h3);
-		allPart[4].addForce(h4);
-	//}
-
+	}*/
 
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
@@ -174,21 +196,25 @@ int main()
 			/*
 			**	SIMULATION
 			*/
-			for (unsigned int i = 0; i < particlenum; i++) {
+			for (unsigned int i = 1; i < particlenum; i++) {
 
 				allPart[i].setAcc(allPart[i].applyForces(allPart[i].getPos(), allPart[i].getVel(), t, dt));
 
-				/*for (unsigned int j = 0; j < 3; j++) {
-					if (allPart[i].getPos()[j] < cubecorner[j]) {
-						allPart[i].setVel(j, allPart[i].getVel()[j] * -0.5f);
-						allPart[i].setPos(j, cubecorner[j]);
-					}
-					else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
-						allPart[i].setVel(j, allPart[i].getVel()[j] * -0.5f);
-						allPart[i].setPos(j, cubecorner[j] + d[j]);
-					}
+					for (unsigned int j = 0; j < 3; j++) {
+						if (allPart[i].getPos()[j] < cubecorner[j]) {
+							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+							allPart[i].setPos(j, cubecorner[j]);
+						}
+						else if (allPart[i].getPos()[j] > cubecorner[j] + d[j]) {
+							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
+							allPart[i].setPos(j, cubecorner[j] + d[j]);
+						}
 
-				}*/
+					}
+			}
+
+
+			for (unsigned int i = 1; i < particlenum; i++) {
 
 				allPart[i].setVel(allPart[i].getVel() + dt * allPart[i].getAcc());
 				allPart[i].translate(dt*allPart[i].getVel());
@@ -214,8 +240,8 @@ int main()
 		}
 
 		// draw demo objects
-		app.draw(cube);
-		app.draw(sphere);
+		//app.draw(cube);
+		//app.draw(sphere);
 
 		app.display();
 	}
