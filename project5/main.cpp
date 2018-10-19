@@ -37,6 +37,8 @@ float ks = 10.0f; //spring stiffness
 float rest = 0.5f;//spring rest length
 float kd = 5.0f;//damping coefficient
 
+
+const int particlenum = 100;//particle num per vertex
 //Drag d = Drag();
 
 
@@ -48,6 +50,21 @@ float RandomFloat(float a, float b) {
 	return a + r;
 }
 
+
+void seflagPos(std::vector<Particle> *pvert) {
+	vec3 inpos = vec3(-10.0f, -10.0f, 0.0f);
+	float gap = 0.5f;
+
+	for (unsigned int i = 0; i < particlenum; ++i) {
+		for (unsigned int x = 0; x%10==0 ; ++x) {
+			for (unsigned int y = 0; y % 10 == 0; ++y) {
+				(*pvert)[x].setPos(inpos + vec3(x*gap,0.0f,y*gap));
+			}		
+		}
+	}
+
+
+}
 // main function
 int main()
 {
@@ -63,36 +80,31 @@ int main()
 	Shader lambert = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	plane.setShader(lambert);
 
-	//Create particle via class:
-
-	const int particlenum = 10;
+	//Create particles via class:
 	std::vector<Particle> allPart;
+
+	std::vector<std::vector<Particle>> vecvec;
 	Shader blue = Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag");
-
-	
-
-
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		allPart.push_back(Particle::Particle());
 		allPart[i].getMesh().setShader(blue);
 	}
 
+
+	//Set particles initial velocity
 	for (unsigned int i = 0; i < particlenum; ++i) {
 		//allPart[i].setVel(vec3(RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 8.0f)));
 		allPart[i].setVel(vec3(0.0f));
 		//allPart[i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(5.0f, 9.0f), RandomFloat(0.0f, 8.0f)));
 	}
 
-	/*allPart[0].setPos(vec3(0.0f, 10.0f, 0.0f));
-	allPart[1].setPos(vec3(0.0f, 8.0f, 0.0f));
-	allPart[2].setPos(vec3(0.0f, 6.0f, 0.0f));
-	allPart[3].setPos(vec3(0.0f, 4.0f, 0.0f));
-	allPart[4].setPos(vec3(0.0f, 2.0f, 0.0f));*/
+	//Set particles' initial position
+	//allPart[0].setPos(vec3(-5.0f, 10.0f, 0.0f));
+	//for (unsigned int i = 1; i < particlenum; ++i) {
+	//	allPart[i].setPos(vec3(allPart[i-1].getPos())+vec3(2.0f,0.0f,0.0f));
+	//}
 
-	allPart[0].setPos(vec3(-5.0f, 10.0f, 0.0f));
-	for (unsigned int i = 1; i < particlenum; ++i) {
-		allPart[i].setPos(vec3(allPart[i-1].getPos())+vec3(2.0f,0.0f,0.0f));
-	}
+	seflagPos(&allPart);
 
 
 	// create demo objects (a cube and a sphere)
@@ -131,13 +143,13 @@ int main()
 
 
 	//Adding the forces applied to the particle
-	allPart[1].addForce(Hookes[0]);
-	for (int i = 1; i < particlenum-2; i++) {
-		allPart[i].addForce(&g);
-		allPart[i].addForce(Hookes[i]);
-		allPart[i+1].addForce(Hookes[i]);
-	}
-	allPart[8].addForce(Hookes[8]);
+	//allPart[1].addForce(Hookes[0]);
+	//for (int i = 1; i < particlenum-2; i++) {
+	//	allPart[i].addForce(&g);
+	//	allPart[i].addForce(Hookes[i]);
+	//	allPart[i+1].addForce(Hookes[i]);
+	//}
+	//allPart[8].addForce(Hookes[8]);
 
 	
 
@@ -199,7 +211,7 @@ int main()
 
 				allPart[i].setAcc(allPart[i].applyForces(allPart[i].getPos(), allPart[i].getVel(), t, dt));
 
-					for (unsigned int j = 0; j < 3; j++) {
+					/*for (unsigned int j = 0; j < 3; j++) {
 						if (allPart[i].getPos()[j] < cubecorner[j]) {
 							allPart[i].setVel(j, allPart[i].getVel()[j] * -1.0f);
 							allPart[i].setPos(j, cubecorner[j]);
@@ -209,7 +221,7 @@ int main()
 							allPart[i].setPos(j, cubecorner[j] + d[j]);
 						}
 
-					}
+					}*/
 			}
 
 
