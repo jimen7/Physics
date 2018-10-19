@@ -60,9 +60,31 @@ void seflagPos(std::vector<std::vector<Particle>> &pvert) {
 			pvert[x][y].setPos(inpos + vec3(x*gap,0.0f,y*gap));
 		}		
 	}
+}
+
+void addHookeForces(std::vector<std::vector<Particle>> &pvert) {
+	for (unsigned int j = 0; j < vertnum; j++) {
+		for (int i = 0; i < particlenum-1; i++)
+		{
+			if (i != 0 && j != 0 && i != 9 && j != 9) {
+
+				Hooke* top = new Hooke(&(pvert[j][i]), &(pvert[j - 1][i]), ks, kd, rest);
+				Hooke* left = new Hooke(&(pvert[j][i]), &(pvert[j][i - 1]), ks, kd, rest);
+				Hooke* bottom = new Hooke(&(pvert[j][i]), &(pvert[j + 1][i]), ks, kd, rest);
+				Hooke* right = new Hooke(&(pvert[j][i]), &(pvert[j][i + 1]), ks, kd, rest);
+
+				pvert[j][i].addForce(&g);
+
+				pvert[j][i].addForce(top);
+				pvert[j][i].addForce(left);
+				pvert[j][i].addForce(bottom);
+				pvert[j][i].addForce(right);
+			}
+			
 
 
-
+		}
+	}
 }
 // main function
 int main()
@@ -114,8 +136,12 @@ int main()
 	//	allPart[i].setPos(vec3(allPart[i-1].getPos())+vec3(2.0f,0.0f,0.0f));
 	//}
 
+
+	//Set particles initial position
 	seflagPos(vecvec);             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////FUNCTION HERE
 
+
+	addHookeForces(vecvec);
 
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
@@ -142,16 +168,28 @@ int main()
 
 
 	//Hooke force
-	const int HookeForces = particlenum-1;
+	const int HookeForces = (particlenum*vertnum)-1;
 	std::vector<Hooke*> Hookes;
 
 	//Adding forces to the Hook vector
-	for (unsigned int j = 0; j < vertnum; j++) {
-		for (int i = 0; i < HookeForces; i++)
-		{
-			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j][i]), ks, kd, rest));
-		}
-	}
+
+
+	//for (unsigned int j = 0; j < vertnum; j++) {
+	//	for (int i = 0; i < HookeForces; i++)
+	//	{
+	//		if (i!=0) {
+
+	//			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j - 1][i]), ks, kd, rest));
+	//			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j][i - 1]), ks, kd, rest));
+	//			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j + 1][i]), ks, kd, rest));
+	//			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j][i + 1]), ks, kd, rest));
+	//		}
+	//		else {
+	//			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j - 1][i]), ks, kd, rest));
+	//		}
+	//		
+	//	}
+	//}
 
 	//Adding the forces applied to the particle
 	//for (unsigned int j = 0; j < vertnum; j++) {
@@ -164,7 +202,14 @@ int main()
 	//	//vecvec[j][8].addForce(Hookes[8]);
 	//}
 	
+	for (unsigned int j = 0; j < vertnum; j++) {
+		for (int i = 1; i < particlenum - 1; i++) {
 
+
+
+
+		}
+	}
 
 
 
@@ -224,7 +269,7 @@ int main()
 
 					vecvec[j][i].setAcc(vecvec[j][i].applyForces(vecvec[j][i].getPos(), vecvec[j][i].getVel(), t, dt));
 
-					/*for (unsigned int k = 0; k < 3; k++) {
+					for (unsigned int k = 0; k < 3; k++) {
 						if (vecvec[j][i].getPos()[k] < cubecorner[k]) {
 							vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
 							vecvec[j][i].setPos(k, cubecorner[k]);
@@ -234,7 +279,7 @@ int main()
 							vecvec[j][i].setPos(k, cubecorner[k] + d[k]);
 						}
 
-					}*/
+					}
 				}
 			}
 
