@@ -79,6 +79,9 @@ void addHookeForces(std::vector<std::vector<Particle>> &pvert) {
 				pvert[j][i].addForce(left);
 				pvert[j][i].addForce(bottom);
 				pvert[j][i].addForce(right);
+
+				vec3 topnormal = (cross((pvert[i-1][j-1].getPos()- pvert[i][j].getPos()),(pvert[i-1][j].getPos()- pvert[i][j].getPos())))/glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
+				float toparea = 0.5f * glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
 			}
 			
 
