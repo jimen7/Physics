@@ -89,7 +89,7 @@ int main()
 	allPart[3].setPos(vec3(0.0f, 4.0f, 0.0f));
 	allPart[4].setPos(vec3(0.0f, 2.0f, 0.0f));*/
 
-	allPart[0].setPos(vec3(0.0f, 10.0f, 0.0f));
+	allPart[0].setPos(vec3(-5.0f, 10.0f, 0.0f));
 	for (unsigned int i = 1; i < particlenum; ++i) {
 		allPart[i].setPos(vec3(allPart[i-1].getPos())+vec3(2.0f,0.0f,0.0f));
 	}
