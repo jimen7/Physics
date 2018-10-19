@@ -156,12 +156,12 @@ int main()
 	//Adding the forces applied to the particle
 	//for (unsigned int j = 0; j < vertnum; j++) {
 	//	vecvec[j][1].addForce(Hookes[0]);
-	//	for (int i = 1; i < particlenum-2; i++) {
+	//	for (int i = 1; i < particlenum-1; i++) {
 	//		vecvec[j][i].addForce(&g);
 	//		vecvec[j][i].addForce(Hookes[i]);
 	//		vecvec[j][i+1].addForce(Hookes[i]);
 	//	}
-	//	vecvec[j][8].addForce(Hookes[8]);
+	//	//vecvec[j][8].addForce(Hookes[8]);
 	//}
 	
 
