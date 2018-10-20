@@ -82,3 +82,20 @@ private:
 	Body* m_b2; //pointer to the body connected to the other extremity
 };
 
+
+class Wind : public Force {
+public:
+	Wind() {}
+	Wind(Body* b1, Body* b2, Body* b3) {
+		m_b1 = b1; m_b2 = b2; m_b3 = b3;
+	}
+
+	glm::vec3 apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel);
+
+
+private:
+	Body* m_b1; //pointer to the body connected to one extremity of the spring
+	Body* m_b2; //pointer to the body connected to the other extremity
+	Body* m_b3; //pointer to the body connected to the other extremity
+};
+

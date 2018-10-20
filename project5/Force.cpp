@@ -79,3 +79,20 @@ glm::vec3 Hooke::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 	
 	//return glm::vec3(0.0f, (Fh + Fd), 0.0f);
 }
+
+
+glm::vec3 Wind::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
+	glm::vec3 rightvector = cross(m_b2->getPos() - m_b1->getPos(), m_b3->getPos() - m_b1->getPos());
+	glm::vec3 normal = rightvector /glm::length(rightvector);
+	float area = 0.5 * glm::length(rightvector);
+
+
+
+
+	return glm::vec3(0.0f);
+}
+
+/*
+vec3 topnormal = (cross((pvert[j - 1][i - 1].getPos() - pvert[j][i].getPos()), (pvert[j - 1][j].getPos() - pvert[i][j].getPos()))) / glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
+float toparea = 0.5f * glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
+*/

@@ -57,10 +57,22 @@ void seflagPos(std::vector<std::vector<Particle>> &pvert) {
 	float gap = 1.0f;
 	for (unsigned int x = 0; x <10 ; ++x) {
 		for (unsigned int y = 0; y < 10; ++y) {
-			pvert[x][y].setPos(inpos + vec3(x*gap,0.0f,y*gap));
+			pvert[x][y].setPos(inpos + vec3(x*gap, 0.0f ,y*gap));
 		}		
 	}
 }
+
+void seflagPoscloth(std::vector<std::vector<Particle>> &pvert) {
+	vec3 inpos = vec3(-5.0f, 10.0f, 0.0f);
+	float gap = 1.0f;
+	for (unsigned int x = 0; x < 10; ++x) {
+		for (unsigned int y = 0; y < 10; ++y) {
+			pvert[x][y].setPos(inpos + vec3(x*gap, -1.0f*y*gap, 0.0f ));
+			std::cout << pvert[x][y].getPos()[0] <<";"<< pvert[x][y].getPos()[1] << ";" << pvert[x][y].getPos()[2] << std::endl;
+		}
+	}
+}
+
 
 void addHookeForces(std::vector<std::vector<Particle>> &pvert) {
 	for (unsigned int j = 0; j < vertnum; j++) {
@@ -89,6 +101,115 @@ void addHookeForces(std::vector<std::vector<Particle>> &pvert) {
 		}
 	}
 }
+
+void addClothForces(std::vector<std::vector<Particle>> &pvert) {
+
+	for (unsigned int j = 0; j < vertnum; j++) {
+
+		for (int i = 0; i < particlenum; i++)
+		{
+			if (j != 0 ) {
+
+				if (i == 0) {   ////LEFT SIDE
+					if (j == 9) { //Bottom left particle
+						Hooke* top = new Hooke(&(pvert[j][i]), &(pvert[j - 1][i]), ks, kd, rest);
+						Hooke* right = new Hooke(&(pvert[j][i]), &(pvert[j][i + 1]), ks, kd, rest);
+
+						pvert[j][i].addForce(&g);
+
+						pvert[j][i].addForce(top);
+						pvert[j][i].addForce(right);
+					}
+					else {
+						Hooke* top = new Hooke(&(pvert[j][i]), &(pvert[j - 1][i]), ks, kd, rest);
+						Hooke* right = new Hooke(&(pvert[j][i]), &(pvert[j][i + 1]), ks, kd, rest);
+						Hooke* bottom = new Hooke(&(pvert[j][i]), &(pvert[j + 1][i]), ks, kd, rest);
+
+						pvert[j][i].addForce(&g);
+
+						pvert[j][i].addForce(top);
+						pvert[j][i].addForce(bottom);
+						pvert[j][i].addForce(right);
+					}
+				}
+
+				if (j == 9) { //////BOTTOM SIDE
+					if (i==0) { //Bottom left particle
+						/*Hooke* top = new Hooke(&(pvert[j][i]), &(pvert[j - 1][i]), ks, kd, rest);
+						Hooke* right = new Hooke(&(pvert[j][i]), &(pvert[j][i + 1]), ks, kd, rest);
+
+						pvert[j][i].addForce(&g);
+						pvert[j][i].addForce(top);
+						pvert[j][i].addForce(right);*/
+					}
+					else if (i == 9) { //bottom right particle
+						Hooke* top = new Hooke(&(pvert[j][i]), &(pvert[j - 1][i]), ks, kd, rest);
+						Hooke* left = new Hooke(&(pvert[j][i]), &(pvert[j][i - 1]), ks, kd, rest);
+
+						pvert[j][i].addForce(&g);
+						pvert[j][i].addForce(top);
+						pvert[j][i].addForce(left);
+					}
+					else {
+						Hooke* top = new Hooke(&(pvert[j][i]), &(pvert[j - 1][i]), ks, kd, rest);
+						Hooke* left = new Hooke(&(pvert[j][i]), &(pvert[j][i - 1]), ks, kd, rest);
+						Hooke* right = new Hooke(&(pvert[j][i]), &(pvert[j][i + 1]), ks, kd, rest);
+
+						pvert[j][i].addForce(&g);
+
+						pvert[j][i].addForce(top);
+						pvert[j][i].addForce(left);
+						pvert[j][i].addForce(right);
+					}
+				}
+
+				if (i == 9) { //RIGHT SIDE
+					if (j == 9) { //Bottom right particle
+						/*Hooke* top = new Hooke(&(pvert[j][i]), &(pvert[j - 1][i]), ks, kd, rest);
+						Hooke* left = new Hooke(&(pvert[j][i]), &(pvert[j][i - 1]), ks, kd, rest);*/
+					}
+					else {
+						Hooke* top = new Hooke(&(pvert[j][i]), &(pvert[j - 1][i]), ks, kd, rest);
+						Hooke* left = new Hooke(&(pvert[j][i]), &(pvert[j][i - 1]), ks, kd, rest);
+						Hooke* bottom = new Hooke(&(pvert[j][i]), &(pvert[j + 1][i]), ks, kd, rest);
+
+						pvert[j][i].addForce(&g);
+
+						pvert[j][i].addForce(top);
+						pvert[j][i].addForce(left);
+						pvert[j][i].addForce(bottom);
+					}		
+				}
+
+
+				if (i != 0 && j != 0 && i != 9 && j != 9) {  //INSIDE PARTICLES
+					Hooke* top = new Hooke(&(pvert[j][i]), &(pvert[j - 1][i]), ks, kd, rest);
+					Hooke* left = new Hooke(&(pvert[j][i]), &(pvert[j][i - 1]), ks, kd, rest);
+					Hooke* bottom = new Hooke(&(pvert[j][i]), &(pvert[j + 1][i]), ks, kd, rest);
+					Hooke* right = new Hooke(&(pvert[j][i]), &(pvert[j][i + 1]), ks, kd, rest);
+
+					pvert[j][i].addForce(&g);
+
+					pvert[j][i].addForce(top);
+					pvert[j][i].addForce(left);
+					pvert[j][i].addForce(bottom);
+					pvert[j][i].addForce(right);
+
+					vec3 topnormal = (cross((pvert[j - 1][i - 1].getPos() - pvert[j][i].getPos()), (pvert[j - 1][j].getPos() - pvert[i][j].getPos()))) / glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
+					float toparea = 0.5f * glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
+
+
+				}
+
+			}
+
+
+
+		}
+	}
+}
+
+
 // main function
 int main()
 {
@@ -115,8 +236,8 @@ int main()
 
 	//Create vertice of vertices
 	std::vector<std::vector<Particle>> vecvec(vertnum);
-	for (unsigned int i = 0; i < particlenum; ++i) {
-		for (unsigned int j = 0; j < vertnum; ++j) {
+	for (unsigned int j = 0; j < particlenum; ++j) {
+		for (unsigned int i = 0; i < vertnum; ++i) {
 			vecvec[j].push_back(Particle::Particle());
 			vecvec[j][i].getMesh().setShader(blue);
 		}
@@ -125,26 +246,21 @@ int main()
 
 
 	//Set particles initial velocity
-	for (unsigned int i = 0; i < particlenum; ++i) {
-		for (unsigned int j = 0; j < vertnum; ++j) {
+	for (unsigned int j = 0; j < particlenum; ++j) {
+		for (unsigned int i = 0; i < vertnum; ++i) {
 			//vecvec[j][i].setVel(vec3(RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 10.0f), RandomFloat(-10.0f, 8.0f)));
 			vecvec[j][i].setVel(vec3(0.0f));
 			//vecvec[j][i].setPos(vec3(RandomFloat(0.0f, 5.0f), RandomFloat(5.0f, 9.0f), RandomFloat(0.0f, 8.0f)));
 		}
 	}
 
-	//Set particles' initial position
-	//allPart[0].setPos(vec3(-5.0f, 10.0f, 0.0f));
-	//for (unsigned int i = 1; i < particlenum; ++i) {
-	//	allPart[i].setPos(vec3(allPart[i-1].getPos())+vec3(2.0f,0.0f,0.0f));
-	//}
-
 
 	//Set particles initial position
-	seflagPos(vecvec);             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////FUNCTION HERE
+	//seflagPos(vecvec);             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////FUNCTION HERE
+	seflagPoscloth(vecvec);
 
-
-	addHookeForces(vecvec);
+	//addHookeForces(vecvec);
+	addClothForces(vecvec);
 
 	// create demo objects (a cube and a sphere)
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
@@ -174,25 +290,6 @@ int main()
 	const int HookeForces = (particlenum*vertnum)-1;
 	std::vector<Hooke*> Hookes;
 
-	//Adding forces to the Hook vector
-
-
-	//for (unsigned int j = 0; j < vertnum; j++) {
-	//	for (int i = 0; i < HookeForces; i++)
-	//	{
-	//		if (i!=0) {
-
-	//			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j - 1][i]), ks, kd, rest));
-	//			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j][i - 1]), ks, kd, rest));
-	//			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j + 1][i]), ks, kd, rest));
-	//			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j][i + 1]), ks, kd, rest));
-	//		}
-	//		else {
-	//			Hookes.push_back(new Hooke(&(vecvec[j][i]), &(vecvec[j - 1][i]), ks, kd, rest));
-	//		}
-	//		
-	//	}
-	//}
 
 	//Adding the forces applied to the particle
 	//for (unsigned int j = 0; j < vertnum; j++) {
@@ -216,41 +313,9 @@ int main()
 
 
 
-
-
-	/*Leaving this for reference of how the spring forces are applied
-
-	Hooke* h1 = new Hooke(&(allPart[0]), &(allPart[1]), ks, kd, rest);
-	Hooke* h2 = new Hooke(&(allPart[1]), &(allPart[2]), ks, kd, rest);
-	Hooke* h3 = new Hooke(&(allPart[2]), &(allPart[3]), ks, kd, rest);
-	Hooke* h4 = new Hooke(&(allPart[3]), &(allPart[4]), ks, kd, rest);
-
-
-	allPart[1].addForce(h1);
-	allPart[1].addForce(h2);
-	allPart[2].addForce(h2);
-	allPart[2].addForce(h3);
-	allPart[3].addForce(h3);
-	allPart[3].addForce(h4);
-	allPart[4].addForce(h4);
-	}
-
-	for (unsigned int i = 0; i < particlenum; i++) {
-		allPart[1].addForce(&g);
-		allPart[2].addForce(&g);
-		allPart[3].addForce(&g);
-		allPart[4].addForce(&g);
-	}*/
-
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
 	{
-		//// Set frame time
-		//GLfloat currentFrame = (GLfloat)  glfwGetTime() - firstFrame;
-		//// the animation can be sped up or slowed down by multiplying currentFrame by a factor.
-		//currentFrame *= 1.5f;
-		//deltaTime = currentFrame - lastFrame;
-		//lastFrame = currentFrame;
 		float newTime = (GLfloat)glfwGetTime();
 		float frameTime = newTime - currentTime;
 		currentTime = newTime;
@@ -272,7 +337,7 @@ int main()
 
 					vecvec[j][i].setAcc(vecvec[j][i].applyForces(vecvec[j][i].getPos(), vecvec[j][i].getVel(), t, dt));
 
-					for (unsigned int k = 0; k < 3; k++) {
+					/*for (unsigned int k = 0; k < 3; k++) {
 						if (vecvec[j][i].getPos()[k] < cubecorner[k]) {
 							vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
 							vecvec[j][i].setPos(k, cubecorner[k]);
@@ -282,7 +347,7 @@ int main()
 							vecvec[j][i].setPos(k, cubecorner[k] + d[k]);
 						}
 
-					}
+					}*/
 				}
 			}
 
@@ -305,7 +370,7 @@ int main()
 		// clear buffer
 		app.clear();
 		// draw groud plane
-		app.draw(plane);
+		//app.draw(plane);
 		// draw particles
 		//app.draw(particle1.getMesh());
 		for (unsigned int j = 0; j < vertnum; j++) {
