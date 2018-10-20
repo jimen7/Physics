@@ -68,7 +68,7 @@ void seflagPoscloth(std::vector<std::vector<Particle>> &pvert) {
 	for (unsigned int x = 0; x < 10; ++x) {
 		for (unsigned int y = 0; y < 10; ++y) {
 			pvert[x][y].setPos(inpos + vec3(x*gap, -1.0f*y*gap, 0.0f ));
-			std::cout << pvert[x][y].getPos()[0] <<";"<< pvert[x][y].getPos()[1] << ";" << pvert[x][y].getPos()[2] << std::endl;
+			//std::cout << pvert[x][y].getPos()[0] <<";"<< pvert[x][y].getPos()[1] << ";" << pvert[x][y].getPos()[2] << std::endl;
 		}
 	}
 }
@@ -108,6 +108,7 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 
 		for (int i = 0; i < particlenum; i++)
 		{
+	
 			if (j != 0 ) {
 
 				if (i == 0) {   ////LEFT SIDE
@@ -195,9 +196,9 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 					pvert[j][i].addForce(bottom);
 					pvert[j][i].addForce(right);
 
-					vec3 topnormal = (cross((pvert[j - 1][i - 1].getPos() - pvert[j][i].getPos()), (pvert[j - 1][j].getPos() - pvert[i][j].getPos()))) / glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
-					float toparea = 0.5f * glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
+					//Wind * wind = new Wind(&(pvert[j][i]), &(pvert[j][i + 1]), &(pvert[j + 1][i]));
 
+					//pvert[j][i].addForce(wind);
 
 				}
 
