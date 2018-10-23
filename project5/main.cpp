@@ -33,9 +33,9 @@ GLfloat lastFrame = 0.0f;
 
 Gravity g = Gravity(glm::vec3(0.0f, -9.8f, 0.0f));
 
-float ks = 10.0f; //spring stiffness 
-float rest = 0.5f;//spring rest length
-float kd = 5.0f;//damping coefficient
+float ks = 50.0f; //spring stiffness 
+float rest = 0.1f;//spring rest length
+float kd = 20.0f;//damping coefficient
 
 
 const int particlenum = 10;//particle num per vertex
@@ -57,7 +57,7 @@ void seflagPos(std::vector<std::vector<Particle>> &pvert) {
 	float gap = 1.0f;
 	for (unsigned int x = 0; x <10 ; ++x) {
 		for (unsigned int y = 0; y < 10; ++y) {
-			pvert[x][y].setPos(inpos + vec3(x*gap, 0.0f ,y*gap));
+			pvert[x][y].setPos(inpos + vec3(x*gap, 0.0f ,-1.0f*y*gap));
 		}		
 	}
 }
@@ -133,6 +133,8 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 						pvert[j][i].addForce(right);
 					}
 				}
+
+
 
 				if (j == 9) { //////BOTTOM SIDE
 					if (i==0) { //Bottom left particle
@@ -257,8 +259,8 @@ int main()
 
 
 	//Set particles initial position
-	//seflagPos(vecvec);             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////FUNCTION HERE
-	seflagPoscloth(vecvec);
+	seflagPos(vecvec);             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////FUNCTION HERE
+	//seflagPoscloth(vecvec);
 
 	//addHookeForces(vecvec);
 	addClothForces(vecvec);
@@ -334,7 +336,7 @@ int main()
 			**	SIMULATION
 			*/
 			for (unsigned int j = 0; j < vertnum; j++) {
-				for (unsigned int i = 1; i < particlenum; i++) {
+				for (unsigned int i = 0; i < particlenum; i++) {
 
 					vecvec[j][i].setAcc(vecvec[j][i].applyForces(vecvec[j][i].getPos(), vecvec[j][i].getVel(), t, dt));
 
@@ -353,7 +355,7 @@ int main()
 			}
 
 			for (unsigned int j = 0; j < vertnum; j++) {
-				for (unsigned int i = 1; i < particlenum; i++) {
+				for (unsigned int i = 0; i < particlenum; i++) {
 
 					vecvec[j][i].setVel(vecvec[j][i].getVel() + dt * vecvec[j][i].getAcc());
 					vecvec[j][i].translate(dt*vecvec[j][i].getVel());
