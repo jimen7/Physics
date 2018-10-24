@@ -198,9 +198,14 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 					pvert[j][i].addForce(bottom);
 					pvert[j][i].addForce(right);
 
-					//Wind * wind = new Wind(&(pvert[j][i]), &(pvert[j][i + 1]), &(pvert[j + 1][i]));
+					Wind * wind = new Wind(&(pvert[j][i]), &(pvert[j][i + 1]), &(pvert[j + 1][i]));
 
-					//pvert[j][i].addForce(wind);
+					pvert[j][i].addForce(wind);
+					pvert[j][i + 1].addForce(wind);
+					pvert[j + 1][i].addForce(wind);
+
+
+
 
 				}
 
