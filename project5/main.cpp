@@ -35,7 +35,7 @@ Gravity g = Gravity(glm::vec3(0.0f, -9.8f, 0.0f));
 
 float ks = 50.0f; //spring stiffness 
 float rest = 0.1f;//spring rest length
-float kd = 20.0f;//damping coefficient
+float kd = 30.0f;//damping coefficient
 
 
 const int particlenum = 10;//particle num per vertex
@@ -198,11 +198,16 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 					pvert[j][i].addForce(bottom);
 					pvert[j][i].addForce(right);
 
-					Wind * wind = new Wind(&(pvert[j][i]), &(pvert[j][i + 1]), &(pvert[j + 1][i]));
+					Wind * wind1 = new Wind(&(pvert[j][i]), &(pvert[j][i + 1]), &(pvert[j + 1][i]));
+					Wind * wind2 = new Wind(&(pvert[j][i]), &(pvert[j - 1][i - 1]), &(pvert[j - 1][i]));
 
-					pvert[j][i].addForce(wind);
-					pvert[j][i + 1].addForce(wind);
-					pvert[j + 1][i].addForce(wind);
+					pvert[j][i].addForce(wind1);
+					pvert[j][i + 1].addForce(wind1);
+					pvert[j + 1][i].addForce(wind1);
+
+					/*pvert[j][i].addForce(wind2);
+					pvert[j-1][i - 1].addForce(wind2);
+					pvert[j - 1][i].addForce(wind2);*/
 
 
 
@@ -310,14 +315,7 @@ int main()
 	//	//vecvec[j][8].addForce(Hookes[8]);
 	//}
 	
-	for (unsigned int j = 0; j < vertnum; j++) {
-		for (int i = 1; i < particlenum - 1; i++) {
 
-
-
-
-		}
-	}
 
 
 

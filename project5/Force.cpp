@@ -82,12 +82,14 @@ glm::vec3 Hooke::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 
 
 glm::vec3 Wind::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
-	if (glm::length(m_b1->getVel()) > 6.0f) {
-		m_b1->setVel(m_b1->getVel() * 0.92f);
-	}
-	glm::vec3 air = glm::vec3(1.2f,7.0f,1.0f);
+	/*if (glm::length(m_b1->getVel()) > 3.0f) {
+		m_b1->setVel(m_b1->getVel() * 0.8f);
+	}*/
+	glm::vec3 air = glm::vec3(1.2f,0.9f,0.0f);
 	glm::vec3 vsurface = (m_b1->getVel() + m_b2->getVel() + m_b3->getVel()) / 3.0f; //(v1+v2+v3)/3
-
+	if (glm::length(vsurface) >3.0) {
+		vsurface *= 0.1f;
+	}
 	float vlength = glm::length(vsurface); //	|vsurface|
 	if (vlength == 0) {
 		return glm::vec3(0.0f);
@@ -100,7 +102,7 @@ glm::vec3 Wind::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 
 	glm::vec3 Fw = 0.5f*density*vlength*vlength*aircoefficient*crossarea*normal;
 
-	return Fw;
+	return Fw/3.0f;
 	
 	
 
