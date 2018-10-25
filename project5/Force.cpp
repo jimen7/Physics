@@ -104,13 +104,4 @@ glm::vec3 Wind::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 
 	return Fw;
 	
-	
-
-
-	
 }
-
-/*
-vec3 topnormal = (cross((pvert[j - 1][i - 1].getPos() - pvert[j][i].getPos()), (pvert[j - 1][j].getPos() - pvert[i][j].getPos()))) / glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
-float toparea = 0.5f * glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
-*/
