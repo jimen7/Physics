@@ -94,7 +94,7 @@ glm::vec3 Wind::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 	if (vlength == 0) {
 		return glm::vec3(0.0f);
 	}
-	vsurface = vsurface + air;
+	vsurface = vsurface - air;
 	glm::vec3 rightvector = cross(m_b2->getPos() - m_b1->getPos(), m_b3->getPos() - m_b1->getPos()); //(r3-r1)x(r2-r1)
 	glm::vec3 normal = rightvector /glm::length(rightvector); //rightvector normalized
 	float trianglearea = 0.5 * glm::length(rightvector); 
@@ -102,7 +102,7 @@ glm::vec3 Wind::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 
 	glm::vec3 Fw = 0.5f*density*vlength*vlength*aircoefficient*crossarea*normal;
 
-	return Fw/3.0f;
+	return Fw;
 	
 	
 

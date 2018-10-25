@@ -126,11 +126,18 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 						Hooke* right = new Hooke(&(pvert[j][i]), &(pvert[j][i + 1]), ks, kd, rest);
 						Hooke* bottom = new Hooke(&(pvert[j][i]), &(pvert[j + 1][i]), ks, kd, rest);
 
+						Wind * wind1 = new Wind(&(pvert[j][i]), &(pvert[j][i + 1]), &(pvert[j + 1][i])); //particle, particle right, particle down
+
 						pvert[j][i].addForce(&g);
 
 						pvert[j][i].addForce(top);
 						pvert[j][i].addForce(bottom);
 						pvert[j][i].addForce(right);
+
+
+						pvert[j][i].addForce(wind1);
+						pvert[j][i + 1].addForce(wind1);
+						pvert[j + 1][i].addForce(wind1);
 					}
 				}
 
@@ -198,19 +205,17 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 					pvert[j][i].addForce(bottom);
 					pvert[j][i].addForce(right);
 
-					Wind * wind1 = new Wind(&(pvert[j][i]), &(pvert[j][i + 1]), &(pvert[j + 1][i]));
-					Wind * wind2 = new Wind(&(pvert[j][i]), &(pvert[j - 1][i - 1]), &(pvert[j - 1][i]));
+					Wind * wind1 = new Wind(&(pvert[j][i]), &(pvert[j][i + 1]), &(pvert[j + 1][i])); //particle, particle right, particle down
+
+					Wind * wind2 = new Wind(&(pvert[j][i+1]), &(pvert[j+1][i+1]), &(pvert[j+1][i])); //particle right, particle right and down, particle down
 
 					pvert[j][i].addForce(wind1);
 					pvert[j][i + 1].addForce(wind1);
 					pvert[j + 1][i].addForce(wind1);
 
-					/*pvert[j][i].addForce(wind2);
-					pvert[j-1][i - 1].addForce(wind2);
-					pvert[j - 1][i].addForce(wind2);*/
-
-
-
+					pvert[j][i+1].addForce(wind2);
+					pvert[j+1][i +1].addForce(wind2);
+					pvert[j + 1][i].addForce(wind2);
 
 				}
 
@@ -303,22 +308,6 @@ int main()
 	const int HookeForces = (particlenum*vertnum)-1;
 	std::vector<Hooke*> Hookes;
 
-
-	//Adding the forces applied to the particle
-	//for (unsigned int j = 0; j < vertnum; j++) {
-	//	vecvec[j][1].addForce(Hookes[0]);
-	//	for (int i = 1; i < particlenum-1; i++) {
-	//		vecvec[j][i].addForce(&g);
-	//		vecvec[j][i].addForce(Hookes[i]);
-	//		vecvec[j][i+1].addForce(Hookes[i]);
-	//	}
-	//	//vecvec[j][8].addForce(Hookes[8]);
-	//}
-	
-
-
-
-
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
 	{
@@ -343,17 +332,17 @@ int main()
 
 					vecvec[j][i].setAcc(vecvec[j][i].applyForces(vecvec[j][i].getPos(), vecvec[j][i].getVel(), t, dt));
 
-					/*for (unsigned int k = 0; k < 3; k++) {
-						if (vecvec[j][i].getPos()[k] < cubecorner[k]) {
-							vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
-							vecvec[j][i].setPos(k, cubecorner[k]);
-						}
-						else if (vecvec[j][i].getPos()[k] > cubecorner[k] + d[k]) {
-							vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
-							vecvec[j][i].setPos(k, cubecorner[k] + d[k]);
-						}
+					//for (unsigned int k = 0; k < 3; k++) {
+					//	if (vecvec[j][i].getPos()[k] < cubecorner[k]) {
+					//		vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
+					//		vecvec[j][i].setPos(k, cubecorner[k]);
+					//	}
+					//	else if (vecvec[j][i].getPos()[k] > cubecorner[k] + d[k]) {
+					//		vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
+					//		vecvec[j][i].setPos(k, cubecorner[k] + d[k]);
+					//	}
 
-					}*/
+					//}
 				}
 			}
 
@@ -376,7 +365,7 @@ int main()
 		// clear buffer
 		app.clear();
 		// draw groud plane
-		//app.draw(plane);
+		app.draw(plane);
 		// draw particles
 		//app.draw(particle1.getMesh());
 		for (unsigned int j = 0; j < vertnum; j++) {
