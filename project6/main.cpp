@@ -43,6 +43,7 @@ const int particlenum = 10;//particle num per vertex
 const int vertnum = 10;
 //Drag d = Drag();
 
+int test = 0;
 
 //Method tyhat creates random variables between 2 values
 float RandomFloat(float a, float b) {
@@ -239,6 +240,7 @@ int main()
 
 	// create ground plane
 	Mesh plane = Mesh::Mesh(Mesh::QUAD);
+	std::cout << "Size of plane: " << plane.getVertices().size() << std::endl;
 	// scale it up x5
 	plane.scale(glm::vec3(5.0f, 5.0f, 5.0f));
 	Shader lambert = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
@@ -318,7 +320,7 @@ int main()
 
 	//Timestep variables
 	float t = 0.0f;
-	const float dt = 0.01f;
+	const float dt = 0.001f;
 	float currentTime = (GLfloat)glfwGetTime();
 	float accumulator = 0.0f;
 
@@ -341,22 +343,36 @@ int main()
 
 		accumulator += frameTime;
 
-		/*
-		**	INTERACTION
-		*/
-		// Manage interaction
-		app.doMovement(dt);
-
+		
 		while (accumulator >= dt) {
 			/*
 			**	SIMULATION
 			*/
 
 			//RIGID BODIES
-			rb.setAcc(rb.applyForces(rb.getPos(), rb.getVel(), t, dt));
+			
+			/*
+		**	INTERACTION
+		*/
+		// Manage interaction
+			app.doMovement(dt);
 
+
+
+			if (test == 0) {
+				rb.setAcc(rb.applyForces(rb.getPos(), rb.getVel(), t, dt));
+			}
+			else if (test == 1) {
+				rb.setAcc(rb.applyForces(rb.getPos() - 1.8f, rb.getVel(), t, dt));
+			}
+			else if (test == 2) {
+				rb.setAcc(rb.applyForces(rb.getPos() + 1.8f, rb.getVel(), t, dt));
+			}
+			
+			
+			//rb.setAngAccl(vec3(0.0f,1.0f,0.0f));
 			//integration (rotation)
-			rb.setAngAccl(rb.getAngVel() + dt * rb.getAngAcc());
+			rb.setAngVel(rb.getAngVel() + dt * rb.getAngAcc());
 			//crete skew symmetric matrix for w
 			glm::mat3 angVelSkew = glm::matrixCross3(rb.getAngVel());
 			//create 3x3 rotation matrix from rb rotation matrix
@@ -364,24 +380,49 @@ int main()
 			//update rotation matrix
 			R += dt * angVelSkew * R;
 			R = glm::orthonormalize(R);
-
-
-			for (unsigned int k = 0; k < 3; k++) {
-				if (rb.getPos()[k] < cubecorner[k]) {
-					rb.setVel(k, rb.getVel()[k] * -1.0f);
-					rb.setPos(k, cubecorner[k]);
-				}
-				else if (rb.getPos()[k] > cubecorner[k] + d[k]) {
-					rb.setVel(k, rb.getVel()[k] * -1.0f);
-					rb.setPos(k, cubecorner[k] + d[k]);
-				}
-
-			}
-
-
-			rb.setVel(rb.getVel() + dt * rb.getAcc());
 			rb.setRotate(glm::mat4(R));
+
+
+
+			//WORKS WITH CENTER OF MASS
+			//for (unsigned int k = 0; k < 3; k++) {
+			//	if (rb.getPos()[k] - 1.0f < cubecorner[k]) {
+			//		rb.setVel(k, rb.getVel()[k] * -1.0f);
+			//		rb.setPos(k - 1.0f, cubecorner[k]);
+			//	}
+			//	else if (rb.getPos()[k] + 1.0f > cubecorner[k] + d[k]) {
+			//		rb.setVel(k, rb.getVel()[k] * -1.0f);
+			//		rb.setPos(k + 1.0f, cubecorner[k] + d[k]);
+			//	}
+			//}
+			test = 0;
+			//Will try to make it work withy vertices
+			for (Vertex vert : rb.getMesh().getVertices())
+			{
+				for (unsigned int k = 0; k < 3; k++) {
+					vec4 worldcoord = rb.getMesh().getModel()*vec4(vert.getCoord(), 1.0f);
+					vec4 pointofcontact;
+					if (worldcoord[k] < cubecorner[k] ) {
+						test = 1;
+						rb.setVel(k, rb.getVel()[k] * -1.0f);
+						rb.setPos(k, cubecorner[k] + 1.8f);
+						//rb.setAngVel(rb.getAngVel()*0.9f);
+						std::cout << "Collision1: ("  << pointofcontact.x << "," << pointofcontact.y << "," << pointofcontact.z << ")" << std::endl;
+					}
+					else if (worldcoord[k] > cubecorner[k] + d[k] ) {
+						test = 2;
+						rb.setVel(k, rb.getVel()[k] * -1.0f);
+						rb.setPos(k, cubecorner[k] + d[k] -1.8f);
+						//rb.setAngVel(rb.getAngVel()*0.9f);
+						std::cout << "Collision2: (" << pointofcontact.x << "," << pointofcontact.y << "," << pointofcontact.z << ")" << std::endl;
+					}
+				}
+			}
+			
+			rb.setVel(rb.getVel() + dt * rb.getAcc());
 			rb.translate(dt*rb.getVel());
+
+
 
 			for (unsigned int j = 0; j < vertnum; j++) {
 				for (unsigned int i = 0; i < particlenum; i++) {
