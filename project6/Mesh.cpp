@@ -3,7 +3,7 @@
 #include <algorithm>
 
 /*
-**	MESH 
+**	MESH
 */
 
 // default constructor creates a horizontal plane or dimensions 1 x 1 centered on the origin
@@ -159,40 +159,65 @@ Mesh::Mesh(MeshType type)
 	}
 
 	//Generate unique vertex vector (no duplicates)
-	//m_vertices = std::vector<Vertex>(std::begin(vertices), std::end(vertices));
+	m_vertices = std::vector<Vertex>(std::begin(vertices), std::end(vertices));
 
-	m_vertices.push_back(vertices[0]);
+	std::vector<Vertex> duplicateverts = std::vector<Vertex>(std::begin(vertices), std::end(vertices));
+	std::vector<Vertex> soloverts;
 
-	for (Vertex a : vertices) {
-		for (Vertex b : vertices) {
-			//if (a.getCoord[0]!=b.getCoord[0] && a.getCoord[1]!=b.getCoord[1] && a.getCoord[2]!=b.getCoord[2]) {
-			if(a.getCoord() != b.getCoord()) {
+	soloverts.push_back(duplicateverts[0]);
 
+	for (Vertex vert1 : duplicateverts) {
+		bool unique = true;
 
-				/*auto it = find(m_vertices.begin(), m_vertices.end(), a);
-				if (it != m_vertices.end()) {
-					m_vertices.push_back(a);
-				}*/
+		for (Vertex vert2 : soloverts) {
 
-
-				//for (int i = 0; i < m_vertices.size();i++) {
-				//	if (m_vertices[i].getCoord() != a.getCoord()) {
-				//		m_vertices.push_back(a);
-				//	}
-				//}
-
-				//Vertex *test = std::find(std::begin(vertices), std::end(vertices), a);
-				/*if (test != std::end(vertices)) {
-					m_vertices.push_back(a);
-				}	*/		
-
-
+			if (vert1.getCoord() == vert2.getCoord()) {
+				unique = false;
 			}
 		}
-	}
+		if (unique) {
+			soloverts.push_back(vert1);
+		}
 
-	//for (int i = 0; i < m_vertices.size(); i++)
-		std::cout <<std::to_string(m_vertices.size()) + "," << std::endl;
+	}
+	m_vertices = soloverts;
+
+	//for (Vertex s : soloverts) {
+	std::cout << m_vertices.size() << std::endl;
+	//}
+
+	//for (Vertex a : vertices) {
+	//	for (Vertex b : vertices) {
+	//		//if (a.getCoord[0]!=b.getCoord[0] && a.getCoord[1]!=b.getCoord[1] && a.getCoord[2]!=b.getCoord[2]) {
+	//		if(a.getCoord() != b.getCoord()) {
+
+
+	///			auto it = find(m_vertices.begin(), m_vertices.end(), a);
+	//			if (it != m_vertices.end()) {
+	//				m_vertices.push_back(a);
+	//			}*/
+
+
+	//			/*for (int i = 0; i < m_vertices.size();i++) {
+	//				if (m_vertices[i].getCoord() != a.getCoord()) {
+	//					m_vertices.push_back(a);
+	//				}
+	//			}*/
+
+
+
+	//			//Vertex *test;// = std::find(std::begin(vertices), std::end(vertices), a);
+	//			//if (test != std::end(vertices)) {
+	//			//	m_vertices.push_back(a);
+	//			//}			
+
+
+	//		}
+	//	}
+	//}
+
+
+	//std::cout << m_vertices.size() << std::endl;
 
 
 	//create mesh
@@ -208,8 +233,8 @@ Mesh::~Mesh()
 }
 
 
-/* 
-** INIT METHODS 
+/*
+** INIT METHODS
 */
 
 // initialise transform matrices to identity
@@ -301,7 +326,7 @@ void Mesh::loadOBJ(const char * path,
 	{
 		printf("The file was not opened\n");
 	}
-	else{
+	else {
 		while (1) {
 
 			char lineHeader[128];

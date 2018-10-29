@@ -61,7 +61,7 @@ glm::vec3 Hooke::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 	else {
 		e = (m_b2->getPos() - m_b1->getPos()) / length;
 	}
-	
+
 
 
 	float Fh = (-1.0f) * getks() * (getrest() - length); //x in this case is rest lenth -current length
@@ -71,12 +71,12 @@ glm::vec3 Hooke::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 	//glm::vec3 acceleration = (glm::vec3(0.0f, (Fh+Fd), 0.0f))/mass;
 
 	if (m_b2->getPos() == pos) {
-		return -(Fh+Fd)*e;
+		return -(Fh + Fd)*e;
 	}
 	else {
-		return (Fh+Fd)*e;
+		return (Fh + Fd)*e;
 	}
-	
+
 	//return glm::vec3(0.0f, (Fh + Fd), 0.0f);
 }
 
@@ -94,12 +94,12 @@ glm::vec3 Wind::apply(float mass, const glm::vec3 &pos, const glm::vec3 &vel) {
 	}
 	vsurface = vsurface - air;
 	glm::vec3 rightvector = cross(m_b2->getPos() - m_b1->getPos(), m_b3->getPos() - m_b1->getPos()); //(r3-r1)x(r2-r1)
-	glm::vec3 normal = rightvector /glm::length(rightvector); //rightvector normalized
-	float trianglearea = 0.5 * glm::length(rightvector); 
-	glm::vec3 crossarea = trianglearea * (((vsurface)*normal)/ vlength);
+	glm::vec3 normal = rightvector / glm::length(rightvector); //rightvector normalized
+	float trianglearea = 0.5 * glm::length(rightvector);
+	glm::vec3 crossarea = trianglearea * (((vsurface)*normal) / vlength);
 
 	glm::vec3 Fw = -0.5f*density*vlength*vlength*aircoefficient*crossarea*normal;
 
 	return Fw;
-	
+
 }

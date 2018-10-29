@@ -56,10 +56,10 @@ float RandomFloat(float a, float b) {
 void seflagPos(std::vector<std::vector<Particle>> &pvert) {
 	vec3 inpos = vec3(-5.0f, 10.0f, 0.0f);
 	float gap = 1.0f;
-	for (unsigned int x = 0; x <10 ; ++x) {
+	for (unsigned int x = 0; x < 10; ++x) {
 		for (unsigned int y = 0; y < 10; ++y) {
-			pvert[x][y].setPos(inpos + vec3(x*gap, 0.0f ,-1.0f*y*gap));
-		}		
+			pvert[x][y].setPos(inpos + vec3(x*gap, 0.0f, -1.0f*y*gap));
+		}
 	}
 }
 
@@ -68,7 +68,7 @@ void seflagPoscloth(std::vector<std::vector<Particle>> &pvert) {
 	float gap = 1.0f;
 	for (unsigned int x = 0; x < 10; ++x) {
 		for (unsigned int y = 0; y < 10; ++y) {
-			pvert[x][y].setPos(inpos + vec3(x*gap, -1.0f*y*gap, 0.0f ));
+			pvert[x][y].setPos(inpos + vec3(x*gap, -1.0f*y*gap, 0.0f));
 			//std::cout << pvert[x][y].getPos()[0] <<";"<< pvert[x][y].getPos()[1] << ";" << pvert[x][y].getPos()[2] << std::endl;
 		}
 	}
@@ -77,7 +77,7 @@ void seflagPoscloth(std::vector<std::vector<Particle>> &pvert) {
 
 void addHookeForces(std::vector<std::vector<Particle>> &pvert) {
 	for (unsigned int j = 0; j < vertnum; j++) {
-		for (int i = 0; i < particlenum-1; i++)
+		for (int i = 0; i < particlenum - 1; i++)
 		{
 			if (i != 0 && j != 0 && i != 9 && j != 9) {
 
@@ -93,10 +93,10 @@ void addHookeForces(std::vector<std::vector<Particle>> &pvert) {
 				pvert[j][i].addForce(bottom);
 				pvert[j][i].addForce(right);
 
-				vec3 topnormal = (cross((pvert[i-1][j-1].getPos()- pvert[i][j].getPos()),(pvert[i-1][j].getPos()- pvert[i][j].getPos())))/glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
+				vec3 topnormal = (cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos()))) / glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
 				float toparea = 0.5f * glm::length(cross((pvert[i - 1][j - 1].getPos() - pvert[i][j].getPos()), (pvert[i - 1][j].getPos() - pvert[i][j].getPos())));
 			}
-			
+
 
 
 		}
@@ -109,8 +109,8 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 
 		for (int i = 0; i < particlenum; i++)
 		{
-	
-			if (j != 0 ) {
+
+			if (j != 0) {
 
 				if (i == 0) {   ////LEFT SIDE
 					if (j == 9) { //Bottom left particle
@@ -145,7 +145,7 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 
 
 				if (j == 9) { //////BOTTOM SIDE
-					if (i==0) { //Bottom left particle
+					if (i == 0) { //Bottom left particle
 						/*Hooke* top = new Hooke(&(pvert[j][i]), &(pvert[j - 1][i]), ks, kd, rest);
 						Hooke* right = new Hooke(&(pvert[j][i]), &(pvert[j][i + 1]), ks, kd, rest);
 
@@ -189,7 +189,7 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 						pvert[j][i].addForce(top);
 						pvert[j][i].addForce(left);
 						pvert[j][i].addForce(bottom);
-					}		
+					}
 				}
 
 
@@ -208,14 +208,14 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 
 					Wind * wind1 = new Wind(&(pvert[j][i]), &(pvert[j][i + 1]), &(pvert[j + 1][i])); //particle, particle right, particle down
 
-					Wind * wind2 = new Wind(&(pvert[j][i+1]), &(pvert[j+1][i+1]), &(pvert[j+1][i])); //particle right, particle right and down, particle down
+					Wind * wind2 = new Wind(&(pvert[j][i + 1]), &(pvert[j + 1][i + 1]), &(pvert[j + 1][i])); //particle right, particle right and down, particle down
 
 					pvert[j][i].addForce(wind1);
 					pvert[j][i + 1].addForce(wind1);
 					pvert[j + 1][i].addForce(wind1);
 
-					pvert[j][i+1].addForce(wind2);
-					pvert[j+1][i +1].addForce(wind2);
+					pvert[j][i + 1].addForce(wind2);
+					pvert[j + 1][i + 1].addForce(wind2);
 					pvert[j + 1][i].addForce(wind2);
 
 				}
@@ -297,7 +297,7 @@ int main()
 	RigidBody rb = RigidBody();
 	Mesh m = Mesh::Mesh(Mesh::CUBE);
 	rb.setMesh(m);
-	Shader rbShader = Shader("resources/shaders/physics.vert","resources/shaders/physics.frag");
+	Shader rbShader = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	rb.getMesh().setShader(rbShader);
 
 
@@ -329,7 +329,7 @@ int main()
 
 
 	//Hooke force
-	const int HookeForces = (particlenum*vertnum)-1;
+	const int HookeForces = (particlenum*vertnum) - 1;
 	std::vector<Hooke*> Hookes;
 
 	// Game loop
@@ -351,27 +351,67 @@ int main()
 			/*
 			**	SIMULATION
 			*/
+
+			//RIGID BODIES
+			rb.setAcc(rb.applyForces(rb.getPos(), rb.getVel(), t, dt));
+
+			//integration (rotation)
+			rb.setAngAccl(rb.getAngVel() + dt * rb.getAngAcc());
+			//crete skew symmetric matrix for w
+			glm::mat3 angVelSkew = glm::matrixCross3(rb.getAngVel());
+			//create 3x3 rotation matrix from rb rotation matrix
+			glm::mat3 R = glm::mat3(rb.getRotate());
+			//update rotation matrix
+			R += dt * angVelSkew * R;
+			R = glm::orthonormalize(R);
+
+
+			for (unsigned int k = 0; k < 3; k++) {
+				if (rb.getPos()[k] < cubecorner[k]) {
+					rb.setVel(k, rb.getVel()[k] * -1.0f);
+					rb.setPos(k, cubecorner[k]);
+				}
+				else if (rb.getPos()[k] > cubecorner[k] + d[k]) {
+					rb.setVel(k, rb.getVel()[k] * -1.0f);
+					rb.setPos(k, cubecorner[k] + d[k]);
+				}
+
+			}
+
+
+			rb.setVel(rb.getVel() + dt * rb.getAcc());
+			rb.setRotate(glm::mat4(R));
+			rb.translate(dt*rb.getVel());
+
 			for (unsigned int j = 0; j < vertnum; j++) {
 				for (unsigned int i = 0; i < particlenum; i++) {
 
+
+
 					//vecvec[j][i].setAcc(vecvec[j][i].applyForces(vecvec[j][i].getPos(), vecvec[j][i].getVel(), t, dt));
 
-					//for (unsigned int k = 0; k < 3; k++) {
-					//	if (vecvec[j][i].getPos()[k] < cubecorner[k]) {
-					//		vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
-					//		vecvec[j][i].setPos(k, cubecorner[k]);
-					//	}
-					//	else if (vecvec[j][i].getPos()[k] > cubecorner[k] + d[k]) {
-					//		vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
-					//		vecvec[j][i].setPos(k, cubecorner[k] + d[k]);
-					//	}
+				/*	for (unsigned int k = 0; k < 3; k++) {
+						if (vecvec[j][i].getPos()[k] < cubecorner[k]) {
+							vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
+							vecvec[j][i].setPos(k, cubecorner[k]);
+						}
+						else if (vecvec[j][i].getPos()[k] > cubecorner[k] + d[k]) {
+							vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
+							vecvec[j][i].setPos(k, cubecorner[k] + d[k]);
+						}
 
-					//}
+					}*/
+
+
+
+
 				}
 			}
 
 			for (unsigned int j = 0; j < vertnum; j++) {
 				for (unsigned int i = 0; i < particlenum; i++) {
+
+
 
 					//vecvec[j][i].setVel(vecvec[j][i].getVel() + dt * vecvec[j][i].getAcc());
 					//vecvec[j][i].translate(dt*vecvec[j][i].getVel());

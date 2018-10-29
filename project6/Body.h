@@ -54,6 +54,9 @@ public:
 	void setCor(float cor) { m_cor = cor; }
 	void setMass(float mass) { m_mass = mass; }
 
+	//Rotation set
+	void setRotate(const glm::mat4 &mat) { m_mesh.setRotate(mat); }
+
 	/*
 	** OTHER METHODS
 	*/
