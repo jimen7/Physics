@@ -12,10 +12,12 @@ public:
 	void setAngVel(const glm::vec3 &omega) { m_angVel = omega; }
 	void setAngAccl(const glm::vec3 &alpha) { m_angAcc = alpha; }
 	void setAngVel(const glm::mat3 &invIneria) { m_invInertia = invIneria; }
-
-	void scale(const glm::vec3 &vect) override;
-
+	void setMass(float mass) { Body::setMass(mass); calculateInertia(); }
 	void calculateInertia();
+
+	virtual void scale(const glm::vec3 &vect) override;
+
+	glm::mat3 getItinverse() { calculateInertia(); return getRotate()*m_invInertia*glm::transpose(getRotate()); }
 
 
 	glm::vec3 getAngVel() { return m_angVel; }

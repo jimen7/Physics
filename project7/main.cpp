@@ -232,6 +232,10 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 	}
 }
 
+void rigidcollidewithPlane(RigidBody &c) {
+	c.getItinverse();
+}
+
 
 // main function
 int main()
@@ -304,15 +308,17 @@ int main()
 	rb.setMesh(m);
 	Shader rbShader = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	rb.getMesh().setShader(rbShader);
+	rb.scale(vec3(1.0f,3.0f,1.0f));
+	rb.setMass(1.0f);
 
 
 	// rigid body motion values
-	rb.translate(vec3(0.0f, 5.0f, 0.0f));
-	rb.setVel(vec3(2.0f, 2.0f, 0.0f));
-	rb.setAngVel(vec3(0.0f, 2.0f, 5.0f));
+	rb.translate(vec3(0.0f, 3.0f, 0.0f));
+	rb.setVel(vec3(3.0f, 0.0f, 0.0f));
+	rb.setAngVel(vec3(0.0f, 0.0f, 0.0f));
 
 	//add forces to Rigid body
-	rb.addForce(&g);
+	//rb.addForce(&g);
 
 
 
@@ -339,6 +345,12 @@ int main()
 	//Hooke force
 	const int HookeForces = (particlenum*vertnum) - 1;
 	std::vector<Hooke*> Hookes;
+
+
+	//Initial impulse
+	bool impulseAppplied = false;
+	vec3 impulseF = vec3(-3.0f,0.0f,0.0f);
+	float impAppTime = 2.0f;
 
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
@@ -389,6 +401,12 @@ int main()
 			rb.setRotate(glm::mat4(R));
 
 
+			if (currentTime > impAppTime && !impulseAppplied) {
+				Vertex inAppPoint = rb.getPos() + vec3(1.0f, 0.0f, 0.0f); //Initial application point
+				rb.setVel(rb.getVel() + impulseF/rb.getMass());
+				rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(inAppPoint.getCoord()-rb.getPos(),impulseF));
+				impulseAppplied = true;
+			}
 
 			//WORKS WITH CENTER OF MASS
 			//for (unsigned int k = 0; k < 3; k++) {
@@ -403,41 +421,41 @@ int main()
 			//}
 			test = 0;
 			//Will try to make it work withy vertices
-			for (Vertex vert : rb.getMesh().getVertices())
-			{
-				for (unsigned int k = 0; k < 3; k++) {
-					vec4 worldcoord = rb.getMesh().getModel()*vec4(vert.getCoord(), 1.0f);
-					vec3 pointofcontact;
-					float sign;
-					if (worldcoord[k] < cubecorner[k] ) {
-						test = 1;
-						pointofcontact = vec3(worldcoord);
-						rb.setVel(k, rb.getVel()[k] * -0.5f);
-						sign = rb.getVel()[k] / length(rb.getVel()[k]);
-						//rb.setPos(k, cubecorner[k] + 1.8f);
-						//rb.translate((0.1f * dir[k] * sign));
+			//for (Vertex vert : rb.getMesh().getVertices())
+			//{
+			//	for (unsigned int k = 0; k < 3; k++) {
+			//		vec4 worldcoord = rb.getMesh().getModel()*vec4(vert.getCoord(), 1.0f);
+			//		vec3 pointofcontact;
+			//		float sign;
+			//		if (worldcoord[k] < cubecorner[k] ) {
+			//			test = 1;
+			//			pointofcontact = vec3(worldcoord);
+			//			rb.setVel(k, rb.getVel()[k] * -0.5f);
+			//			sign = rb.getVel()[k] / length(rb.getVel()[k]);
+			//			//rb.setPos(k, cubecorner[k] + 1.8f);
+			//			//rb.translate((0.1f * dir[k] * sign));
 
-						rb.translate(((worldcoord[k]-cubecorner[k]) * dir[k] )* -1.0f);
+			//			rb.translate(((worldcoord[k]-cubecorner[k]) * dir[k] )* -1.0f);
 
-						rb.setAngVel(rb.getAngVel()*(-0.5f));
-						//std::cout << "Collision1: ("  << pointofcontact.x << "," << pointofcontact.y << "," << pointofcontact.z << ")" << std::endl;
-						//std::cout << "worldpos: (" << worldcoord[k] << ")" << std::endl;
-					}
-					else if (worldcoord[k] > cubecorner[k] + d[k] ) {
-						test = 2;
-						pointofcontact = vec3(worldcoord);
-						rb.setVel(k, rb.getVel()[k] * -0.5f);
-						sign = rb.getVel()[k] / length(rb.getVel()[k]);
-						//rb.setPos(k, cubecorner[k] + d[k] -1.8f);
-						//rb.translate(((cubecorner[k] + d[k]) * dir[k] )* sign);
+			//			rb.setAngVel(rb.getAngVel()*(-0.5f));
+			//			//std::cout << "Collision1: ("  << pointofcontact.x << "," << pointofcontact.y << "," << pointofcontact.z << ")" << std::endl;
+			//			//std::cout << "worldpos: (" << worldcoord[k] << ")" << std::endl;
+			//		}
+			//		else if (worldcoord[k] > cubecorner[k] + d[k] ) {
+			//			test = 2;
+			//			pointofcontact = vec3(worldcoord);
+			//			rb.setVel(k, rb.getVel()[k] * -0.5f);
+			//			sign = rb.getVel()[k] / length(rb.getVel()[k]);
+			//			//rb.setPos(k, cubecorner[k] + d[k] -1.8f);
+			//			//rb.translate(((cubecorner[k] + d[k]) * dir[k] )* sign);
 
-						rb.translate(((worldcoord[k] - (cubecorner[k]+d[k]) ) * dir[k])* -1.0f);
-						//rb.translate((0.1f * dir[k] * sign));
-						rb.setAngVel(rb.getAngVel()*(-0.5f));
-						//std::cout << "Collision2: (" << pointofcontact.x << "," << pointofcontact.y << "," << pointofcontact.z << ")" << std::endl;
-					}
-				}
-			}
+			//			rb.translate(((worldcoord[k] - (cubecorner[k]+d[k]) ) * dir[k])* -1.0f);
+			//			//rb.translate((0.1f * dir[k] * sign));
+			//			rb.setAngVel(rb.getAngVel()*(-0.5f));
+			//			//std::cout << "Collision2: (" << pointofcontact.x << "," << pointofcontact.y << "," << pointofcontact.z << ")" << std::endl;
+			//		}
+			//	}
+			//}
 			
 			rb.setVel(rb.getVel() + dt * rb.getAcc());
 			rb.translate(dt*rb.getVel());
