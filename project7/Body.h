@@ -64,7 +64,7 @@ public:
 	// transformation methods
 	void translate(const glm::vec3 & vect);
 	void rotate(float angle, const glm::vec3 & vect);
-	void scale(const glm::vec3 & vect);
+	virtual void scale(const glm::vec3 &vect);
 
 	//Forces
 	std::vector<Force*> getForces() { return m_forces; }	void addForce(Force *f) { m_forces.push_back(f); }

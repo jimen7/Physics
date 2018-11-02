@@ -12,13 +12,16 @@ public:
 	void setAngVel(const glm::vec3 &omega) { m_angVel = omega; }
 	void setAngAccl(const glm::vec3 &alpha) { m_angAcc = alpha; }
 	void setAngVel(const glm::mat3 &invIneria) { m_invInertia = invIneria; }
+
+	void scale(const glm::vec3 &vect) override;
+
 	void calculateInertia();
 
 
 	glm::vec3 getAngVel() { return m_angVel; }
 	glm::vec3 getAngAcc() { return m_angAcc; }
 	glm::mat3 getInvInertia() { return m_invInertia; }
-	void scale(glm::vec3 vect);
+	//void getScale();
 	//glm::mat3 
 
 
