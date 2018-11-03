@@ -362,9 +362,9 @@ int main()
 
 	//Initial impulse
 	bool impulseAppplied = false;
-	vec3 impulseF = vec3(-3.0f,0.0f,0.0f);
+	vec3 impulseF = vec3(3.0f,10.0f,0.0f);
 	//vec3 impulseF2 = vec3(3.0f, 0.0f, 0.0f);
-	float impAppTime = 2.0f;
+	float impAppTime = 3.0f;
 
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
@@ -415,15 +415,15 @@ int main()
 			rb.setRotate(glm::mat4(R));
 
 
-			//if (currentTime > impAppTime && !impulseAppplied) {
-			//	Vertex inAppPoint = rb.getPos() + vec3(0.25f, 0.0f, 0.0f); //Initial application point
-			//	//Vertex inAppPoint2 = rb.getPos() + vec3(0.0f, -3.0f, 0.0f); //Initial application point
-			//	//rb.setVel(rb.getVel() + (impulseF + impulseF2) / rb.getMass());
-			//	rb.setVel(rb.getVel() + (impulseF)/rb.getMass());
-			//	rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(inAppPoint.getCoord()-rb.getPos(), impulseF));
-			//	//rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(inAppPoint2.getCoord() - rb.getPos(), impulseF2));
-			//	impulseAppplied = true;
-			//}
+			if (currentTime > impAppTime && !impulseAppplied) {
+				Vertex inAppPoint = rb.getPos() + vec3(1.0f, 0.0f, 0.0f)*rb.getRotate(); //Initial application point
+				//Vertex inAppPoint2 = rb.getPos() + vec3(0.0f, -3.0f, 0.0f); //Initial application point
+				//rb.setVel(rb.getVel() + (impulseF + impulseF2) / rb.getMass());
+				rb.setVel(rb.getVel() + (impulseF)/rb.getMass());
+				rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(inAppPoint.getCoord()-rb.getPos(), impulseF));
+				//rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(inAppPoint2.getCoord() - rb.getPos(), impulseF2));
+				impulseAppplied = true;
+			}
 
 			//WORKS WITH CENTER OF MASS
 			//for (unsigned int k = 0; k < 3; k++) {
