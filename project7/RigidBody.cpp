@@ -29,7 +29,7 @@ void RigidBody::calculateInertia() {
 }
 
 void RigidBody::scale(const glm::vec3 &vect) {
-	__super::scale(vect);
-	//Body::scale(vect);
+	//__super::scale(vect);
+	Body::scale(vect);
 	this->calculateInertia();
 }

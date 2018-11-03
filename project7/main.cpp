@@ -232,8 +232,21 @@ void addClothForces(std::vector<std::vector<Particle>> &pvert) {
 	}
 }
 
-void rigidcollidewithPlane(RigidBody &c) {
-	c.getItinverse();
+std::vector<Vertex> giveColVertices(float  y, RigidBody &r) {
+
+	std::vector<Vertex> colVert;
+
+	//CHecking if any vertice is added to the plane, and if it is add it to the vector of vrtices
+	for (Vertex v : r.getMesh().getVertices()) {
+		//World position of given vertex:
+		vec3 worlpos = mat3(r.getMesh().getModel()) * v.getCoord() + r.getPos();
+		//Check if the world position of the vertices are coplliding with the plane
+		if (worlpos[1]<y) {
+			colVert.push_back(worlpos);
+		}
+	}
+
+	return colVert;
 }
 
 
@@ -313,12 +326,12 @@ int main()
 
 
 	// rigid body motion values
-	rb.translate(vec3(0.0f, 3.0f, 0.0f));
+	rb.translate(vec3(0.0f, 5.0f, 0.0f));
 	rb.setVel(vec3(0.0f, 0.0f, 0.0f));
-	rb.setAngVel(vec3(0.0f, 0.0f, 0.0f));
+	rb.setAngVel(vec3(0.0f, 0.0f, 2.0f));
 
 	//add forces to Rigid body
-	//rb.addForce(&g);
+	rb.addForce(&g);
 
 
 
@@ -402,15 +415,15 @@ int main()
 			rb.setRotate(glm::mat4(R));
 
 
-			if (currentTime > impAppTime && !impulseAppplied) {
-				Vertex inAppPoint = rb.getPos() + vec3(0.0f, 3.0f, 0.0f); //Initial application point
-				//Vertex inAppPoint2 = rb.getPos() + vec3(0.0f, -3.0f, 0.0f); //Initial application point
-				//rb.setVel(rb.getVel() + (impulseF + impulseF2) / rb.getMass());
-				rb.setVel(rb.getVel() + (impulseF)/rb.getMass());
-				rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(inAppPoint.getCoord()-rb.getPos(), impulseF));
-				//rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(inAppPoint2.getCoord() - rb.getPos(), impulseF2));
-				impulseAppplied = true;
-			}
+			//if (currentTime > impAppTime && !impulseAppplied) {
+			//	Vertex inAppPoint = rb.getPos() + vec3(0.25f, 0.0f, 0.0f); //Initial application point
+			//	//Vertex inAppPoint2 = rb.getPos() + vec3(0.0f, -3.0f, 0.0f); //Initial application point
+			//	//rb.setVel(rb.getVel() + (impulseF + impulseF2) / rb.getMass());
+			//	rb.setVel(rb.getVel() + (impulseF)/rb.getMass());
+			//	rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(inAppPoint.getCoord()-rb.getPos(), impulseF));
+			//	//rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(inAppPoint2.getCoord() - rb.getPos(), impulseF2));
+			//	impulseAppplied = true;
+			//}
 
 			//WORKS WITH CENTER OF MASS
 			//for (unsigned int k = 0; k < 3; k++) {
@@ -467,82 +480,46 @@ int main()
 			//rb.translate(dt*rb.getVel());
 
 
-			////Will try to make it work withy vertices and IMPULSEEES
-			for (Vertex vert : rb.getMesh().getVertices())
-			{
-				for (unsigned int k = 0; k < 3; k++) {
-					vec4 worldcoord = rb.getMesh().getModel()*vec4(vert.getCoord(), 1.0f);
-					vec3 pointofcontact;
-					float sign;
-					if (worldcoord[k] < cubecorner[k]) {
-						test = 1;
-						pointofcontact = vec3(worldcoord);
-						rb.setVel(k, rb.getVel()[k] * -1.0f);
-						sign = rb.getVel()[k] / length(rb.getVel()[k]);
-						//rb.setPos(k, cubecorner[k] + 1.8f);
-						//rb.translate((0.1f * dir[k] * sign));
+			////PLANE COLLISION WITH IMPULSES
+			std::vector<Vertex> colVert = giveColVertices(plane.getPos()[1],rb);
 
-						rb.translate(((worldcoord[k] - cubecorner[k]) * dir[k])* -1.0f);
+			vec3 sumpoint = vec3(0.0f);
 
-						rb.setAngVel(rb.getAngVel()*(-0.5f));
-						//std::cout << "Collision1: ("  << pointofcontact.x << "," << pointofcontact.y << "," << pointofcontact.z << ")" << std::endl;
-						//std::cout << "worldpos: (" << worldcoord[k] << ")" << std::endl;
-					}
-					else if (worldcoord[k] > cubecorner[k] + d[k]) {
-						test = 2;
-						pointofcontact = vec3(worldcoord);
-						rb.setVel(k, rb.getVel()[k] * -1.0f);
-						sign = rb.getVel()[k] / length(rb.getVel()[k]);
-						//rb.setPos(k, cubecorner[k] + d[k] -1.8f);
-						//rb.translate(((cubecorner[k] + d[k]) * dir[k] )* sign);
-
-						rb.translate(((worldcoord[k] - (cubecorner[k] + d[k])) * dir[k])* -1.0f);
-						//rb.translate((0.1f * dir[k] * sign));
-						rb.setAngVel(rb.getAngVel()*(-0.5f));
-						//std::cout << "Collision2: (" << pointofcontact.x << "," << pointofcontact.y << "," << pointofcontact.z << ")" << std::endl;
+			if (colVert.size()>0) {
+				//Displacement so that the RB doesn't get stuck in the ground, and the point where we are going to apply the impulse(sumpoint):
+				Vertex lowest = colVert[0];
+				for (Vertex v : colVert) {
+					sumpoint += v.getCoord();
+					if (v.getCoord().y < lowest.getCoord().y) {
+						lowest = v;
 					}
 				}
+				vec3 displacement = vec3(0.0f);
+				displacement.y = abs(lowest.getCoord().y);
+				//cout << std::
+				rb.translate(displacement);
+				//Get average collision point
+				Vertex pointofimpulse = Vertex(sumpoint/colVert.size());
+
+				//Calculate the formula
+				vec3 r = pointofimpulse.getCoord() - rb.getPos(); // r in j formula
+				vec3 vr = rb.getVel() + glm::cross(rb.getAngVel(),r);
+				vec3 n = glm::normalize(vec3(0.0f, 1.0f, 0.0f));
+				float e = 0.4f;
+				vec3 jn = -(1+e)*vr*n / ( (1/rb.getMass()) + n* (rb.getItinverse()*glm::cross(glm::cross(r,n),r) ) );
+
+				rb.setVel(rb.getVel() + jn / rb.getMass());
+				rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(r, jn));
+
 			}
+		
 
 			rb.setVel(rb.getVel() + dt * rb.getAcc());
 			rb.translate(dt*rb.getVel());
 
 
 
-			for (unsigned int j = 0; j < vertnum; j++) {
-				for (unsigned int i = 0; i < particlenum; i++) {
 
-
-
-					//vecvec[j][i].setAcc(vecvec[j][i].applyForces(vecvec[j][i].getPos(), vecvec[j][i].getVel(), t, dt));
-
-				/*	for (unsigned int k = 0; k < 3; k++) {
-						if (vecvec[j][i].getPos()[k] < cubecorner[k]) {
-							vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
-							vecvec[j][i].setPos(k, cubecorner[k]);
-						}
-						else if (vecvec[j][i].getPos()[k] > cubecorner[k] + d[k]) {
-							vecvec[j][i].setVel(k, vecvec[j][i].getVel()[k] * -1.0f);
-							vecvec[j][i].setPos(k, cubecorner[k] + d[k]);
-						}
-
-					}*/
-
-
-
-
-				}
-			}
-
-			for (unsigned int j = 0; j < vertnum; j++) {
-				for (unsigned int i = 0; i < particlenum; i++) {
-
-
-
-					//vecvec[j][i].setVel(vecvec[j][i].getVel() + dt * vecvec[j][i].getAcc());
-					//vecvec[j][i].translate(dt*vecvec[j][i].getVel());
-				}
-			}
 
 
 			accumulator -= dt;
