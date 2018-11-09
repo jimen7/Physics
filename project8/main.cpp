@@ -478,7 +478,7 @@ int main()
 
 				//Calculate friction
 				vec3 vt = vr - dot(vr,n)*n;
-				float mue = 1.0f;
+				float mue = 0.7f;
 				vec3 jFriction;
 				vec3 t = normalize(vt);
 
