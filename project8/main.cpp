@@ -328,7 +328,8 @@ int main()
 	// rigid body motion values
 	rb.translate(vec3(0.0f, 5.0f, 0.0f));
 	rb.setVel(vec3(0.0f, 0.0f, 0.0f));
-	rb.setAngVel(vec3(0.1f, 0.1f, 0.1f));
+	//rb.setAngVel(vec3(1.0f, 1.0f, 1.0f));
+	rb.setAngVel(vec3(0.0f, 0.0f, 4.0f));
 
 	//add forces to Rigid body
 	rb.addForce(&g);
@@ -342,7 +343,7 @@ int main()
 
 	//Timestep variables
 	float t = 0.0f;
-	const float dt = 0.001f;
+	const float dt = 0.01f;
 	float currentTime = (GLfloat)glfwGetTime();
 	float accumulator = 0.0f;
 
@@ -392,7 +393,6 @@ int main()
 
 
 			/*if (test == 0) {*/
-				rb.setAcc(rb.applyForces(rb.getPos(), rb.getVel(), t, dt));
 		/*	}
 			else if (test == 1) {
 				rb.setAcc(rb.applyForces(rb.getPos() - 1.8f, rb.getVel(), t, dt));
@@ -401,7 +401,12 @@ int main()
 				rb.setAcc(rb.applyForces(rb.getPos() + 1.8f, rb.getVel(), t, dt));
 			}*/
 			
-			
+			// translate body
+			rb.setAcc(rb.applyForces(rb.getPos(), rb.getVel(), t, dt));
+			rb.setVel(rb.getVel() + dt * rb.getAcc());
+			rb.translate(dt*rb.getVel());
+
+			// rotate body
 			//rb.setAngAccl(vec3(0.0f,1.0f,0.0f));
 			//integration (rotation)
 			rb.setAngVel(rb.getAngVel() + dt * rb.getAngAcc());
@@ -414,6 +419,7 @@ int main()
 			R = glm::orthonormalize(R);
 			rb.setRotate(glm::mat4(R));
 
+			
 
 			//if (currentTime > impAppTime && !impulseAppplied) {
 			//	Vertex inAppPoint = (rb.getPos() + vec3(0.0f, -2.0f, 0.0f))*rb.getRotate(); //Initial application point
@@ -480,6 +486,7 @@ int main()
 			//rb.setVel(rb.getVel() + dt * rb.getAcc());
 			//rb.translate(dt*rb.getVel());
 
+			
 
 			////PLANE COLLISION WITH IMPULSES
 			std::vector<Vertex> colVert = giveColVertices(plane.getPos()[1],rb);
@@ -499,6 +506,7 @@ int main()
 				displacement.y = abs(lowest.getCoord().y);
 				//cout << std::
 				rb.translate(displacement);
+				
 				//Get average collision point
 				Vertex pointofimpulse = Vertex(sumpoint/colVert.size());
 
@@ -506,19 +514,62 @@ int main()
 				vec3 r = pointofimpulse.getCoord() - rb.getPos(); // r in j formula
 				vec3 vr = rb.getVel() + glm::cross(rb.getAngVel(),r);
 				vec3 n = glm::normalize(vec3(0.0f, 1.0f, 0.0f));
-				float e = 0.7f;
-				vec3 jn = -(1+e)*vr*n / ( (1/rb.getMass()) + n* (rb.getItinverse()*glm::cross(glm::cross(r,n),r) ) );
+				float e = 0.6f;
 
 
-				rb.setVel(rb.getVel() + jn / rb.getMass());
-				rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(r, jn));
+				//vec3 jn = -(1+e)*vr*n / ( (1/rb.getMass()) + n* (rb.getItinverse()*glm::cross(glm::cross(r,n),r) ) );
+				float jn = -1.0f * (1.0f + e) * dot(vr, n) / (1.0f / rb.getMass() + dot(n, glm::cross(rb.getItinverse() * glm::cross(r, n), r)));
+
+				//Works with float jn
+				rb.setVel(rb.getVel() + (jn*n / rb.getMass()));
+				rb.setAngVel(rb.getAngVel() + jn * rb.getItinverse()*glm::cross(r, n));
+
+
+				//Works with vec3 jn
+				//rb.setVel(rb.getVel() + (jn / rb.getMass()));
+				//rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(r, jn));
+
+				//create skew symmetric matrix for w
+				angVelSkew = glm::matrixCross3(rb.getAngVel());
+				//create 3x3 rotation matrix from rb rotation matrix
+				R = glm::mat3(rb.getRotate());
+				//update rotation matrix
+				R += dt * angVelSkew * R;
+				R = glm::orthonormalize(R);
+				rb.setRotate(glm::mat4(R));
+
+				
+				//rb.setAngVel(rb.getAngVel() + dt * rb.getAngAcc());
+				
+				//rb.calculateInertia();
+				
+
+
+				//Calculate friction
+				vec3 vt = vr - dot(vr,n)*n;
+				float mue = 0.8f;
+				vec3 jFriction;
+
+				if (vt != vec3(0.0f)) {
+					jFriction = -mue * glm::length(jn) * normalize(vt);
+				}
+				else {
+					jFriction = vec3(0.0f);
+				}
 
 			}
+
+
+			//FRICTION
+
 		
 
-			rb.setVel(rb.getVel() + dt * rb.getAcc());
-			rb.translate(dt*rb.getVel());
+			
+			
 
+			
+			
+			
 
 
 
