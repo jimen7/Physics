@@ -541,7 +541,8 @@ int main()
 
 				//Calculate friction
 				vec3 vt = vr - dot(vr, n)*n;
-				float mue = 0.09f;
+				float mue = 0.8f;
+				//float mue = 0.09f;
 				vec3 jFriction;
 				vec3 tan = normalize(vt);
 
@@ -555,8 +556,8 @@ int main()
 				if (vt != vec3(0.0f)) {
 					//jFriction = -mue * glm::length(jn) * normalize(vt);
 
-					//jFriction = (-mue*t)/( (1.0f + rb.getMass()) + dot( glm::cross(rb.getItinverse()*cross(r,t),r) , t )  );
-					jFriction = -tan * (mue*dot(vr, tan)) / ((1.0f + rb.getMass()) + dot(glm::cross(rb.getItinverse()*cross(r, tan), r), tan));
+					jFriction = (-mue*tan)/( (1.0f + rb.getMass()) + dot( glm::cross(rb.getItinverse()*cross(r,tan),r) , tan )  );
+					//jFriction = -tan * (mue*dot(vr, tan)) / ((1.0f + rb.getMass()) + dot(glm::cross(rb.getItinverse()*cross(r, tan), r), tan));
 
 					//jFriction = -1.0f * mue * glm::length(jn)*(vt / glm::length(vt));  //2nd implementation, MUE MUST BE SMALLER THAN 0.2
 
