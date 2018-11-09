@@ -363,7 +363,7 @@ int main()
 
 	//Initial impulse
 	bool impulseAppplied = false;
-	vec3 impulseF = vec3(2.0f,3.0f,0.0f);
+	vec3 impulseF = vec3(9.0f,3.0f,0.0f);
 	//vec3 impulseF2 = vec3(3.0f, 0.0f, 0.0f);
 	float impAppTime = 2.0f;
 
@@ -523,10 +523,24 @@ int main()
 				
 
 				//FRICTION
-				rb.setVel(rb.getVel() + (jFriction / rb.getMass()));
+				
 				//std::cout << glm::to_string(jFriction) << std::endl;
-				rb.setAngVel(rb.getAngVel() +  rb.getItinverse()*glm::cross(r, jFriction));
+				
 
+				
+				if (glm::length(rb.getVel()) < 0.1f) {
+					rb.setVel(vec3(0.0f));
+				}
+				else {
+					rb.setVel(rb.getVel() + (jFriction / rb.getMass()));
+				}
+
+				if (glm::length(rb.getAngVel()) < 0.1f) {
+					rb.setAngVel(vec3(0.0f));
+				}
+				else {
+					rb.setAngVel(rb.getAngVel() + rb.getItinverse()*glm::cross(r, jFriction));
+				}
 
 				//Second attempt
 				//Friction with jFrivtion as a float
@@ -545,12 +559,14 @@ int main()
 				rb.setRotate(glm::mat4(R));
 
 				
+				
+				
 
 			}
 
 
 			
-
+			
 		
 
 		//	rb.setAcc(rb.applyForces(rb.getPos(), rb.getVel(), t, dt));
