@@ -329,7 +329,7 @@ int main()
 	rb.translate(vec3(0.0f, 5.0f, 0.0f));
 	rb.setVel(vec3(0.0f, 0.0f, 0.0f));
 	//rb.setAngVel(vec3(1.0f, 1.0f, 1.0f));
-	rb.setAngVel(vec3(0.0f, 0.0f, 1.0f));
+	rb.setAngVel(vec3(0.1f, 0.1f, 1.0f));
 
 	//add forces to Rigid body
 	rb.addForce(&g);
@@ -504,8 +504,21 @@ int main()
 				}
 
 				//COLLISION with jn as a float
-				rb.setVel(rb.getVel() + (jn*n / rb.getMass()));
-				rb.setAngVel(rb.getAngVel() + jn * rb.getItinverse()*glm::cross(r, n));
+				if (glm::length(rb.getVel()) < 0.1f) {
+					rb.setVel(vec3(0.0f));
+				}
+				else{
+					rb.setVel(rb.getVel() + (jn*n / rb.getMass()));
+				}
+				
+
+				if (glm::length(rb.getAngVel()) < 0.1f) {
+
+				}
+				else {
+					rb.setAngVel(rb.getAngVel() + jn * rb.getItinverse()*glm::cross(r, n));
+				}
+				
 
 				//COLLISION with jn as a vec3
 				//rb.setVel(rb.getVel() + (jn / rb.getMass()));
