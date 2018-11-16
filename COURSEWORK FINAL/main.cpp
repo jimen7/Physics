@@ -40,7 +40,7 @@ float rest = 0.1f;//spring rest length
 float kd = 30.0f;//damping coefficient
 
 
-const int spherenum = 10;
+const int spherenum = 30;
 
 const float sphereradius = 1.0f;
 
@@ -116,11 +116,12 @@ int main()
 	//Set up spheres
 	std::vector<Sphere> Spheres;
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
+	Shader sphereshader = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	for (unsigned int i = 0; i < spherenum; i++){
 		Sphere sp = Sphere();
 
 		sp.setMesh(sphere);
-		sp.getMesh().setShader(rbShader);
+		sp.getMesh().setShader(sphereshader);
 
 		//sp.scale(glm::vec3(sphereradius, sphereradius, sphereradius));
 		sp.setRadius(1.0f);
@@ -128,13 +129,12 @@ int main()
 
 		Spheres.push_back(sp);
 
-
 		
 	}
 
 	for (unsigned int i = 0; i < spherenum; i++) {
-		Spheres[i].translate(glm::vec3(RandomFloat(1.0f, 29.0f), Spheres[i].getRadius(), RandomFloat(1.0f, 29.0f)));
-		Spheres[i].setVel(vec3(20.0f, 0.0f, 20.0f));
+		Spheres[i].translate(glm::vec3(RandomFloat(-29.0f, 29.0f), Spheres[i].getRadius(), RandomFloat(-29.0f, 29.0f)));
+		Spheres[i].setVel(vec3(RandomFloat(0.0f,20.0f), 0.0f, RandomFloat(0.0f, 20.0f)));
 		Spheres[i].setAngVel(vec3(0.0f, 0.0f, 0.0f));
 		//spheres.addforce?
 	}
@@ -157,8 +157,8 @@ int main()
 	float accumulator = 0.0f;
 
 	//Cube Variables
-	glm::vec3 cubecorner = glm::vec3(-5.0f, 0.0f, -5.0f);
-	glm::vec3 d = glm::vec3(10.0f);
+	glm::vec3 cubecorner = glm::vec3(-15.0f, 0.0f, -15.0f);
+	glm::vec3 d = glm::vec3(30.0f);
 
 	std::vector<glm::vec3> dir;
 	dir.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -170,6 +170,13 @@ int main()
 	vec3 impulseF = vec3(2.0f,1.0f,0.0f);
 	//vec3 impulseF2 = vec3(3.0f, 0.0f, 0.0f);
 	float impAppTime = 2.0f;
+
+
+
+	//Ipulse pooint variables
+	float e = 0.6f;
+
+	bool stop = false;
 
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
@@ -203,13 +210,70 @@ int main()
 			}
 			
 			
+			//for (unsigned int i = 0; i < spherenum; i++) { //Collision with cushion
+			//	if (Spheres[i].getPos().x > 29.0f || Spheres[i].getPos().z > 29.0f || Spheres[i].getPos().x < -29.0f || Spheres[i].getPos().z < -29.0f) {
+			//		Spheres[i].translate(glm::normalize(Spheres[i].getVel()));
+			//		Spheres[i].setVel(-Spheres[i].getVel());
+			//	}
+			//}
+
+
 			for (unsigned int i = 0; i < spherenum; i++) {
-				if (Spheres[i].getPos().x > 30.0f || Spheres[i].getPos().z > 30.0f || Spheres[i].getPos().x < -30.0f || Spheres[i].getPos().z < -30.0f) {
-					Spheres[i].setVel(-Spheres[i].getVel());
+
+				for (unsigned int k = 0; k < 3; k++) {
+
+					if (k == 1) {
+						//NOthing on y axxis
+						continue;
+					}
+
+					else {
+
+						if (Spheres[i].getPos()[k] < cubecorner[k]) {
+							Spheres[i].setVel(k, Spheres[i].getVel()[k]*-1.0f);
+							Spheres[i].setPos(k, cubecorner[k]);
+						}
+
+						else if (Spheres[i].getPos()[k] < cubecorner[k] + d[k]) {
+							Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
+							Spheres[i].setPos(k, cubecorner[k] + d[k]);
+
+						}
+
+					}
+
+				}
+
+			}
+			
+
+			
+
+			for (unsigned int i = 0; i < spherenum; i++) {
+				for (unsigned int j = i+1; j < spherenum; j++) {
+					if (glm::distance(Spheres[i].getPos(), Spheres[j].getPos()) < Spheres[i].getRadius() + Spheres[j].getRadius()) {
+						vec3 n = glm::normalize(Spheres[j].getPos() - Spheres[i].getPos());
+
+						float displacement =  Spheres[j].getRadius()+ Spheres[i].getRadius() - glm::distance(Spheres[j].getPos(), Spheres[i].getPos());
+
+						float ball1portion = glm::length(Spheres[i].getVel()) / (glm::length(Spheres[i].getVel()) + glm::length(Spheres[j].getVel()));
+						float ball2portion = glm::length(Spheres[j].getVel()) / (glm::length(Spheres[i].getVel()) + glm::length(Spheres[j].getVel()));
+
+						Spheres[i].translate(displacement * -n * ball1portion);
+						Spheres[j].translate(displacement * n * ball2portion);
+
+						vec3 vr = Spheres[j].getVel() - Spheres[i].getVel();
+						//vec3 vr = Spheres[i].getVel() - Spheres[j].getVel();
+						//vec3 n = glm::normalize(Spheres[i].getVel());
+						
+						float jn = (-(1.0f + e)*dot(vr,n)) / (1.0f/Spheres[i].getMass() + 1.0f/Spheres[j].getMass());
+
+						Spheres[i].setVel(Spheres[i].getVel() - (jn*n / Spheres[i].getMass()));
+						Spheres[j].setVel(Spheres[j].getVel() + (jn*n / Spheres[j].getMass()));
+
+					}
 				}
 			}
-
-
 			
 
 			
