@@ -122,7 +122,8 @@ int main()
 		sp.setMesh(sphere);
 		sp.getMesh().setShader(rbShader);
 
-		sp.scale(glm::vec3(sphereradius, sphereradius, sphereradius));
+		//sp.scale(glm::vec3(sphereradius, sphereradius, sphereradius));
+		sp.setRadius(1.0f);
 		sp.setMass(1.0f);
 
 		Spheres.push_back(sp);

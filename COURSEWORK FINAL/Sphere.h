@@ -8,7 +8,7 @@ public:
 	Sphere();
 	~Sphere();
 
-	void setRadius(const float &r) { m_radius = r*glm::normalize(getScale()[1][1]);  }
+	void setRadius(const float &r) { getMesh().scale(glm::vec3(r, r, r)); m_radius = r; }
 
 	float getRadius() { return m_radius; }
 
