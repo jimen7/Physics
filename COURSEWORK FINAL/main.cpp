@@ -133,8 +133,8 @@ int main()
 	}
 
 	for (unsigned int i = 0; i < spherenum; i++) {
-		Spheres[i].translate(glm::vec3(RandomFloat(1.0f, 29.0f), sphereradius, RandomFloat(1.0f, 29.0f)));
-		Spheres[i].setVel(vec3(0.0f, 0.0f, 0.0f));
+		Spheres[i].translate(glm::vec3(RandomFloat(1.0f, 29.0f), Spheres[i].getRadius(), RandomFloat(1.0f, 29.0f)));
+		Spheres[i].setVel(vec3(20.0f, 0.0f, 20.0f));
 		Spheres[i].setAngVel(vec3(0.0f, 0.0f, 0.0f));
 		//spheres.addforce?
 	}
@@ -203,8 +203,11 @@ int main()
 			}
 			
 			
-
-			test = 0;
+			for (unsigned int i = 0; i < spherenum; i++) {
+				if (Spheres[i].getPos().x > 30.0f || Spheres[i].getPos().z > 30.0f || Spheres[i].getPos().x < -30.0f || Spheres[i].getPos().z < -30.0f) {
+					Spheres[i].setVel(-Spheres[i].getVel());
+				}
+			}
 
 
 			
