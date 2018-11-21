@@ -40,7 +40,7 @@ float rest = 0.1f;//spring rest length
 float kd = 30.0f;//damping coefficient
 
 
-const int spherenum = 30;
+const int spherenum = 20;
 
 const float sphereradius = 1.0f;
 
@@ -103,6 +103,11 @@ int main()
 
 
 
+	//Testing cibe
+	Mesh cube = Mesh::Mesh("resources/models/cube.obj");
+	cube.translate(glm::vec3(-30.0, 0.0f, -30.0));
+	cube.setShader(lambert);
+
 
 	//Set up a cubic rigid body
 	RigidBody rb = RigidBody();
@@ -157,8 +162,8 @@ int main()
 	float accumulator = 0.0f;
 
 	//Cube Variables
-	glm::vec3 cubecorner = glm::vec3(-15.0f, 0.0f, -15.0f);
-	glm::vec3 d = glm::vec3(30.0f);
+	glm::vec3 cubecorner = glm::vec3(-30.0f, 0.0f, -30.0f);
+	glm::vec3 d = glm::vec3(60.0f);
 
 	std::vector<glm::vec3> dir;
 	dir.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -201,36 +206,49 @@ int main()
 		// Manage interaction
 			app.doMovement(dt);
 
-
+			//std::cout << glm::to_string(plane.getPos()) << std::endl;
 			//Translate Spheres
-			for (unsigned int i = 0; i < spherenum; i++) {
-				Spheres[i].setAcc(Spheres[i].applyForces(Spheres[i].getPos(), Spheres[i].getVel(), t, dt));
-				Spheres[i].setVel(Spheres[i].getVel() + dt * Spheres[i].getAcc());
-				Spheres[i].translate(dt*Spheres[i].getVel());
-			}
+			//for (unsigned int i = 0; i < spherenum; i++) {
+			//	Spheres[i].setAcc(Spheres[i].applyForces(Spheres[i].getPos(), Spheres[i].getVel(), t, dt));
+			//	Spheres[i].setVel(Spheres[i].getVel() + dt * Spheres[i].getAcc());
+			//	Spheres[i].translate(dt*Spheres[i].getVel());
+			//}
 			
 			
 			//for (unsigned int i = 0; i < spherenum; i++) { //Collision with cushion
 			//	if (Spheres[i].getPos().x > 29.0f || Spheres[i].getPos().z > 29.0f || Spheres[i].getPos().x < -29.0f || Spheres[i].getPos().z < -29.0f) {
-			//		Spheres[i].translate(glm::normalize(Spheres[i].getVel()));
-			//		Spheres[i].setVel(-Spheres[i].getVel());
+			//		//Spheres[i].translate(glm::normalize(Spheres[i].getVel()));
+			//		for (unsigned int k = 0; k < 3; k++) {
+			//			Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
+			//		}
+			//		
 			//	}
 			//}
 
 
+			
+
+			
+
 			for (unsigned int i = 0; i < spherenum; i++) {
 
+				//Set Acceleration for Spheres
+				Spheres[i].setAcc(Spheres[i].applyForces(Spheres[i].getPos(), Spheres[i].getVel(), t, dt));
+				Spheres[i].setVel(Spheres[i].getVel() + dt * Spheres[i].getAcc());
+				Spheres[i].translate(dt*Spheres[i].getVel());
+
+				//Collisions with cushion
 				for (unsigned int k = 0; k < 3; k++) {
 
 					if (k == 1) {
-						//NOthing on y axxis
+						//Do nothing for y axxis
 						continue;
 					}
 
 					else {
 
 						if (Spheres[i].getPos()[k] < cubecorner[k]) {
-							Spheres[i].setVel(k, Spheres[i].getVel()[k]*-1.0f);
+							Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
 							Spheres[i].setPos(k, cubecorner[k]);
 						}
 
@@ -241,15 +259,12 @@ int main()
 						}
 
 					}
-
+					
 				}
 
-			}
-			
+				
 
-			
-
-			for (unsigned int i = 0; i < spherenum; i++) {
+				//Sphere Collisions
 				for (unsigned int j = i+1; j < spherenum; j++) {
 					if (glm::distance(Spheres[i].getPos(), Spheres[j].getPos()) < Spheres[i].getRadius() + Spheres[j].getRadius()) {
 						vec3 n = glm::normalize(Spheres[j].getPos() - Spheres[i].getPos());
@@ -273,6 +288,8 @@ int main()
 
 					}
 				}
+
+				
 			}
 			
 
@@ -306,7 +323,7 @@ int main()
 		}
 
 		// draw demo objects
-		//app.draw(cube);
+		app.draw(cube);
 		//app.draw(sphere);
 		app.display();
 	}
