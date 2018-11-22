@@ -40,7 +40,7 @@ float rest = 0.1f;//spring rest length
 float kd = 30.0f;//damping coefficient
 
 
-const int spherenum = 20;
+const int spherenum = 100;
 
 const float sphereradius = 1.0f;
 
@@ -104,9 +104,9 @@ int main()
 
 
 	//Testing cibe
-	Mesh cube = Mesh::Mesh("resources/models/cube.obj");
-	cube.translate(glm::vec3(-30.0, 0.0f, -30.0));
-	cube.setShader(lambert);
+	//Mesh cube = Mesh::Mesh("resources/models/cube.obj");
+	//cube.translate(glm::vec3(-30.0, 0.0f, -30.0));
+	//cube.setShader(lambert);
 
 
 	//Set up a cubic rigid body
@@ -139,7 +139,7 @@ int main()
 
 	for (unsigned int i = 0; i < spherenum; i++) {
 		Spheres[i].translate(glm::vec3(RandomFloat(-29.0f, 29.0f), Spheres[i].getRadius(), RandomFloat(-29.0f, 29.0f)));
-		Spheres[i].setVel(vec3(RandomFloat(0.0f,20.0f), 0.0f, RandomFloat(0.0f, 20.0f)));
+		Spheres[i].setVel(vec3(RandomFloat(-20.0f,20.0f), 0.0f, RandomFloat(-20.0f, 20.0f)));
 		Spheres[i].setAngVel(vec3(0.0f, 0.0f, 0.0f));
 		//spheres.addforce?
 	}
@@ -162,8 +162,8 @@ int main()
 	float accumulator = 0.0f;
 
 	//Cube Variables
-	glm::vec3 cubecorner = glm::vec3(-30.0f, 0.0f, -30.0f);
-	glm::vec3 d = glm::vec3(60.0f);
+	glm::vec3 cubecorner = glm::vec3(-29.0f, 0.0f, -29.0f);
+	glm::vec3 d = glm::vec3(58.0f,0.0f,58.0f);
 
 	std::vector<glm::vec3> dir;
 	dir.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -206,23 +206,6 @@ int main()
 		// Manage interaction
 			app.doMovement(dt);
 
-			//std::cout << glm::to_string(plane.getPos()) << std::endl;
-			//Translate Spheres
-			//for (unsigned int i = 0; i < spherenum; i++) {
-			//	Spheres[i].setAcc(Spheres[i].applyForces(Spheres[i].getPos(), Spheres[i].getVel(), t, dt));
-			//	Spheres[i].setVel(Spheres[i].getVel() + dt * Spheres[i].getAcc());
-			//	Spheres[i].translate(dt*Spheres[i].getVel());
-			//}
-			
-			
-			for (unsigned int i = 0; i < spherenum; i++) { //Collision with cushion
-				
-			}
-
-
-			
-
-			
 
 			for (unsigned int i = 0; i < spherenum; i++) {
 
@@ -232,82 +215,34 @@ int main()
 				Spheres[i].translate(dt*Spheres[i].getVel());
 
 
-				//Collsion with cushion try 2
 
-					//Spheres[i].translate(glm::normalize(Spheres[i].getVel()));
-					/*for (unsigned int k = 0; k < 3; k++) {
-						if (k == 1) {
-							continue;
-						}
 
-						if (Spheres[i].getPos().x > 29.0f || Spheres[i].getPos().z > 29.0f) {
+				//Collisions with cushion
+				for (unsigned int k = 0; k < 3; k++) {
+
+
+					if(k!=1) {
+
+						if (Spheres[i].getPos()[k]  < plane.getPos()[k] - plane.getScale()[k][k]+ Spheres[i].getRadius()) {
+							//Spheres[i].setVel(glm::vec3(0.0f));
 							Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
-
+							//Spheres[i].translate(Spheres[i].getPos() - plane.getScale()[k][k] + Spheres[i].getRadius());
+							Spheres[i].setPos(k, plane.getPos()[k] - plane.getScale()[k][k] + Spheres[i].getRadius());
 						}
-						else if (Spheres[i].getPos().x < -29.0f || Spheres[i].getPos().z < -29.0f) {
+
+						else if (Spheres[i].getPos()[k]  > plane.getPos()[k] + plane.getScale()[k][k] - Spheres[i].getRadius()) {
+							//Spheres[i].setVel(glm::vec3(0.0f));
 							Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
+							//Spheres[i].translate(Spheres[i].getPos() + plane.getScale()[k][k] - Spheres[i].getRadius());
+							Spheres[i].setPos(k, plane.getPos()[k] + plane.getScale()[k][k] - Spheres[i].getRadius());
+
 						}
-						
-					}*/
+
+					}
+					
+				}
 
 
-				//Collisions with cushion try 2
-				//for (unsigned int k = 0; k < 3; k++) {
-
-				//	if (k == 1) {
-				//		//Do nothing for y axxis
-				//		continue;
-				//	}
-
-				//	else {
-
-				//		if (Spheres[i].getPos()[k] + Spheres[i].getRadius() < cubecorner[k]) {
-				//			Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
-
-				//			//Spheres[i].setPos(k, cubecorner[k]+ Spheres[i].getRadius());
-				//		}
-
-				//		else if (Spheres[i].getPos()[k] + +Spheres[i].getRadius() < cubecorner[k] + d[k]) {
-				//			Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
-				//			//Spheres[i].setPos(k, cubecorner[k] + d[k] - Spheres[i].getRadius());
-
-				//		}
-
-				//	}
-				//	
-				//}
-
-				//Collisions with cushions try 3
-
-				//for (unsigned int k = 0; k < 3; k++) {
-
-				//	if (k == 1) {
-				//		//Do nothing for y axxis
-				//		continue;
-				//	}
-
-				//	if (Spheres[i].getPos().x + Spheres[i].getRadius() < cubecorner.x) {
-				//		Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
-				//		//Spheres[i].translate(vec3(Spheres[i].getRadius(),0.0f,0.0f));
-				//	}
-				//	else if (Spheres[i].getPos().x + Spheres[i].getRadius() < cubecorner.x + d[k]) {
-				//		Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
-				//		//Spheres[i].translate(vec3(-(Spheres[i].getRadius() + d[k]), 0.0f, 0.0f));
-				//	}
-
-				//	if (Spheres[i].getPos().z + Spheres[i].getRadius() < cubecorner.z) {
-				//		Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
-				//		//Spheres[i].translate(vec3(0.0f, 0.0f, Spheres[i].getRadius()));
-				//	}
-				//	else if (Spheres[i].getPos().z + Spheres[i].getRadius() < cubecorner.x + d[k]) {
-				//		Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
-				//		//Spheres[i].translate(vec3(0.0f, 0.0f, -(Spheres[i].getRadius()+d[k])));
-				//	}
-
-				//}
-				
-
-				
 
 				//Sphere Collisions
 				for (unsigned int j = i+1; j < spherenum; j++) {
@@ -368,7 +303,7 @@ int main()
 		}
 
 		// draw demo objects
-		app.draw(cube);
+		//app.draw(cube);
 		//app.draw(sphere);
 		app.display();
 	}
