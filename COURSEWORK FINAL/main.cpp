@@ -215,15 +215,9 @@ int main()
 			//}
 			
 			
-			//for (unsigned int i = 0; i < spherenum; i++) { //Collision with cushion
-			//	if (Spheres[i].getPos().x > 29.0f || Spheres[i].getPos().z > 29.0f || Spheres[i].getPos().x < -29.0f || Spheres[i].getPos().z < -29.0f) {
-			//		//Spheres[i].translate(glm::normalize(Spheres[i].getVel()));
-			//		for (unsigned int k = 0; k < 3; k++) {
-			//			Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
-			//		}
-			//		
-			//	}
-			//}
+			for (unsigned int i = 0; i < spherenum; i++) { //Collision with cushion
+				
+			}
 
 
 			
@@ -237,30 +231,81 @@ int main()
 				Spheres[i].setVel(Spheres[i].getVel() + dt * Spheres[i].getAcc());
 				Spheres[i].translate(dt*Spheres[i].getVel());
 
-				//Collisions with cushion
-				for (unsigned int k = 0; k < 3; k++) {
 
-					if (k == 1) {
-						//Do nothing for y axxis
-						continue;
-					}
+				//Collsion with cushion try 2
 
-					else {
-
-						if (Spheres[i].getPos()[k] < cubecorner[k]) {
-							Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
-							Spheres[i].setPos(k, cubecorner[k]);
+					//Spheres[i].translate(glm::normalize(Spheres[i].getVel()));
+					/*for (unsigned int k = 0; k < 3; k++) {
+						if (k == 1) {
+							continue;
 						}
 
-						else if (Spheres[i].getPos()[k] < cubecorner[k] + d[k]) {
+						if (Spheres[i].getPos().x > 29.0f || Spheres[i].getPos().z > 29.0f) {
 							Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
-							Spheres[i].setPos(k, cubecorner[k] + d[k]);
 
 						}
+						else if (Spheres[i].getPos().x < -29.0f || Spheres[i].getPos().z < -29.0f) {
+							Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
+						}
+						
+					}*/
 
-					}
-					
-				}
+
+				//Collisions with cushion try 2
+				//for (unsigned int k = 0; k < 3; k++) {
+
+				//	if (k == 1) {
+				//		//Do nothing for y axxis
+				//		continue;
+				//	}
+
+				//	else {
+
+				//		if (Spheres[i].getPos()[k] + Spheres[i].getRadius() < cubecorner[k]) {
+				//			Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
+
+				//			//Spheres[i].setPos(k, cubecorner[k]+ Spheres[i].getRadius());
+				//		}
+
+				//		else if (Spheres[i].getPos()[k] + +Spheres[i].getRadius() < cubecorner[k] + d[k]) {
+				//			Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
+				//			//Spheres[i].setPos(k, cubecorner[k] + d[k] - Spheres[i].getRadius());
+
+				//		}
+
+				//	}
+				//	
+				//}
+
+				//Collisions with cushions try 3
+
+				//for (unsigned int k = 0; k < 3; k++) {
+
+				//	if (k == 1) {
+				//		//Do nothing for y axxis
+				//		continue;
+				//	}
+
+				//	if (Spheres[i].getPos().x + Spheres[i].getRadius() < cubecorner.x) {
+				//		Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
+				//		//Spheres[i].translate(vec3(Spheres[i].getRadius(),0.0f,0.0f));
+				//	}
+				//	else if (Spheres[i].getPos().x + Spheres[i].getRadius() < cubecorner.x + d[k]) {
+				//		Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
+				//		//Spheres[i].translate(vec3(-(Spheres[i].getRadius() + d[k]), 0.0f, 0.0f));
+				//	}
+
+				//	if (Spheres[i].getPos().z + Spheres[i].getRadius() < cubecorner.z) {
+				//		Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
+				//		//Spheres[i].translate(vec3(0.0f, 0.0f, Spheres[i].getRadius()));
+				//	}
+				//	else if (Spheres[i].getPos().z + Spheres[i].getRadius() < cubecorner.x + d[k]) {
+				//		Spheres[i].setVel(k, Spheres[i].getVel()[k] * -1.0f);
+				//		//Spheres[i].translate(vec3(0.0f, 0.0f, -(Spheres[i].getRadius()+d[k])));
+				//	}
+
+				//}
+				
 
 				
 
