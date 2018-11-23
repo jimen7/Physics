@@ -63,22 +63,26 @@ float RandomFloat(float a, float b) {
 }
 
 
-vec3 RandomPosition(float a, float b, Mesh plane) {
-	std::vector<int> thing;
-	bool test = true;
-	if (test) {
-		for (int i = 0; i < plane.getScale[0][0]-1; i++) {
-			thing.push_back(i);
-			if (i < plane.getScale[0][0] - 2) {
-				test = false;
-			}
-		}
-	}
-	
-	float x = thing[rand()];
-	float z = thing[rand()];
-	vec3 finalpos = vec3(x,0.0f,z);
-}
+//vec3 RandomPosition(float a, float b, Mesh plane) {
+//	std::vector<int> thing;
+//	bool test = true;
+//	float xvalue;
+//	float yvalue;
+//	if (test) {
+//		for (int i = 0; i < plane.getScale[0][0]-1; i++) {
+//			thing.push_back(i);
+//			if (i < plane.getScale[0][0] - 2) {
+//				test = false;
+//				xvalue = RandomFloat();
+//			}
+//		}
+//	}
+//	
+//	float x = thing[rand()];
+//	float z = thing[rand()];
+//	vec3 finalpos = vec3(x,0.0f,z);
+//	return finalpos;
+//}
 
 
 std::vector<Vertex> giveColVertices(float  y, RigidBody &r) {
@@ -112,8 +116,8 @@ int main()
 	Mesh plane = Mesh::Mesh(Mesh::QUAD);
 	//std::cout << "Size of plane: " << plane.getVertices().size() << std::endl;
 	// scale it up x5
-	plane.scale(glm::vec3(30.0f, 0.0f, 30.0f));
-	//plane.scale(glm::vec3(1000.0f, 0.0f, 1000.0f));
+	//plane.scale(glm::vec3(30.0f, 0.0f, 30.0f));
+	plane.scale(glm::vec3(1000.0f, 0.0f, 1000.0f));
 	Shader lambert = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	plane.setShader(lambert);
 
@@ -121,6 +125,14 @@ int main()
 
 
 	std::vector<std::vector<std::vector<Vertex>>> optSpheres;
+
+	std::vector<std::vector<std::vector<vec3>>> grid;
+
+	for (float i = 0; i < 10.0f; i++) {
+		for (float j = 0; j < 10.0f; j++) {
+			grid[i][j].push_back(vec3(i*10.0f,0.0f,j*10.0f));
+		}
+	}
 
 	//Testing cibe
 	//Mesh cube = Mesh::Mesh("resources/models/cube.obj");
@@ -157,8 +169,8 @@ int main()
 	}
 
 	for (unsigned int i = 0; i < spherenum; i++) {
-		Spheres[i].translate(glm::vec3(RandomFloat(-29.0f, 29.0f), Spheres[i].getRadius(), RandomFloat(-29.0f, 29.0f)));
-		//Spheres[i].translate(glm::vec3(RandomFloat(-499.0f, 499.0f), Spheres[i].getRadius(), RandomFloat(-499.0f, 499.0f)));
+		//Spheres[i].translate(glm::vec3(RandomFloat(-29.0f, 29.0f), Spheres[i].getRadius(), RandomFloat(-29.0f, 29.0f)));
+		Spheres[i].translate(glm::vec3(RandomFloat(-499.0f, 499.0f), Spheres[i].getRadius(), RandomFloat(-499.0f, 499.0f)));
 		Spheres[i].setVel(vec3(RandomFloat(-20.0f,20.0f), 0.0f, RandomFloat(-20.0f, 20.0f)));
 		Spheres[i].setAngVel(vec3(0.0f, 0.0f, 0.0f));
 		//spheres.addforce?
@@ -263,6 +275,18 @@ int main()
 				}
 
 
+				//Grid Optimisation, looping through grid
+				for (float l = 0; l < 10.0f; l++) {
+					for (float r = 0; r < 10.0f; r++) {
+						
+						if (grid[l][r][0].x < Spheres[i].getPos().x) {
+
+						}
+
+
+
+					}
+				}
 
 				//Sphere Collisions
 				for (unsigned int j = i+1; j < spherenum; j++) {
