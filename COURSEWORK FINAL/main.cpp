@@ -40,7 +40,7 @@ float rest = 0.1f;//spring rest length
 float kd = 30.0f;//damping coefficient
 
 
-const int spherenum = 100;
+const int spherenum = 500;
 
 const float sphereradius = 1.0f;
 
@@ -63,10 +63,28 @@ float RandomFloat(float a, float b) {
 }
 
 
+vec3 RandomPosition(float a, float b, Mesh plane) {
+	std::vector<int> thing;
+	bool test = true;
+	if (test) {
+		for (int i = 0; i < plane.getScale[0][0]-1; i++) {
+			thing.push_back(i);
+			if (i < plane.getScale[0][0] - 2) {
+				test = false;
+			}
+		}
+	}
+	
+	float x = thing[rand()];
+	float z = thing[rand()];
+	vec3 finalpos = vec3(x,0.0f,z);
+}
+
 
 std::vector<Vertex> giveColVertices(float  y, RigidBody &r) {
 
 	std::vector<Vertex> colVert;
+
 
 	//CHecking if any vertice is added to the plane, and if it is add it to the vector of vrtices
 	for (Vertex v : r.getMesh().getVertices()) {
@@ -95,13 +113,14 @@ int main()
 	//std::cout << "Size of plane: " << plane.getVertices().size() << std::endl;
 	// scale it up x5
 	plane.scale(glm::vec3(30.0f, 0.0f, 30.0f));
+	//plane.scale(glm::vec3(1000.0f, 0.0f, 1000.0f));
 	Shader lambert = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	plane.setShader(lambert);
 
 	Shader blue = Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag");
 
 
-
+	std::vector<std::vector<std::vector<Vertex>>> optSpheres;
 
 	//Testing cibe
 	//Mesh cube = Mesh::Mesh("resources/models/cube.obj");
@@ -139,6 +158,7 @@ int main()
 
 	for (unsigned int i = 0; i < spherenum; i++) {
 		Spheres[i].translate(glm::vec3(RandomFloat(-29.0f, 29.0f), Spheres[i].getRadius(), RandomFloat(-29.0f, 29.0f)));
+		//Spheres[i].translate(glm::vec3(RandomFloat(-499.0f, 499.0f), Spheres[i].getRadius(), RandomFloat(-499.0f, 499.0f)));
 		Spheres[i].setVel(vec3(RandomFloat(-20.0f,20.0f), 0.0f, RandomFloat(-20.0f, 20.0f)));
 		Spheres[i].setAngVel(vec3(0.0f, 0.0f, 0.0f));
 		//spheres.addforce?
