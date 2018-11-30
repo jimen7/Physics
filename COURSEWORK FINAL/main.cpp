@@ -53,6 +53,23 @@ int test = 0;
 
 const int gridnum = 10;
 
+//Storing Previous Coordinates of boxes in order to clear
+int columnOld;
+int rowOld;
+int boxsize;
+int column1Old;
+int row1Old;
+int boxsize1;
+int column2Old;
+int row2Old;
+int boxsize2;
+int column3Old;
+int row3Old;
+int boxsize3;
+int column4Old;
+int row4Old;
+int boxsize4;
+bool firsttime=true;
 
 //Method tyhat creates random variables between 2 values
 float RandomFloat(float a, float b) {
@@ -85,9 +102,15 @@ float RandomFloat(float a, float b) {
 //}
 
 
+void clearGrid(std::vector<std::vector<std::vector<Sphere>>> &optSpheres) {
+	for (int i = 0; i < gridnum; i++) {
+		for (int j = 0; j < gridnum; j++) {
+			optSpheres[i][j].clear();
+		}
+	}
+}
 
-
-void updateGrid(std::vector<std::vector<std::vector<Sphere>>> &optSpheres, Sphere current, float numberofcolumns, int sidelength) {
+void updateGrid(std::vector<std::vector<std::vector<Sphere>>> &optSpheres, Sphere &current, float numberofcolumns, int sidelength) {
 	
 
 	float xpos = current.getMesh().getPos()[0];
@@ -95,10 +118,11 @@ void updateGrid(std::vector<std::vector<std::vector<Sphere>>> &optSpheres, Spher
 
 	int column = floor(xpos/sidelength) + numberofcolumns/2;
 	int row = floor(zpos / sidelength) + numberofcolumns / 2;
-	optSpheres[column][row].clear();
 	optSpheres[column][row].push_back(current);
 
+
 	//Right and front
+
 
 	int column1 = floor((xpos + current.getRadius())/ sidelength) + numberofcolumns / 2;
 	int row1 = floor((zpos + current.getRadius() )/ sidelength) + numberofcolumns / 2;
@@ -110,6 +134,7 @@ void updateGrid(std::vector<std::vector<std::vector<Sphere>>> &optSpheres, Spher
 	
 
 	//BVack and left
+
 	int column2 = floor((xpos - current.getRadius()) / sidelength) + numberofcolumns / 2;
 	int row2 = floor((zpos - current.getRadius()) / sidelength) + numberofcolumns / 2;
 	if (column2 > 0 && row2 > 0 && column2 < numberofcolumns && row2 < numberofcolumns) {
@@ -117,6 +142,7 @@ void updateGrid(std::vector<std::vector<std::vector<Sphere>>> &optSpheres, Spher
 			optSpheres[column2][row2].push_back(current);
 		}
 	}
+
 	
 
 	//Right and back
@@ -127,9 +153,11 @@ void updateGrid(std::vector<std::vector<std::vector<Sphere>>> &optSpheres, Spher
 			optSpheres[column3][row3].push_back(current);
 		}
 	}
+
 	
 
 	//Left and back
+	//if (column2 != NULL && row2 != NULL) { optSpheres[column1][row1].clear(); }
 	int column4 = floor((xpos - current.getRadius()) / sidelength) + numberofcolumns / 2;
 	int row4 = floor((zpos + current.getRadius()) / sidelength) + numberofcolumns / 2;
 	if (column4 > 0 && row4 > 0 && column4 < numberofcolumns && row4 < numberofcolumns) {
@@ -322,7 +350,7 @@ int main()
 
 		accumulator += frameTime;
 
-		
+		//optSpheres.clear();
 		while (accumulator >= dt) {
 			/*
 			**	SIMULATION
@@ -354,12 +382,13 @@ int main()
 				Spheres[i].translate(dt*Spheres[i].getVel());
 
 
-
+				clearGrid(optSpheres);
 				updateGrid(optSpheres, Spheres[i], gridnum, 6);
-				//updateGrid(*grid, Spheres[i], 10.0f, 10);
 
-				if (optSpheres[9][9].size()>0) {
-					optSpheres[9][9][0].setVel(vec3(0.0f));
+				if (optSpheres[0][0].size()>0) {
+					for (int i = 0; i < optSpheres[0][0].size(); i++) {
+						optSpheres[0][0][i].setVel(vec3(0.0f));
+					}					
 				}
 
 				//Collisions with cushion
