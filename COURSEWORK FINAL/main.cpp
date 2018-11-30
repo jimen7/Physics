@@ -119,7 +119,7 @@ void updateGrid(std::vector<std::vector<std::vector<Sphere>>> &optSpheres, Spher
 	int column = floor(xpos/sidelength) + numberofcolumns/2;
 	int row = floor(zpos / sidelength) + numberofcolumns / 2;
 	optSpheres[column][row].push_back(current);
-
+	//std::cout << "size of cell " << column << "  " << row << " :" << optSpheres[column][row].size() << std::endl;
 
 	//Right and front
 
@@ -372,7 +372,7 @@ int main()
 			//		}
 			//	}
 			//}
-
+			clearGrid(optSpheres);
 
 			for (unsigned int i = 0; i < spherenum; i++) {
 
@@ -382,12 +382,12 @@ int main()
 				Spheres[i].translate(dt*Spheres[i].getVel());
 
 
-				clearGrid(optSpheres);
+				
 				updateGrid(optSpheres, Spheres[i], gridnum, 6);
 
 				if (optSpheres[0][0].size()>0) {
 					for (int i = 0; i < optSpheres[0][0].size(); i++) {
-						optSpheres[0][0][i].setVel(vec3(0.0f));
+						optSpheres[0][0][i].setVel(vec3(0.0f));		//Pointer issue maybve?
 					}					
 				}
 
