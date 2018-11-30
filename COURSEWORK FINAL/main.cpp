@@ -341,6 +341,21 @@ int main()
 
 	bool stop = false;
 
+	// test
+	Sphere s1 = Sphere();
+	s1.setMesh(sphere);
+	s1.getMesh().setShader(sphereshader);
+
+	//sp.scale(glm::vec3(sphereradius, sphereradius, sphereradius));
+	s1.setRadius(1.0f);
+	s1.setMass(1.0f);
+
+	std::vector<Sphere> balls;
+	balls.push_back(s1);
+	s1.translate(glm::vec3(0.0f, 10.0f, 0.0f));
+	
+
+
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
 	{
@@ -382,12 +397,13 @@ int main()
 				Spheres[i].translate(dt*Spheres[i].getVel());
 
 
-				
+				// update grid
 				updateGrid(optSpheres, Spheres[i], gridnum, 6);
 
 				if (optSpheres[0][0].size()>0) {
 					for (int i = 0; i < optSpheres[0][0].size(); i++) {
 						optSpheres[0][0][i].setVel(vec3(0.0f));		//Pointer issue maybve?
+						std::cout << glm::to_string(optSpheres[0][0][i].getVel());
 					}					
 				}
 
@@ -471,6 +487,12 @@ int main()
 		app.clear();
 		// draw groud plane
 		app.draw(plane);
+
+		// test
+		app.draw(balls[0].getMesh());
+
+
+
 		// draw particles
 		//app.draw(particle1.getMesh());
 		//for (unsigned int j = 0; j < vertnum; j++) {
@@ -478,9 +500,10 @@ int main()
 		//		app.draw(vecvec[j][i].getMesh());
 		//	}
 		//}
-		for (unsigned int i = 0; i < spherenum; i++) {
+		
+		/*for (unsigned int i = 0; i < spherenum; i++) {
 			app.draw(Spheres[i].getMesh());
-		}
+		}*/
 
 		// draw demo objects
 		//app.draw(cube);
