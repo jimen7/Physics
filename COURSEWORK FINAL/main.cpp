@@ -343,16 +343,24 @@ int main()
 
 	// test
 	Sphere s1 = Sphere();
+	Sphere *s2 = &(Sphere());
 	s1.setMesh(sphere);
 	s1.getMesh().setShader(sphereshader);
+	s2->setMesh(sphere);
+	s2->getMesh().setShader(sphereshader);
 
 	//sp.scale(glm::vec3(sphereradius, sphereradius, sphereradius));
 	s1.setRadius(1.0f);
 	s1.setMass(1.0f);
+	s2->setRadius(1.0f);
+	s2->setMass(1.0f);
 
-	std::vector<Sphere> balls;
-	balls.push_back(s1);
-	s1.translate(glm::vec3(0.0f, 10.0f, 0.0f));
+	std::vector<Sphere*> balls;
+
+
+	balls.push_back(&s1);			//MIRACLE
+	balls[0]->translate(glm::vec3(0.0f, 10.0f, 0.0f));
+	//s2->translate(glm::vec3(0.0f, 10.0f, 0.0f));
 	
 
 
@@ -489,7 +497,7 @@ int main()
 		app.draw(plane);
 
 		// test
-		app.draw(balls[0].getMesh());
+		app.draw(balls[0]->getMesh());
 
 
 
