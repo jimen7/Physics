@@ -69,7 +69,7 @@ int boxsize3;
 int column4Old;
 int row4Old;
 int boxsize4;
-bool firsttime=true;
+bool firsttime = true;
 
 //Method tyhat creates random variables between 2 values
 float RandomFloat(float a, float b) {
@@ -110,12 +110,12 @@ void clearGrid(std::vector<std::vector<std::vector<Sphere*>>> &optSpheres) {
 }
 
 void updateGrid(std::vector<std::vector<std::vector<Sphere*>>> &optSpheres, Sphere *current, float numberofcolumns, int sidelength) {
-	
+
 
 	float xpos = current->getMesh().getPos()[0];
 	float zpos = current->getMesh().getPos()[2];
 
-	int column = floor(xpos/sidelength) + numberofcolumns/2;
+	int column = floor(xpos / sidelength) + numberofcolumns / 2;
 	int row = floor(zpos / sidelength) + numberofcolumns / 2;
 	optSpheres[column][row].push_back(current);
 	//std::cout << "size of cell " << column << "  " << row << " :" << optSpheres[column][row].size() << std::endl;
@@ -123,48 +123,48 @@ void updateGrid(std::vector<std::vector<std::vector<Sphere*>>> &optSpheres, Sphe
 	//Right and front
 
 
-	//int column1 = floor((xpos + current->getRadius())/ sidelength) + numberofcolumns / 2;
-	//int row1 = floor((zpos + current->getRadius() )/ sidelength) + numberofcolumns / 2;
-	//if (column1 > 0 && row1 > 0 && column1 < numberofcolumns && row1 < numberofcolumns) {
-	//	if (column1 != column || row1 != row) {
-	//		optSpheres[column1][row1].push_back(current);
-	//	}
-	//}
-	//
+	int column1 = floor((xpos + current->getRadius())/ sidelength) + numberofcolumns / 2;
+	int row1 = floor((zpos + current->getRadius() )/ sidelength) + numberofcolumns / 2;
+	if (column1 > 0 && row1 > 0 && column1 < numberofcolumns && row1 < numberofcolumns) {
+		if (column1 != column || row1 != row) {
+			optSpheres[column1][row1].push_back(current);
+		}
+	}
+	
 
-	////BVack and left
+	//BVack and left
 
-	//int column2 = floor((xpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
-	//int row2 = floor((zpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
-	//if (column2 > 0 && row2 > 0 && column2 < numberofcolumns && row2 < numberofcolumns) {
-	//	if (column2 != column || row2 != row) {
-	//		optSpheres[column2][row2].push_back(current);
-	//	}
-	//}
+	int column2 = floor((xpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
+	int row2 = floor((zpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
+	if (column2 > 0 && row2 > 0 && column2 < numberofcolumns && row2 < numberofcolumns) {
+		if (column2 != column || row2 != row) {
+			optSpheres[column2][row2].push_back(current);
+		}
+	}
 
-	//
+	
 
-	////Right and back
-	//int column3 = floor((xpos + current->getRadius()) / sidelength) + numberofcolumns / 2;
-	//int row3 = floor((zpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
-	//if (column3 > 0 && row3 > 0 && column3 < numberofcolumns && row3 < numberofcolumns) {
-	//	if (column3 != column || row3 != row) {
-	//		optSpheres[column3][row3].push_back(current);
-	//	}
-	//}
+	//Right and back
+	int column3 = floor((xpos + current->getRadius()) / sidelength) + numberofcolumns / 2;
+	int row3 = floor((zpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
+	if (column3 > 0 && row3 > 0 && column3 < numberofcolumns && row3 < numberofcolumns) {
+		if (column3 != column || row3 != row) {
+			optSpheres[column3][row3].push_back(current);
+		}
+	}
 
-	//
+	
 
-	////Left and back
-	////if (column2 != NULL && row2 != NULL) { optSpheres[column1][row1].clear(); }
-	//int column4 = floor((xpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
-	//int row4 = floor((zpos + current->getRadius()) / sidelength) + numberofcolumns / 2;
-	//if (column4 > 0 && row4 > 0 && column4 < numberofcolumns && row4 < numberofcolumns) {
-	//	if (column4 != column || row4 != row) {
-	//		optSpheres[column4][row4].push_back(current);
-	//	}
-	//}
-	//
+	//Left and back
+	//if (column2 != NULL && row2 != NULL) { optSpheres[column1][row1].clear(); }
+	int column4 = floor((xpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
+	int row4 = floor((zpos + current->getRadius()) / sidelength) + numberofcolumns / 2;
+	if (column4 > 0 && row4 > 0 && column4 < numberofcolumns && row4 < numberofcolumns) {
+		if (column4 != column || row4 != row) {
+			optSpheres[column4][row4].push_back(current);
+		}
+	}
+	
 
 
 }
@@ -198,7 +198,7 @@ std::vector<Vertex> giveColVertices(float  y, RigidBody &r) {
 		//World position of given vertex:
 		vec3 worlpos = mat3(r.getMesh().getModel()) * v.getCoord() + r.getPos();
 		//Check if the world position of the vertices are coplliding with the plane
-		if (worlpos[1]<y) {
+		if (worlpos[1] < y) {
 			colVert.push_back(worlpos);
 		}
 	}
@@ -226,7 +226,7 @@ int main()
 
 	Shader blue = Shader("resources/shaders/solid.vert", "resources/shaders/solid_blue.frag");
 
-	
+
 	std::vector<std::vector<std::vector<Sphere*>>> optSpheres;
 
 	for (int i = 0; i < gridnum; i++) {
@@ -266,7 +266,7 @@ int main()
 	rb.setMesh(m);
 	Shader rbShader = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	rb.getMesh().setShader(rbShader);
-	rb.scale(vec3(1.0f,3.0f,1.0f));
+	rb.scale(vec3(1.0f, 3.0f, 1.0f));
 	rb.setMass(1.0f);
 
 	//Set up spheres
@@ -275,7 +275,7 @@ int main()
 	//Sphere Spheres[spherenum];
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
 	Shader sphereshader = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
-	for (unsigned int i = 0; i < spherenum; i++){
+	for (unsigned int i = 0; i < spherenum; i++) {
 		Sphere *sp = &(Sphere());
 
 		sp->setMesh(sphere);
@@ -290,7 +290,7 @@ int main()
 		//Spheres[i] = sp;
 
 
-		
+
 	}
 
 
@@ -303,14 +303,14 @@ int main()
 		//Spheres[i]->translate(glm::vec3(r1, Spheres[i]->getRadius(), r2));
 		//Spheres[i]->translate(glm::vec3(RandomFloat(-499.0f, 499.0f), Spheres[i]->getRadius(), RandomFloat(-499.0f, 499.0f)));
 		std::cout << glm::to_string(Spheres[i]->getPos()) << std::endl;
-		Spheres[i]->setVel(vec3(RandomFloat(-20.0f,20.0f), 0.0f, RandomFloat(-20.0f, 20.0f)));
+		Spheres[i]->setVel(vec3(RandomFloat(-20.0f, 20.0f), 0.0f, RandomFloat(-20.0f, 20.0f)));
 		Spheres[i]->setAngVel(vec3(0.0f, 0.0f, 0.0f));
 		//spheres.addforce?
-		
+
 	}
 
 
-	
+
 
 
 
@@ -328,7 +328,7 @@ int main()
 
 	//Cube Variables
 	glm::vec3 cubecorner = glm::vec3(-29.0f, 0.0f, -29.0f);
-	glm::vec3 d = glm::vec3(58.0f,0.0f,58.0f);
+	glm::vec3 d = glm::vec3(58.0f, 0.0f, 58.0f);
 
 	std::vector<glm::vec3> dir;
 	dir.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -337,7 +337,7 @@ int main()
 
 	//Initial impulse
 	bool impulseAppplied = false;
-	vec3 impulseF = vec3(2.0f,1.0f,0.0f);
+	vec3 impulseF = vec3(2.0f, 1.0f, 0.0f);
 	//vec3 impulseF2 = vec3(3.0f, 0.0f, 0.0f);
 	float impAppTime = 2.0f;
 
@@ -369,7 +369,7 @@ int main()
 	balls.push_back(s2);
 	balls[0]->translate(glm::vec3(0.0f, 10.0f, 0.0f));
 	//s2->translate(glm::vec3(0.0f, 10.0f, 0.0f));
-	
+
 
 
 	// Game loop
@@ -388,7 +388,7 @@ int main()
 			*/
 
 			//RIGID BODIES
-			
+
 			/*
 		**	INTERACTION
 		*/
@@ -416,27 +416,27 @@ int main()
 				// update grid
 				//updateGrid(optSpheres, Spheres[i], gridnum, 6);
 
-				if (optSpheres[0][0].size()>0) {
+				if (optSpheres[0][0].size() > 0) {
 					for (int i = 0; i < optSpheres[0][0].size(); i++) {
 						optSpheres[0][0][i]->setVel(vec3(0.0f));		//Pointer issue maybve?
 						//std::cout << glm::to_string(optSpheres[0][0][i]->getVel());
-					}					
+					}
 				}
 
 				//Collisions with cushion
 				for (unsigned int k = 0; k < 3; k++) {
 
 
-					if(k!=1) {
+					if (k != 1) {
 
-						if (Spheres[i]->getPos()[k]  < plane.getPos()[k] - plane.getScale()[k][k]+ Spheres[i]->getRadius()) {
+						if (Spheres[i]->getPos()[k] < plane.getPos()[k] - plane.getScale()[k][k] + Spheres[i]->getRadius()) {
 							//Spheres[i]->setVel(glm::vec3(0.0f));
 							Spheres[i]->setVel(k, Spheres[i]->getVel()[k] * -1.0f);
 							//Spheres[i]->translate(Spheres[i]->getPos() - plane.getScale()[k][k] + Spheres[i]->getRadius());
 							Spheres[i]->setPos(k, plane.getPos()[k] - plane.getScale()[k][k] + Spheres[i]->getRadius());
 						}
 
-						else if (Spheres[i]->getPos()[k]  > plane.getPos()[k] + plane.getScale()[k][k] - Spheres[i]->getRadius()) {
+						else if (Spheres[i]->getPos()[k] > plane.getPos()[k] + plane.getScale()[k][k] - Spheres[i]->getRadius()) {
 							//Spheres[i]->setVel(glm::vec3(0.0f));
 							Spheres[i]->setVel(k, Spheres[i]->getVel()[k] * -1.0f);
 							//Spheres[i]->translate(Spheres[i]->getPos() + plane.getScale()[k][k] - Spheres[i]->getRadius());
@@ -445,17 +445,17 @@ int main()
 						}
 
 					}
-					
+
 				}
 
 
 
 				//Sphere Collisions
-				for (unsigned int j = i+1; j < spherenum; j++) {
+				for (unsigned int j = i + 1; j < spherenum; j++) {
 					if (glm::distance(Spheres[i]->getPos(), Spheres[j]->getPos()) < Spheres[i]->getRadius() + Spheres[j]->getRadius()) {
 						vec3 n = glm::normalize(Spheres[j]->getPos() - Spheres[i]->getPos());
 
-						float displacement =  Spheres[j]->getRadius()+ Spheres[i]->getRadius() - glm::distance(Spheres[j]->getPos(), Spheres[i]->getPos());
+						float displacement = Spheres[j]->getRadius() + Spheres[i]->getRadius() - glm::distance(Spheres[j]->getPos(), Spheres[i]->getPos());
 
 						float ball1portion = glm::length(Spheres[i]->getVel()) / (glm::length(Spheres[i]->getVel()) + glm::length(Spheres[j]->getVel()));
 						float ball2portion = glm::length(Spheres[j]->getVel()) / (glm::length(Spheres[i]->getVel()) + glm::length(Spheres[j]->getVel()));
@@ -466,8 +466,8 @@ int main()
 						vec3 vr = Spheres[j]->getVel() - Spheres[i]->getVel();
 						//vec3 vr = Spheres[i]->getVel() - Spheres[j]->getVel();
 						//vec3 n = glm::normalize(Spheres[i]->getVel());
-						
-						float jn = (-(1.0f + e)*dot(vr,n)) / (1.0f/Spheres[i]->getMass() + 1.0f/Spheres[j]->getMass());
+
+						float jn = (-(1.0f + e)*dot(vr, n)) / (1.0f / Spheres[i]->getMass() + 1.0f / Spheres[j]->getMass());
 
 						Spheres[i]->setVel(Spheres[i]->getVel() - (jn*n / Spheres[i]->getMass()));
 						Spheres[j]->setVel(Spheres[j]->getVel() + (jn*n / Spheres[j]->getMass()));
@@ -475,9 +475,9 @@ int main()
 					}
 				}
 
-				
+
 			}
-			
+
 
 			/*for (float i = 0; i < spherenum; i++) {
 				for (float j = 0; j < spherenum; j++) {
@@ -517,7 +517,7 @@ int main()
 		//		app.draw(vecvec[j][i].getMesh());
 		//	}
 		//}
-		
+
 		for (unsigned int i = 0; i < spherenum; i++) {
 			app.draw(Spheres[i]->getMesh());
 		}

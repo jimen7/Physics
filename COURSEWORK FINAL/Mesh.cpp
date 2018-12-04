@@ -184,8 +184,8 @@ Mesh::Mesh(MeshType type)
 	m_vertices = soloverts;
 
 	for (Vertex s : m_vertices) {
-	////////////////////std::cout << m_vertices.size() << std::endl;
-	//std::cout << glm::to_string(s.getCoord()) << std::endl;  THIS IS THE CORRECT
+		////////////////////std::cout << m_vertices.size() << std::endl;
+		//std::cout << glm::to_string(s.getCoord()) << std::endl;  THIS IS THE CORRECT
 	}
 
 	//for (Vertex a : vertices) {

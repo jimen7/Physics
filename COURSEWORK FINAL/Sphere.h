@@ -1,7 +1,7 @@
 #pragma once
 #include "RigidBody.h"
 
-class Sphere:
+class Sphere :
 	public RigidBody
 {
 public:
