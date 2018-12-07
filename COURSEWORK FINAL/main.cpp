@@ -276,7 +276,7 @@ int main()
 	Mesh sphere = Mesh::Mesh("resources/models/sphere.obj");
 	Shader sphereshader = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	for (unsigned int i = 0; i < spherenum; i++) {
-		Sphere *sp = &(Sphere());
+		Sphere *sp = new Sphere();
 
 		sp->setMesh(sphere);
 		sp->getMesh().setShader(sphereshader);
@@ -294,12 +294,13 @@ int main()
 	}
 
 
-	float r1;
-	float r2;
+	//float r1;
+	//float r2;
 	for (unsigned int i = 0; i < spherenum; i++) {
-		r1 = -29.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (29.0f - -29.0f)));
-		r2 = -29.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (29.0f - -29.0f)));
+		/*r1 = -29.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (29.0f - -29.0f)));
+		r2 = -29.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (29.0f - -29.0f)));*/
 		Spheres[i]->translate(glm::vec3(RandomFloat(-29.0f, 29.0f), Spheres[i]->getRadius(), RandomFloat(-29.0f, 29.0f)));		//////////////////////////////////this i need to fix
+		//Spheres[i]->setPos(glm::vec3(RandomFloat(-29.0f, 29.0f), Spheres[i]->getRadius(), RandomFloat(-29.0f, 29.0f)));
 		//Spheres[i]->translate(glm::vec3(r1, Spheres[i]->getRadius(), r2));
 		//Spheres[i]->translate(glm::vec3(RandomFloat(-499.0f, 499.0f), Spheres[i]->getRadius(), RandomFloat(-499.0f, 499.0f)));
 		std::cout << glm::to_string(Spheres[i]->getPos()) << std::endl;
@@ -403,7 +404,7 @@ int main()
 			//		}
 			//	}
 			//}
-			//clearGrid(optSpheres);
+			clearGrid(optSpheres);
 
 			for (unsigned int i = 0; i < spherenum; i++) {
 
@@ -414,19 +415,11 @@ int main()
 
 
 				// update grid
-				//updateGrid(optSpheres, Spheres[i], gridnum, 6);
+				updateGrid(optSpheres, Spheres[i], gridnum, 6);
 
-				if (optSpheres[0][0].size() > 0) {
-					for (int i = 0; i < optSpheres[0][0].size(); i++) {
-						optSpheres[0][0][i]->setVel(vec3(0.0f));		//Pointer issue maybve?
-						//std::cout << glm::to_string(optSpheres[0][0][i]->getVel());
-					}
-				}
 
 				//Collisions with cushion
 				for (unsigned int k = 0; k < 3; k++) {
-
-
 					if (k != 1) {
 
 						if (Spheres[i]->getPos()[k] < plane.getPos()[k] - plane.getScale()[k][k] + Spheres[i]->getRadius()) {
@@ -488,6 +481,13 @@ int main()
 			}*/
 
 
+			//int test = 4;
+			//if (optSpheres[test][test].size() > 0) {
+			//	for (int i = 0; i < optSpheres[test][test].size(); i++) {
+			//		optSpheres[test][test][i]->setVel(vec3(0.0f));
+			//		//std::cout << glm::to_string(optSpheres[0][0][i]->getVel());
+			//	}
+			//}
 
 
 
