@@ -53,6 +53,59 @@ public:
 	void display();
 	void terminate(){ glfwTerminate(); }
 
+
+	void Application::showFPS() {
+
+		static double previousSeconds = 0.0;
+
+		static int frameCount;
+
+		double elapsedSeconds;
+
+		double currentSeconds = glfwGetTime();
+
+
+
+		elapsedSeconds = currentSeconds - previousSeconds;
+
+
+
+		// limit FPS refresh rate to 4 times per second
+
+		if (elapsedSeconds > 0.25) {
+
+			previousSeconds = currentSeconds;
+
+			double FPS = (double)frameCount / elapsedSeconds;
+
+			double msPerFrame = 1000.0 / FPS;
+
+
+
+			std::ostringstream outs;
+
+			outs.precision(3);
+
+			outs << std::fixed
+
+				<< "Physics Simulation  "
+
+				<< "FPS: " << FPS << "  "
+
+				<< "Frame time: " << msPerFrame << "ms" << std::endl;
+
+			glfwSetWindowTitle(m_window, outs.str().c_str());
+
+
+
+			frameCount = 0;
+
+		}
+
+		frameCount++;
+
+	}
+
 private:
 
 	// view and projection matrices

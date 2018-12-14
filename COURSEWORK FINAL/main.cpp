@@ -40,7 +40,7 @@ float rest = 0.1f;//spring rest length
 float kd = 30.0f;//damping coefficient
 
 
-const int spherenum = 30;
+const int spherenum = 5000;
 
 const float sphereradius = 1.0f;
 
@@ -51,7 +51,8 @@ const int vertnum = 10;
 
 int test = 0;
 
-const int gridnum = 10;
+const int gridnum = 100;
+const float planeScale = 500;
 
 //Storing Previous Coordinates of boxes in order to clear
 int columnOld;
@@ -137,7 +138,7 @@ void updateGrid(std::vector<std::vector<std::vector<Sphere*>>> &optSpheres, Sphe
 	int column2 = floor((xpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
 	int row2 = floor((zpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
 	if (column2 > 0 && row2 > 0 && column2 < numberofcolumns && row2 < numberofcolumns) {
-		if (column2 != column || row2 != row) {
+		if ((column2 != column || row2 != row) && (column2 != column1 || row2 != row1)) {
 			optSpheres[column2][row2].push_back(current);
 		}
 	}
@@ -148,7 +149,7 @@ void updateGrid(std::vector<std::vector<std::vector<Sphere*>>> &optSpheres, Sphe
 	int column3 = floor((xpos + current->getRadius()) / sidelength) + numberofcolumns / 2;
 	int row3 = floor((zpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
 	if (column3 > 0 && row3 > 0 && column3 < numberofcolumns && row3 < numberofcolumns) {
-		if (column3 != column || row3 != row) {
+		if ((column3 != column || row3 != row) && (column3 != column1 || row3 != row1 ) && (column3 != column2 || row3 != row2) ) {
 			optSpheres[column3][row3].push_back(current);
 		}
 	}
@@ -160,7 +161,7 @@ void updateGrid(std::vector<std::vector<std::vector<Sphere*>>> &optSpheres, Sphe
 	int column4 = floor((xpos - current->getRadius()) / sidelength) + numberofcolumns / 2;
 	int row4 = floor((zpos + current->getRadius()) / sidelength) + numberofcolumns / 2;
 	if (column4 > 0 && row4 > 0 && column4 < numberofcolumns && row4 < numberofcolumns) {
-		if (column4 != column || row4 != row) {
+		if ((column4 != column || row4 != row) && (column4 != column1 || row4 != row1) && (column4 != column2 || row4 != row2) && (column4 != column3 || row4 != row3) ) {
 			optSpheres[column4][row4].push_back(current);
 		}
 	}
@@ -219,7 +220,7 @@ int main()
 	Mesh plane = Mesh::Mesh(Mesh::QUAD);
 	//std::cout << "Size of plane: " << plane.getVertices().size() << std::endl;
 	// scale it up x5
-	plane.scale(glm::vec3(30.0f, 0.0f, 30.0f));
+	plane.scale(glm::vec3(planeScale, 0.0f, planeScale));
 	//plane.scale(glm::vec3(1000.0f, 0.0f, 1000.0f));
 	Shader lambert = Shader("resources/shaders/physics.vert", "resources/shaders/physics.frag");
 	plane.setShader(lambert);
@@ -285,7 +286,7 @@ int main()
 		sp->setRadius(1.0f);
 		sp->setMass(1.0f);
 
-		//updateGrid(optSpheres, sp, gridnum, 6);
+		//updateGrid(optSpheres, sp, gridnum, (planeScale*2)/gridnum));
 		Spheres.push_back(sp);
 		//Spheres[i] = sp;
 
@@ -299,11 +300,11 @@ int main()
 	for (unsigned int i = 0; i < spherenum; i++) {
 		/*r1 = -29.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (29.0f - -29.0f)));
 		r2 = -29.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (29.0f - -29.0f)));*/
-		Spheres[i]->translate(glm::vec3(RandomFloat(-29.0f, 29.0f), Spheres[i]->getRadius(), RandomFloat(-29.0f, 29.0f)));		//////////////////////////////////this i need to fix
+		Spheres[i]->translate(glm::vec3(RandomFloat(-planeScale+1.0f, planeScale - 1.0f), Spheres[i]->getRadius(), RandomFloat(-planeScale + 1.0f, planeScale - 1.0f)));		//////////////////////////////////this i need to fix
 		//Spheres[i]->setPos(glm::vec3(RandomFloat(-29.0f, 29.0f), Spheres[i]->getRadius(), RandomFloat(-29.0f, 29.0f)));
 		//Spheres[i]->translate(glm::vec3(r1, Spheres[i]->getRadius(), r2));
 		//Spheres[i]->translate(glm::vec3(RandomFloat(-499.0f, 499.0f), Spheres[i]->getRadius(), RandomFloat(-499.0f, 499.0f)));
-		std::cout << glm::to_string(Spheres[i]->getPos()) << std::endl;
+		//std::cout << glm::to_string(Spheres[i]->getPos()) << std::endl;
 		Spheres[i]->setVel(vec3(RandomFloat(-20.0f, 20.0f), 0.0f, RandomFloat(-20.0f, 20.0f)));
 		Spheres[i]->setAngVel(vec3(0.0f, 0.0f, 0.0f));
 		//spheres.addforce?
@@ -349,33 +350,35 @@ int main()
 
 	bool stop = false;
 
-	// test
-	Sphere s1 = Sphere();
-	Sphere *s2 = &(Sphere());
-	s1.setMesh(sphere);
-	s1.getMesh().setShader(sphereshader);
-	s2->setMesh(sphere);
-	s2->getMesh().setShader(sphereshader);
+	//// test
+	//Sphere s1 = Sphere();
+	//Sphere *s2 = &(Sphere());
+	//s1.setMesh(sphere);
+	//s1.getMesh().setShader(sphereshader);
+	//s2->setMesh(sphere);
+	//s2->getMesh().setShader(sphereshader);
 
-	//sp.scale(glm::vec3(sphereradius, sphereradius, sphereradius));
-	s1.setRadius(1.0f);
-	s1.setMass(1.0f);
-	s2->setRadius(1.0f);
-	s2->setMass(1.0f);
+	////sp.scale(glm::vec3(sphereradius, sphereradius, sphereradius));
+	//s1.setRadius(1.0f);
+	//s1.setMass(1.0f);
+	//s2->setRadius(1.0f);
+	//s2->setMass(1.0f);
 
-	std::vector<Sphere*> balls;
+	//std::vector<Sphere*> balls;
 
 
-	//balls.push_back(&s1);			//MIRACLE
-	balls.push_back(s2);
-	balls[0]->translate(glm::vec3(0.0f, 10.0f, 0.0f));
-	//s2->translate(glm::vec3(0.0f, 10.0f, 0.0f));
-
+	////balls.push_back(&s1);			//MIRACLE
+	//balls.push_back(s2);
+	//balls[0]->translate(glm::vec3(0.0f, 10.0f, 0.0f));
+	////s2->translate(glm::vec3(0.0f, 10.0f, 0.0f));
+	//std::cout << optSpheres.size() << std::endl;
 
 
 	// Game loop
 	while (!glfwWindowShouldClose(app.getWindow()))
 	{
+
+		app.showFPS();
 		float newTime = (GLfloat)glfwGetTime();
 		float frameTime = newTime - currentTime;
 		currentTime = newTime;
@@ -404,18 +407,20 @@ int main()
 			//		}
 			//	}
 			//}
+
+
+
 			clearGrid(optSpheres);
 
 			for (unsigned int i = 0; i < spherenum; i++) {
 
 				//Set Acceleration for Spheres
-				Spheres[i]->setAcc(Spheres[i]->applyForces(Spheres[i]->getPos(), Spheres[i]->getVel(), t, dt));
+				//Spheres[i]->setAcc(Spheres[i]->applyForces(Spheres[i]->getPos(), Spheres[i]->getVel(), t, dt));
 				Spheres[i]->setVel(Spheres[i]->getVel() + dt * Spheres[i]->getAcc());
 				Spheres[i]->translate(dt*Spheres[i]->getVel());
 
 
-				// update grid
-				updateGrid(optSpheres, Spheres[i], gridnum, 6);
+
 
 
 				//Collisions with cushion
@@ -442,54 +447,71 @@ int main()
 				}
 
 
+				//for (unsigned int j = i + 1; j < spherenum; j++) {
+				//	if (glm::distance(Spheres[i]->getPos(), Spheres[j]->getPos()) < Spheres[i]->getRadius() + Spheres[j]->getRadius()) {
+				//		vec3 n = glm::normalize(Spheres[j]->getPos() - Spheres[i]->getPos());
 
-				//Sphere Collisions
-				for (unsigned int j = i + 1; j < spherenum; j++) {
-					if (glm::distance(Spheres[i]->getPos(), Spheres[j]->getPos()) < Spheres[i]->getRadius() + Spheres[j]->getRadius()) {
-						vec3 n = glm::normalize(Spheres[j]->getPos() - Spheres[i]->getPos());
+				//		float displacement = Spheres[j]->getRadius() + Spheres[i]->getRadius() - glm::distance(Spheres[j]->getPos(), Spheres[i]->getPos());
 
-						float displacement = Spheres[j]->getRadius() + Spheres[i]->getRadius() - glm::distance(Spheres[j]->getPos(), Spheres[i]->getPos());
+				//		float ball1portion = glm::length(Spheres[i]->getVel()) / (glm::length(Spheres[i]->getVel()) + glm::length(Spheres[j]->getVel()));
+				//		float ball2portion = glm::length(Spheres[j]->getVel()) / (glm::length(Spheres[i]->getVel()) + glm::length(Spheres[j]->getVel()));
 
-						float ball1portion = glm::length(Spheres[i]->getVel()) / (glm::length(Spheres[i]->getVel()) + glm::length(Spheres[j]->getVel()));
-						float ball2portion = glm::length(Spheres[j]->getVel()) / (glm::length(Spheres[i]->getVel()) + glm::length(Spheres[j]->getVel()));
+				//		Spheres[i]->translate(displacement * -n * ball1portion);
+				//		Spheres[j]->translate(displacement * n * ball2portion);
 
-						Spheres[i]->translate(displacement * -n * ball1portion);
-						Spheres[j]->translate(displacement * n * ball2portion);
+				//		vec3 vr = Spheres[j]->getVel() - Spheres[i]->getVel();
+				//		//vec3 vr = Spheres[i]->getVel() - Spheres[j]->getVel();
+				//		//vec3 n = glm::normalize(Spheres[i]->getVel());
 
-						vec3 vr = Spheres[j]->getVel() - Spheres[i]->getVel();
-						//vec3 vr = Spheres[i]->getVel() - Spheres[j]->getVel();
-						//vec3 n = glm::normalize(Spheres[i]->getVel());
+				//		float jn = (-(1.0f + e)*dot(vr, n)) / (1.0f / Spheres[i]->getMass() + 1.0f / Spheres[j]->getMass());
 
-						float jn = (-(1.0f + e)*dot(vr, n)) / (1.0f / Spheres[i]->getMass() + 1.0f / Spheres[j]->getMass());
+				//		Spheres[i]->setVel(Spheres[i]->getVel() - (jn*n / Spheres[i]->getMass()));
+				//		Spheres[j]->setVel(Spheres[j]->getVel() + (jn*n / Spheres[j]->getMass()));
 
-						Spheres[i]->setVel(Spheres[i]->getVel() - (jn*n / Spheres[i]->getMass()));
-						Spheres[j]->setVel(Spheres[j]->getVel() + (jn*n / Spheres[j]->getMass()));
+				//	}
+				//}
 
-					}
-				}
-
-
+				updateGrid(optSpheres, Spheres[i], gridnum, (planeScale * 2) / gridnum);
 			}
 
+			for (int column = 0; column < gridnum; column++) {
+				for (int row = 0; row < gridnum; row++) {
 
-			/*for (float i = 0; i < spherenum; i++) {
-				for (float j = 0; j < spherenum; j++) {
-					if (Spheres[i]->getPos().x > i*10.0f && Spheres[i]->getPos().x < (i + 1)*10.0f && Spheres[i]->getPos().z > j*10.0f && Spheres[i]->getPos().z < (j + 1)*10.0f) {
-						optSpheres[i][j].clear;
+					if (optSpheres[column][row].size() > 1) {
+						for (int i = 0; i < optSpheres[column][row].size(); i++) {
+							for (unsigned int j = i + 1; j < optSpheres[column][row].size(); j++) {
+
+								if ((glm::length(optSpheres[column][row][i]->getVel()) > 0 || glm::length(optSpheres[column][row][j]->getVel()) > 0 )) {
+
+
+									vec3 n = glm::normalize(optSpheres[column][row][j]->getPos() - optSpheres[column][row][i]->getPos());
+
+									float displacement = optSpheres[column][row][j]->getRadius() + optSpheres[column][row][i]->getRadius() - glm::distance(optSpheres[column][row][j]->getPos(), optSpheres[column][row][i]->getPos());
+
+									float ball1portion = glm::length(optSpheres[column][row][i]->getVel()) / (glm::length(optSpheres[column][row][i]->getVel()) + glm::length(optSpheres[column][row][j]->getVel()));
+									float ball2portion = glm::length(optSpheres[column][row][j]->getVel()) / (glm::length(optSpheres[column][row][i]->getVel()) + glm::length(optSpheres[column][row][j]->getVel()));
+
+									optSpheres[column][row][i]->translate(displacement * -n * ball1portion);
+									optSpheres[column][row][j]->translate(displacement * n * ball2portion);
+
+									vec3 vr = optSpheres[column][row][j]->getVel() - optSpheres[column][row][i]->getVel();
+									//vec3 vr = optSpheres[column][row][i]->getVel() - optSpheres[column][row][j]->getVel();
+									//vec3 n = glm::normalize(optSpheres[column][row][i]->getVel());
+									
+									float jn = (-(1.0f + e)*dot(vr, n)) / (1.0f / optSpheres[column][row][i]->getMass() + 1.0f / optSpheres[column][row][j]->getMass());
+
+									optSpheres[column][row][i]->setVel(optSpheres[column][row][i]->getVel() - (jn*n / optSpheres[column][row][i]->getMass()));
+									optSpheres[column][row][j]->setVel(optSpheres[column][row][j]->getVel() + (jn*n / optSpheres[column][row][j]->getMass()));
+
+								}
+
+							}
+						}
+
 					}
+
 				}
-			}*/
-
-
-			//int test = 4;
-			//if (optSpheres[test][test].size() > 0) {
-			//	for (int i = 0; i < optSpheres[test][test].size(); i++) {
-			//		optSpheres[test][test][i]->setVel(vec3(0.0f));
-			//		//std::cout << glm::to_string(optSpheres[0][0][i]->getVel());
-			//	}
-			//}
-
-
+			}
 
 
 			accumulator -= dt;
@@ -506,7 +528,7 @@ int main()
 
 		// test
 		//app.draw(balls[0]->getMesh());
-		app.draw(s2->getMesh());
+		//app.draw(s2->getMesh());
 
 
 
