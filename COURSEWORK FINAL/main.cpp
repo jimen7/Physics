@@ -40,7 +40,7 @@ float rest = 0.1f;//spring rest length
 float kd = 30.0f;//damping coefficient
 
 
-const int spherenum = 7000;
+const int spherenum = 7200;
 
 const float sphereradius = 1.0f;
 
@@ -176,6 +176,9 @@ std::vector<Vertex> giveColVertices(float  y, RigidBody &r) {
 // main function
 int main()
 {
+
+
+	double framerateaverage;
 	// create application
 	Application app = Application::Application();
 	app.initRender();
