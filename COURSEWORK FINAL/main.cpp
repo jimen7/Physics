@@ -40,7 +40,7 @@ float rest = 0.1f;//spring rest length
 float kd = 30.0f;//damping coefficient
 
 
-const int spherenum = 5;
+const int spherenum = 20;
 
 const float sphereradius = 1.0f;
 
@@ -201,7 +201,7 @@ int main()
 	// create application
 	Application app = Application::Application();
 	app.initRender();
-	Application::camera.setCameraPosition(glm::vec3(0.0f, 5.0f, 20.0f));
+	Application::camera.setCameraPosition(glm::vec3(0.0f, 5.0f, 50.0f));
 
 	// create ground plane
 	Mesh plane = Mesh::Mesh(Mesh::QUAD);
@@ -270,7 +270,8 @@ int main()
 	for (unsigned int i = 0; i < spherenum; i++) {
 		Spheres[i]->translate(glm::vec3(RandomFloat(-planeScale+1.0f, planeScale - 1.0f), Spheres[i]->getRadius(), RandomFloat(-planeScale + 1.0f, planeScale - 1.0f)));		//////////////////////////////////this i need to fix
 		//Spheres[i]->setVel(vec3(RandomFloat(-20.0f, 20.0f), 0.0f, RandomFloat(-20.0f, 20.0f)));
-		//Spheres[i]->setAngVel(vec3(Spheres[i]->getVel().x*0.01, 0.0f, 0.0f));
+		
+
 	}
 
 
@@ -303,7 +304,7 @@ int main()
 	bool impulseAppplied = false;
 	vec3 impulseF;
 	//vec3 impulseF2 = vec3(3.0f, 0.0f, 0.0f);
-	float impAppTime = 2.0f;
+	float impAppTime = 4.0f;
 	int impulsenumcheck = 0;
 
 
@@ -329,6 +330,8 @@ int main()
 		currentTime = newTime;
 
 		accumulator += frameTime;
+		bool AccVel = false;
+
 
 		//optSpheres.clear();
 		while (accumulator >= dt) {
@@ -370,17 +373,23 @@ int main()
 
 				
 				if (currentTime > impAppTime && !impulseAppplied) {
-				impulseF = vec3(RandomFloat(10.0f,30.0f), 0.0f, RandomFloat(10.0f, 30.0f));
-				Vertex inapppoint = (Spheres[i]->getPos()+vec3(0.0f,0.008f,0.0f)); //initial application point
-				//vertex inapppoint2 = rb.getpos() + vec3(0.0f, -3.0f, 0.0f); //initial application point
-				//rb.setvel(rb.getvel() + (impulsef + impulsef2) / rb.getmass());
-				Spheres[i]->setVel(Spheres[i]->getVel() + (impulseF)/ Spheres[i]->getMass());
-				Spheres[i]->setAngVel(Spheres[i]->getAngVel() + Spheres[i]->getItinverse()*glm::cross(inapppoint.getCoord()- Spheres[i]->getPos(), impulseF));
-				//rb.setangvel(rb.getangvel() + rb.getitinverse()*glm::cross(inapppoint2.getcoord() - rb.getpos(), impulsef2));
-				impulsenumcheck = impulsenumcheck+1;
-				if (impulsenumcheck >= spherenum) {
-					impulseAppplied = true;
-				}
+
+					if (i < spherenum/3) {
+
+						impulseF = vec3(RandomFloat(10.0f, 20.0f), 0.0f, RandomFloat(10.0f, 20.0f));
+						Vertex inapppoint = (Spheres[i]->getPos() /*+ vec3(0.0f, 0.008f, 0.0f)*/); //initial application point
+						//vertex inapppoint2 = rb.getpos() + vec3(0.0f, -3.0f, 0.0f); //initial application point
+						//rb.setvel(rb.getvel() + (impulsef + impulsef2) / rb.getmass());
+						Spheres[i]->setVel(Spheres[i]->getVel() + (impulseF) / Spheres[i]->getMass());
+						Spheres[i]->setAngVel(Spheres[i]->getAngVel() + Spheres[i]->getItinverse()*glm::cross(inapppoint.getCoord() - Spheres[i]->getPos(), impulseF));
+						//rb.setangvel(rb.getangvel() + rb.getitinverse()*glm::cross(inapppoint2.getcoord() - rb.getpos(), impulsef2));
+						impulsenumcheck = impulsenumcheck + 1;
+						if (impulsenumcheck >= spherenum) {
+							impulseAppplied = true;
+						}
+
+					}
+				
 				
 				//std::cout << "inverse matrix: " << glm::to_string(rb.getitinverse()) << std::endl;
 			}
@@ -398,6 +407,13 @@ int main()
 				}
 				if (sumpoint != vec3(0.0f)) {
 					//Displacement so that the RB doesn't get stuck in the ground, and the point where we are going to apply the impulse(sumpoint):
+
+
+					//std::cout << glm::to_string(Spheres[i]->getMesh().getVertices()) << std::endl;
+					//World position of given vertex:
+					//vec3 worlpos = mat3(Spheres[i]->getMesh().getModel()) * v.getCoord() + s->getPos();
+
+
 					//Vertex lowest = colVert[0];
 					//for (Vertex v : colVert) {
 
@@ -412,7 +428,7 @@ int main()
 					//Spheres[i]->translate(displacement);
 
 					//Get average collision point
-					Vertex pointofimpulse = /*Vertex(sumpoint / colVert.size())*/ sumpoint;
+					vec3 pointofimpulse = /*Vertex(sumpoint / colVert.size())*/ sumpoint;
 
 
 
@@ -420,7 +436,7 @@ int main()
 
 
 				//Calculate the formula
-					vec3 r = pointofimpulse.getCoord() - Spheres[i]->getPos(); // r in j formula
+					vec3 r = pointofimpulse - Spheres[i]->getPos(); // r in j formula
 					vec3 vr = Spheres[i]->getVel() + glm::cross(Spheres[i]->getAngVel(), r);
 					vec3 n = glm::normalize(vec3(0.0f, 1.0f, 0.0f));
 					float e = 0.8f;
@@ -434,7 +450,7 @@ int main()
 
 					//rb.calculateInertia();
 
-
+					//Spheres[i]->setAngVel(vec3(20.0f, 0.0f, 0.0f));
 
 					//Set VEL and ANG.VEl
 					/*if (glm::length(Spheres[i]->getVel()) < 0.1f) {*/
@@ -469,11 +485,16 @@ int main()
 					//FRICTION
 
 		//Calculate friction
-					vec3 vt = vr - dot(vr, n)*n;
-					float mue = 0.4f; // GOLD VALUE
-					//float mue = 0.2f;
+					n = glm::normalize(Spheres[i]->getVel())*-1.0f;
+					//vec3 r = pointofimpulse - Spheres[i]->getPos(); // r in j formula
+					//r = Spheres[i]->getRadius()*(-n);
+					vec3 vt = vr - dot(vr, n)*n; 
+					//vec3 vt = vr - glm::proj(n,vr);
+					//float mue = 0.4f; // GOLD VALUE
+					float mue = 0.3f;
 					vec3 jFriction;
-					vec3 tan = normalize(vt);
+					vec3 tan = glm::normalize(vt);
+					//vec3 tan = glm::normalize(Spheres[i]->getVel());
 
 					//PLaying around
 					//float momentum_before = dot(rb.getVel() * rb.getMass() , n);
@@ -481,18 +502,16 @@ int main()
 					float body_vel_after = dot(vec3(0.0f), n) + body_rel_vel_after;
 					float jFrictionFloat;*/
 
+					if (vt != vec3(0.0f) && Spheres[i]->getVel() != vec3(0.0f)) {
+					//if (vt != vec3(0.0f)) {
 
-					if (vt != vec3(0.0f)) {
+
 						//jFriction = -mue * glm::length(jn) * normalize(vt);
 
-						jFriction = (-mue * tan) / ((1.0f + Spheres[i]->getMass()) + dot(glm::cross(Spheres[i]->getItinverse()*cross(r, tan), r), tan)); //KIUND WORKS FOR SPHERES
+						jFriction = (-mue * tan) / ((1.0f + Spheres[i]->getMass()) + dot(glm::cross(Spheres[i]->getItinverse()*cross(r, tan), r), tan)); //KIND WORKS FOR SPHERES
 						//jFriction = -tan * (mue*dot(vr, tan)) / ((1.0f + Spheres[i]->getMass()) + dot(glm::cross(Spheres[i]->getItinverse()*cross(r, tan), r), tan));
 
 						//jFriction = -1.0f * mue * glm::length(jn)*(vt / glm::length(vt));  //2nd implementation, MUE MUST BE SMALLER THAN 0.2
-
-						/*body_rel_vel_after = -e * dot(rb.getVel(), n);
-						body_vel_after = dot(vec3(0.0f), n) + body_rel_vel_after;
-						jFrictionFloat = rb.getMass() * (body_vel_after - dot(rb.getVel(), n));*/   //3rd implementation DOESNT WORK
 					}
 					else {
 						jFriction = vec3(0.0f);
@@ -501,54 +520,32 @@ int main()
 					float minus = -1.0f;
 
 					//Set VEL and ANG.VEl
-					if (glm::length(Spheres[i]->getVel()) < 2.0f) {
+					if (glm::length(Spheres[i]->getVel()) < 5.0f && currentTime > impAppTime) {
 						//Spheres[i]->setVel(vec3(0.0f));
-						Spheres[i]->setVel(Spheres[i]->getVel()*0.6f);
+						/*Spheres[i]->setVel(Spheres[i]->getVel()*0.6f);*/
+						Spheres[i]->setVel(Spheres[i]->getVel() + (jFriction / Spheres[i]->getMass()));
+						Spheres[i]->setAngVel((Spheres[i]->getAngVel() + Spheres[i]->getItinverse()*glm::cross(r, jFriction)));
+						//Spheres[i]->setAngVel(Spheres[i]->getAngVel()*0.6f);
 					}
 					else {
 						Spheres[i]->setVel(Spheres[i]->getVel() + (jFriction / Spheres[i]->getMass()));
-					}
-
-
-
-
-					if (currentTime < impAppTime) {
 						Spheres[i]->setAngVel((Spheres[i]->getAngVel() + Spheres[i]->getItinverse()*glm::cross(r, jFriction)));
-
-
-						//create skew symmetric matrix for w
-						angVelSkew = glm::matrixCross3(Spheres[i]->getAngVel());
-						//create 3x3 rotation matrix from rb rotation matrix
-						R = glm::mat3(Spheres[i]->getRotate());
-						//update rotation matrix
-						R += dt * angVelSkew * R;
-						R = glm::orthonormalize(R);
-						Spheres[i]->setRotate(glm::mat4(R));
 					}
-					else {
 
 
-
-						if (glm::length(Spheres[i]->getAngVel()) < 0.2f && glm::length(Spheres[i]->getAngVel()) > 0.05f) {
-							Spheres[i]->setAngVel(Spheres[i]->getAngVel()*0.7f);
-						}
-						else {
-							Spheres[i]->setAngVel((Spheres[i]->getAngVel() + Spheres[i]->getItinverse()*glm::cross(r, jFriction)));
-							std::cout << "BALL" << i << ": " << glm::to_string(Spheres[i]->getAngVel()) << "\n" << std::endl;
-
-							//create skew symmetric matrix for w
-							angVelSkew = glm::matrixCross3(Spheres[i]->getAngVel());
-							//create 3x3 rotation matrix from rb rotation matrix
-							R = glm::mat3(Spheres[i]->getRotate());
-							//update rotation matrix
-							R += dt * angVelSkew * R;
-							R = glm::orthonormalize(R);
-							Spheres[i]->setRotate(glm::mat4(R));
-						}
-					}
 
 
 					
+
+
+					//create skew symmetric matrix for w
+					angVelSkew = glm::matrixCross3(Spheres[i]->getAngVel());
+					//create 3x3 rotation matrix from rb rotation matrix
+					R = glm::mat3(Spheres[i]->getRotate());
+					//update rotation matrix
+					R += dt * angVelSkew * R;
+					R = glm::orthonormalize(R);
+					Spheres[i]->setRotate(glm::mat4(R));
 
 
 
@@ -565,7 +562,7 @@ int main()
 							if (Spheres[i]->getPos()[k] < plane.getPos()[k] - plane.getScale()[k][k] + Spheres[i]->getRadius()) {
 								//Spheres[i]->setVel(glm::vec3(0.0f));
 								Spheres[i]->setVel(k, Spheres[i]->getVel()[k] * -0.9f);
-								//Spheres[i]->setAngVel(Spheres[i]->getAngVel()*-0.8f);
+								Spheres[i]->setAngVel(Spheres[i]->getAngVel()*-1.0f);
 								//Spheres[i]->translate(Spheres[i]->getPos() - plane.getScale()[k][k] + Spheres[i]->getRadius());
 								Spheres[i]->setPos(k, plane.getPos()[k] - plane.getScale()[k][k] + Spheres[i]->getRadius());
 							}
@@ -573,12 +570,21 @@ int main()
 							else if (Spheres[i]->getPos()[k] > plane.getPos()[k] + plane.getScale()[k][k] - Spheres[i]->getRadius()) {
 								//Spheres[i]->setVel(glm::vec3(0.0f));
 								Spheres[i]->setVel(k, Spheres[i]->getVel()[k] * -0.9f);
-								//Spheres[i]->setAngVel(Spheres[i]->getAngVel()*-0.8f);
+								Spheres[i]->setAngVel(Spheres[i]->getAngVel()*-1.0f);
 								//Spheres[i]->translate(Spheres[i]->getPos() + plane.getScale()[k][k] - Spheres[i]->getRadius());
 								Spheres[i]->setPos(k, plane.getPos()[k] + plane.getScale()[k][k] - Spheres[i]->getRadius());
 
 							}
 
+
+							//create skew symmetric matrix for w
+							angVelSkew = glm::matrixCross3(Spheres[i]->getAngVel());
+							//create 3x3 rotation matrix from rb rotation matrix
+							R = glm::mat3(Spheres[i]->getRotate());
+							//update rotation matrix
+							R += dt * angVelSkew * R;
+							R = glm::orthonormalize(R);
+							Spheres[i]->setRotate(glm::mat4(R));
 						}
 
 					}
@@ -601,6 +607,22 @@ int main()
 							//vec3 n = glm::normalize(Spheres[i]->getVel());
 
 							float jn = (-(1.0f + e)*dot(vr, n)) / (1.0f / Spheres[i]->getMass() + 1.0f / Spheres[j]->getMass());
+
+							//if (Spheres[i]->getVel() == vec3(0.0f)) {
+							//	Spheres[i]->setAngVel(Spheres[j]->getAngVel());
+							//}
+							//else if (Spheres[j]->getVel() == vec3(0.0f)) {
+							//	Spheres[j]->setAngVel(Spheres[i]->getAngVel());
+							//}
+
+							////create skew symmetric matrix for w
+							//angVelSkew = glm::matrixCross3(Spheres[i]->getAngVel());
+							////create 3x3 rotation matrix from rb rotation matrix
+							//R = glm::mat3(Spheres[i]->getRotate());
+							////update rotation matrix
+							//R += dt * angVelSkew * R;
+							//R = glm::orthonormalize(R);
+							//Spheres[i]->setRotate(glm::mat4(R));
 
 							Spheres[i]->setVel(Spheres[i]->getVel() - (jn*n / Spheres[i]->getMass()));
 							Spheres[j]->setVel(Spheres[j]->getVel() + (jn*n / Spheres[j]->getMass()));
