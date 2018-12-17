@@ -12,6 +12,7 @@ public:
 
 	float getRadius() { return m_radius; }
 
+	void calculateInertia();
 
 private:
 	float m_radius;

@@ -30,8 +30,11 @@ public:
 
 private:
 	float m_density;
-	glm::mat3 m_invInertia; //Inverse Inertia
+	
 	glm::vec3 m_angVel; //Angular velocity
 	glm::vec3 m_angAcc; //Angular Acceleration
+
+protected:
+	glm::mat3 m_invInertia; //Inverse Inertia
 };
 

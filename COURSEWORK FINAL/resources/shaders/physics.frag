@@ -1,8 +1,14 @@
 #version 410
 
 layout (location = 0) in vec3 position;
+layout (location = 1) in vec2 texCoord;
+layout (location = 2) in vec3 normalIn;
+
+uniform vec4 ambient;
+uniform vec3 eyePosition;
 
 in vec3 normal;
+in vec3 normalLocal;
 out vec4 color;
 
 struct DirectionalLight
@@ -25,9 +31,24 @@ void main()
     float ambientIntensity = .5f;
     vec3 ambient = light.color * ambientIntensity;
 
+    
     // diffuse
     float diffuseIntensity = 1.0f;
-	vec3 diffuse = .2f * max(dot(light.direction, normal),0) * light.color * diffuseIntensity;
+    vec3 diffColour = vec3(1.0f, 0.0f, 0.2f);
+    if (normalLocal.y > 0 && normalLocal.x > 0){
+        diffColour = vec3(1.0f, 0.0f, 0.2f);
+    }
+    if (normalLocal.y < 0 && normalLocal.x > 0){
+        diffColour = vec3(.2f, 0.0f, 1.0f);
+    }
+    if (normalLocal.y < 0 && normalLocal.x < 0){
+        diffColour = vec3(1.0f, 0.0f, 0.2f);
+    }
+    if (normalLocal.y > 0 && normalLocal.x < 0){
+        diffColour = vec3(.2f, 0.0f, 1.0f);
+    }
+    
+	vec3 diffuse = .2f * max(dot(light.direction, normal),0) * diffColour * diffuseIntensity;
 	
 	// final colour
     color = vec4(ambient + diffuse, 1.0);
