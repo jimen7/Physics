@@ -1,0 +1,191 @@
+% #######################################
+% ########### FILL THESE IN #############
+% #######################################
+\def\mytitle{Final project - Report}
+\def\mykeywords{Pool Physics, Friction, Collision Detection, Simulation, Physics Optimization}
+\def\myauthor{Dimitrios Tsolis}
+\def\contact{40204497@live.napier.ac.uk}
+\def\mymodule{Physics Based Animation (SET09119)}
+% #######################################
+% #### YOU DON'T NEED TO TOUCH BELOW ####
+% #######################################
+\documentclass[10pt, a4paper]{article}
+\usepackage[a4paper,outer=1.5cm,inner=1.5cm,top=1.75cm,bottom=1.5cm]{geometry}
+\twocolumn
+\usepackage{graphicx}
+\graphicspath{{./images/}}
+%colour our links, remove weird boxes
+\usepackage[colorlinks,linkcolor={black},citecolor={blue!80!black},urlcolor={blue!80!black}]{hyperref}
+%Stop indentation on new paragraphs
+\usepackage[parfill]{parskip}
+%% Arial-like font
+\IfFileExists{uarial.sty}
+{
+    \usepackage[english]{babel}
+    \usepackage[T1]{fontenc}
+    \usepackage{uarial}
+    \renewcommand{\familydefault}{\sfdefault}
+}{
+    \GenericError{}{Couldn't find Arial font}{ you may need to install 'nonfree' fonts on your system}{}
+    \usepackage{lmodern}
+    \renewcommand*\familydefault{\sfdefault}
+}
+%Napier logo top right
+\usepackage{watermark}
+%Lorem Ipusm dolor please don't leave any in you final report ;)
+\usepackage{lipsum}
+\usepackage{xcolor}
+\usepackage{listings}
+%give us the Capital H that we all know and love
+\usepackage{float}
+%tone down the line spacing after section titles
+\usepackage{titlesec}
+%Cool maths printing
+\usepackage{amsmath}
+%PseudoCode
+\usepackage{algorithm2e}
+%Used for mue
+
+
+
+
+\titlespacing{\subsection}{0pt}{\parskip}{-3pt}
+\titlespacing{\subsubsection}{0pt}{\parskip}{-\parskip}
+\titlespacing{\paragraph}{0pt}{\parskip}{\parskip}
+\newcommand{\figuremacro}[5]{
+    \begin{figure}[#1]
+        \centering
+        \includegraphics[width=#5\columnwidth]{#2}
+        \caption[#3]{\textbf{#3}#4}
+        \label{fig:#2}
+    \end{figure}
+}
+
+\lstset{
+	escapeinside={/*@}{@*/}, language=C++,
+	basicstyle=\fontsize{8.5}{12}\selectfont,
+	numbers=left,numbersep=2pt,xleftmargin=2pt,frame=tb,
+    columns=fullflexible,showstringspaces=false,tabsize=4,
+    keepspaces=true,showtabs=false,showspaces=false,
+    backgroundcolor=\color{white}, morekeywords={inline,public,
+    class,private,protected,struct},captionpos=t,lineskip=-0.4em,
+	aboveskip=10pt, extendedchars=true, breaklines=true,
+	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941}
+}
+
+\thiswatermark{\centering \put(336.5,-38.0){\includegraphics[scale=0.8]{logo}} }
+\title{\mytitle}
+\author{\myauthor\hspace{1em}\\\contact\\Edinburgh Napier University\hspace{0.5em}-\hspace{0.5em}\mymodule}
+\date{}
+\hypersetup{pdfauthor=\myauthor,pdftitle=\mytitle,pdfkeywords=\mykeywords}
+\sloppy
+% #######################################
+% ########### START FROM HERE ###########
+% #######################################
+\begin{document}
+    \maketitle
+    \begin{abstract}
+        %Replace the lipsum command with actual text 
+        %\lipsum[2]
+        In this report, a simulation in which a  number of spheres collide with each other will be analyzed. The simulation is inspired from the game pool.  This implementation focuses on the physics behind pool, mainly in two parts, collision detection and friction physics. Furthermore, the optimisations made in order to achieve the highest possible number of balls will be analyzed. The maximum number of balls achieved in the simulation while maintaining 60FPS was 7,200. The optimisations made don't include graphic optimisations, as this coursework focuses on the physics aspect of the simulation.
+    \end{abstract}
+    
+    \textbf{Keywords -- }{\mykeywords}
+    
+    \section{Introduction}
+    The set up from the simulation was inspired from the game Pool. First of all, the implementation of the ball collision in the simulation will be briefly analyzed, and then the optimisations that were made in order to fit the largest amount of colliding balls on the table. Furthermore, the friction physics used for the second part for this assignment will also be evaluated.
+
+  
+    \figuremacro{h}{pool}{Pool Game}{ -  Initial Set up}{1.0}
+	
+	\section{Collision and Optimization}
+%	Some common formatting you may need uses these commands for \textbf{Bold Text}, \textit{Italics}, and \underline{underlined}.
+	\subsection{Collision Implementation}
+
+The collision was implemented using impulses. An impulse represents a change in momentum and the effect of a force over a short period of time. It produces an instantaneous change in the velocity(regardless of point of application), and the angular velocity of a body(depending on it point of application). For this part, only the change in velocity will be analyzed, as angular velocity change will be explained later in the Pool Physics Section. The formula used to calculate the impulse for Sphere Collisions in this simulation is:
+    
+    \begin{center}
+          $  \boldsymbol{j} = \dfrac{ -( 1 + e ) \boldsymbol{v_r} \cdot \boldsymbol{n} } { \boldsymbol{m_1^{-1}} +  \boldsymbol{m_2^{-1}} }$
+    \end{center}
+  
+,where \boldsymbol{e} is the coefficient of elasticity, \boldsymbol{v_r} is the relative velocity of the colliding spheres (\textit{$v_r = v_2 -v_1$}) , \boldsymbol{n} is the normal of the collision in regards to one sphere, and \boldsymbol{m_1} and \boldsymbol{m_2} are the respective masses of the spheres. This impulse formula is derived from the conservation of momentum, as the same absolute value of the impulse will be applied to both bodies.After the Impulse is applied, the velocities of each respective sphere after the collision are set using the following formulas:\\
+
+\begin{center}
+$\boldsymbol{v'_1} = \boldsymbol{v_1} - \dfrac{\boldsymbol{j_r} } { \boldsymbol{m_1}} \cdot \boldsymbol{n}$ \\
+$\boldsymbol{v'_2} = \boldsymbol{v_2} + \dfrac{\boldsymbol{j_r} } { \boldsymbol{m_2}} \cdot \boldsymbol{n}$ \\
+\end{center}
+
+This formula is applied when collision is detected, but if a ball has overlapped another ball between frames, the balls needs to be translated outside of each other by the length of overlap. So before the impulse of the collision is applied, if the balls are overlapping, they are translated outside of each other and then the impulse is applied. If this concept was not implemented, sometimes the spheres would get stuck within each other. This translation concept was implemented for the cushion collision as well.
+
+For collision with the cushion at the edge of the the table, the simulation simply detects if the ball is at the edge of the table. If that is the case, it firstly translates it in case it has overlapped with the cushion between frames and then reverses the velocity while absorbing some of it as the table cushions are considered as fixed objects and won't move.
+
+For both of the above types of collisions, the bounding volumes of each sphere is calculated by taking the midpoint of the sphere(center) and adding the radius, meaning that the bounding volume is considered to be the edges of the sphere.
+    
+    
+	\subsection{Optimization}
+Using the collision implementation from above, the simulation constantly checks if a ball should collide with any other ball, therefore every ball is checked at each iteration of the game loop. The maximum number of balls that could be inserted on the table before any optimisations were made was 200. The drawback with this implementation was that inside the game loop, every ball was checked against every other ball, which is computationally intensive.
+    
+This issue was tackled by implementing a grid-based partitioning approach, specifically a Uniform grid. A Uniform grid is a simple but effective spatial decomposition which is used to simply overlay space with a uniform grid, meaning that the table in this simulation will be comprised of a number of equal sized regions, which are also called cells. This was implemented in order to free up computational power, as only those objects which overlap a common cell can be in contact, therefore the intersection tests are only performed against objects which share cells. Specifically, for this simulation, when the calculations for collision detection were done previously, each ball was checked against every other ball in the table, but while using a Uniform grid, each ball is checked against every other ball that is in the same cell. After the Uniform grid was implemented, the maximum numbers of balls that could be inserted on the table went from 200 to 7,200, which is a big improvement. The table was scaled to 500 units, so that it can fit as many balls as possible. Each ball in the table has a radius of 1 unit. The table with all the balls is shown in \boldsymbol{Figure  \ref{fig:Optimised Pool Table}} .
+
+\begin{figure}[h!]
+  \includegraphics[scale=0.5]{Optimised_Balls.PNG}
+  \caption{The scaled pool table in the simulation with 7,200 balls}
+  \label{fig:Optimised Pool Table}
+\end{figure}
+
+In detail, for sphere collision detection, instead of checking every ball with every other ball in the table, each cell is checked first. If there is more than one ball in that cell, the simulation checks for collision detection with every other ball in that cell only. This implies that the collision checking in each cell is only done if it contains more than one ball. A ball can be part of more than one cells if it's on the edge of one. If that is the case, the simulation will check for collisions with any other ball within the cells that the ball is part off.
+
+For cushion collision detection, two optimisations were made. First of all, collisions with the cushions are only checked on the cells that are at the edges of the table, as the balls in the other cells will never collide with the cushions. Furthermore, whilst checking these cells, collision checking is performed only for the balls that are close enough to the edges of the table. These optimisations increased the frame rate when rendering 7,200 colliding balls from an average of 50FPS to 60FPS. 
+
+In order to find the bottlenecks of the simulation, the Visual Studio Performance Profiler was used. It was found that the collisions and the draw function in the simulation were the most computationally intensive processes. The optimisations that were made for the collisions were implemented to improve the overall performance of the simulation and increase the amount of balls the table can have. The draw function is what renders the objects on the screen(e.g. the pool table and the balls), but it was not changed as it was out of scope for this coursework.
+
+	\subsection{Pool Physics}
+This section will mainly focus on friction between the ground and the balls, as the physics behind collisions were analyzed previously. The friction and the angular velocity change from sphere collisions will also be expanded upon.
+
+ The model used was based on the Coulomb friction model(\cite{Fiedler}.) The Coulomb Friction formula includes a friction coefficient variable. Lower values for this coefficient result to less friction, and higher values result to more friction. Typical values from this coefficient are in the range [0,1]. In this coursework, different friction coefficient values have been used and their respective results will be analyzed. 
+
+The formula used for friction in this simulation is: \\
+    
+    $j_t = \dfrac{ - \boldsymbol{\mu} \cdot \boldsymbol{t} } { m^{-1} + ( \boldsymbol{I^{-1}} ( \boldsymbol{r} \times \boldsymbol{t} ) \times \boldsymbol{r} ) \cdot \boldsymbol{t} }$
+
+Where:
+\begin{itemize}
+\item \boldsymbol{j_t} is the magnitude of the friction impulse
+\item \boldsymbol{\mu} is the coefficient of friction, which ranges from 0 to 1
+\item \boldsymbol{t} is the tangent vector in the direction of sliding
+\item \boldsymbol{r} is the contact point minus the center of the sphere(in this case, it will be a vector with the length of the ball radius)
+\item \boldsymbol{I} is the inertia tensor of the sphere
+\item \boldsymbol{m} is the mass of the sphere(for this simulation, every sphere is set to have a mass of 1 unit)
+\end{itemize}
+
+The point of application of the impulse is the lowest point of the sphere, meaning the point of the sphere where it touches the ground. This impulse is applied as long as the sphere is moving, and it's direction is the opposite of the movements. This implementation allows the balls to eventually stop moving, it gradually decreases their respective angular velocity, and it also allows for drag shots. Drag shots are achieved when a sphere is hit under the center of mass with an instant impulse. In this scenario, the ball will start moving towards a direction but it will be rolling the opposite way of the movement, and if given enough time, it will reach a point where its angular velocity will reverse and the ball will start spinning in the same direction as the current movement.
+
+This simulation also includes transfer of angular velocity from ball to ball during collision. In order to make the simulation more realistic, when a ball is rolling and it hits another ball, some of its angular velocity is transferred to the ball it hits. A rolling friction implementation was trialed for this simulation but could not be implemented due to unexpected results. The solution to this problem was implementing Coulomb Friction in a way that the angular velocity is gradually decreasing when a sphere is moving along the floor, and by implementing the transfer of angular velocity during ball collisions. The end result looks visually pleasing and physically accurate.
+
+In order to show the end result, the code can be slightly changed in order to show 3 different scenes. For the first two scenes, the setup is the same as the initial set up of a pool table. The setup can be seen in Figure \ref{fig:Pool Triangle}.
+\begin{figure}[h!]
+  \includegraphics[scale=0.58]{Triangle.PNG}
+  \caption{The initial set up of the 2 scenes}
+  \label{fig:Pool Triangle}
+\end{figure}
+In order to get this initial set up, the Boolean variable \textit{triangle} must be set to true. If the coefficient of friction(\textit{mue} in the simulation) is set to less than 0.6, the gray ball will hit the other balls in a straight line. For this initial set up, a \textit{mue} value of 0.12 is recommended. If the \textit{mue} variable is set to more than 0.6 (0.7 is recommended), the gray ball will ricochet of the edges and then hit the triangle. This was implemented in order to show the different behaviours when changing the coefficient of friction. Finally, in order to render the last scene, the \textit{triangle} Boolean variable needs to be set to false. In this scenes, the balls are randomly placed on the table, and a third of the balls will be hit with a randomly calculated impulse. For this scene, the coefficient of friction is recommended to be 0.12. The initial set up for this scene can be seen in Figure \ref{fig:Randomly Placed Balls}.
+\begin{figure}[h!]
+  \includegraphics[scale=0.57]{RandomBalls.PNG}
+  \caption{The initial set up of the 3rd scene}
+  \label{fig:Randomly Placed Balls}
+\end{figure}
+
+\section{Future Work}
+
+\section{Conclusion}	
+
+
+
+
+\bibliographystyle{ieeetr}
+\bibliography{references}
+		
+\end{document}
